@@ -10,13 +10,6 @@
     <artifactId>pluginsib-scanweb</artifactId>
     <version>3.0.0</version>
   </parent>
-  <repositories>
-    <repository>
-      <name>Local Maven Repository</name>
-      <id>org.fundaciobit.pluginsib.localrepo3</id>
-      <url>file://${project.basedir}/../iecisascanweb/iecisa-scanweb-plugin/local-repo</url>
-    </repository>
-  </repositories>
   <dependencies>
     <!-- iText -->
     <dependency>
@@ -82,7 +75,7 @@
                 <artifactItem>
                   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
                   <artifactId>plugin-scanweb-iecisascanweb-applet-signed</artifactId>
-                  <version>2.0.0</version>
+                  <version>3.0.0</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <destFileName>plugin-scanweb-iecisascanweb-applet.jar</destFileName>
