@@ -58,8 +58,8 @@ import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
 import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin;
 import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin.InfoCertificate;
 */
-import org.fundaciobit.plugins.utils.Metadata;
-import org.fundaciobit.plugins.utils.PublicCertificatePrivateKeyPair;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.PublicCertificatePrivateKeyPair;
 
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;

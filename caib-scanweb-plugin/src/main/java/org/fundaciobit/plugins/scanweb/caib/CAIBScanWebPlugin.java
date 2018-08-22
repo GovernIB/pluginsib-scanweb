@@ -28,8 +28,8 @@ import org.fundaciobit.plugins.scanweb.api.ScanWebMode;
 import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
 import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
 import org.fundaciobit.plugins.scanweb.api.ScannedSignedFile;
-import org.fundaciobit.plugins.utils.Metadata;
-import org.fundaciobit.plugins.utils.MetadataType;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.MetadataType;
 
 import es.caib.digital.ws.api.v1.copiaautentica.CopiaAutenticaWSService;
 import es.caib.digital.ws.api.v1.copiaautentica.CopiaAutenticaWSServiceService;

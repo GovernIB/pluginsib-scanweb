@@ -8,7 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.fundaciobit.plugins.scanweb.caib.CAIBScanWebPlugin;
-import org.fundaciobit.plugins.utils.XTrustProvider;
+import org.fundaciobit.pluginsib.core.utils.XTrustProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.fundaciobit.plugins.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
  * 

@@ -3,7 +3,7 @@ package org.fundaciobit.plugins.scanweb.api;
 import java.util.Date;
 import java.util.List;
 
-import org.fundaciobit.plugins.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
  * 

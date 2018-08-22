@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.fundaciobit.plugins.scanweb.api.ScanWebConfig;
 import org.fundaciobit.plugins.scanweb.api.ScanWebMode;
-import org.fundaciobit.plugins.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
  *

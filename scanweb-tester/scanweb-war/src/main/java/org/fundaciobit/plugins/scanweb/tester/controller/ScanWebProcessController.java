@@ -22,7 +22,7 @@ import org.fundaciobit.plugins.scanweb.tester.ejb.utils.ScanWebConfigTester;
 import org.fundaciobit.plugins.scanweb.tester.form.ScanWebConfigForm;
 import org.fundaciobit.plugins.scanweb.tester.form.ScanWebConfigValidator;
 import org.fundaciobit.plugins.scanweb.tester.utils.HtmlUtils;
-import org.fundaciobit.plugins.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
