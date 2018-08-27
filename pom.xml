@@ -5,7 +5,7 @@
   <artifactId>pluginsib-scanweb</artifactId>
   <version>3.0.0</version>
   <packaging>pom</packaging>
-  <name>PluginsIB - Scan Web Plugins</name>
+  <name>PluginsIB - Scan Web</name>
   <properties>
     <documentcustody.api.version>4.0.0</documentcustody.api.version>
     <scanweb.api.version>3.0.0</scanweb.api.version>
