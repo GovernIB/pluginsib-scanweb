@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-tester-ear</artifactId>
+  <version>3.0.0</version>
   <packaging>ear</packaging>
   <name>PluginsIB - Scan Web - Tester - EAR</name>
   <parent>
