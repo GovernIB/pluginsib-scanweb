@@ -259,7 +259,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
   @Override
   public void requestGET(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
         request, response, true);
@@ -267,7 +267,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
   @Override
   public void requestPOST(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
         request, response, false);
@@ -284,7 +284,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    * 
    */
   protected void requestGETPOST(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, boolean isGet) {
 
     if (!absolutePluginRequestPath.endsWith("/")) {
@@ -359,7 +359,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
   public static final String INDEX = "index.html";
 
   protected void indexPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
 
     PrintWriter out;
@@ -731,7 +731,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
   // TODO fer cache
   protected void retornarDynamsoftWebtwainConfig(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
     
     String mime = getMimeType(query);
@@ -787,7 +787,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
 
   protected void finalPage(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
     
@@ -812,7 +812,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
 
   protected void uploadPage(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
 
@@ -914,7 +914,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
   
   protected void isFinishedRequest(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
     
     
@@ -1137,7 +1137,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
   
   
   protected void retornarRecursDesdeDirectori(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
     
     String mime = getMimeType(query);

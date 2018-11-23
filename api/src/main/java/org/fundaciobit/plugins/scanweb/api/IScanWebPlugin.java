@@ -62,17 +62,17 @@ public interface IScanWebPlugin extends IPlugin {
       String relativePluginRequestPath, HttpServletRequest request,
       ScanWebConfig config)  throws Exception;
 
-  public void endScanWebTransaction(long scanWebID, HttpServletRequest request);
+  public void endScanWebTransaction(String scanWebID, HttpServletRequest request);
 
   public void requestGET(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception;
 
   public void requestPOST(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception;
 
-  public void cleanScannedFiles(long scanWebID, HttpServletRequest request);
+  public void cleanScannedFiles(String scanWebID, HttpServletRequest request);
 
   // JPG, PNG, GIF, TIFF, PDF, ...
   public List<String> getSupportedScanTypes();

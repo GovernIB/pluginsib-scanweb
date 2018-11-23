@@ -36,7 +36,7 @@ import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
 public abstract class AbstractScanWebPlugin extends AbstractPluginProperties implements
     IScanWebPlugin {
 
-  private Map<Long, ScanWebConfig> scanTransactions = new HashMap<Long, ScanWebConfig>();
+  private Map<String, ScanWebConfig> scanTransactions = new HashMap<String, ScanWebConfig>();
 
   protected Logger log = Logger.getLogger(this.getClass());
 
@@ -99,12 +99,12 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
   }
 
   @Override
-  public void endScanWebTransaction(long scanWebID, HttpServletRequest request) {
+  public void endScanWebTransaction(String scanWebID, HttpServletRequest request) {
     scanTransactions.remove(scanWebID);
   }
 
   @Override
-  public void cleanScannedFiles(long scanWebID, HttpServletRequest request) {
+  public void cleanScannedFiles(String scanWebID, HttpServletRequest request) {
 
     ScanWebConfig swif = getTransaction(scanWebID);
     if (swif != null) {
@@ -114,12 +114,12 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
 
   
 
-  protected ScanWebConfig getTransaction(long scanWebID) {
+  protected ScanWebConfig getTransaction(String scanWebID) {
     return scanTransactions.get(scanWebID);
   }
 
   protected void putTransaction(ScanWebConfig config) {
-    final long scanWebID = config.getScanWebID();
+    final String scanWebID = config.getScanWebID();
     if (scanTransactions.containsKey(scanWebID)) {
       log.warn("S'esta registrant per segona vegada una transacció amb ID " + scanWebID,
           new Exception());
@@ -213,7 +213,7 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
   * 
   */
  protected void requestGETPOST(String absolutePluginRequestPath,
-     String relativePluginRequestPath, long scanWebID, ScanWebConfig fullInfo,
+     String relativePluginRequestPath, String scanWebID, ScanWebConfig fullInfo,
      String query, Locale languageUI,
      HttpServletRequest request, HttpServletResponse response, boolean isGet) {
 
@@ -476,7 +476,7 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
 
   // TODO XYZ mogut a base
   protected void retornarRecursLocal(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
     byte[] contingut = null;
     String mime = getMimeType(query);

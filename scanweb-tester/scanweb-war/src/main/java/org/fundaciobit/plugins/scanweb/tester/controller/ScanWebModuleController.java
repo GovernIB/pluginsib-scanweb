@@ -45,7 +45,7 @@ public class ScanWebModuleController extends HttpServlet {
 
   @RequestMapping(value = "/selectscanwebmodule/{scanWebID}")
   public ModelAndView selectScanWebModule(HttpServletRequest request,
-      HttpServletResponse response, @PathVariable("scanWebID") long scanWebID)
+      HttpServletResponse response, @PathVariable("scanWebID") String scanWebID)
       throws Exception {
 
     List<Plugin> pluginsFiltered = scanWebModuleEjb.getAllPluginsFiltered(request, scanWebID);
@@ -90,7 +90,7 @@ public class ScanWebModuleController extends HttpServlet {
   @RequestMapping(value = "/showscanwebmodule/{pluginID}/{scanWebID}")
   public ModelAndView showScanWebModule(HttpServletRequest request,
       HttpServletResponse response, @PathVariable("pluginID") Long pluginID,
-      @PathVariable("scanWebID") long scanWebID) throws Exception {
+      @PathVariable("scanWebID") String scanWebID) throws Exception {
 
     log.info("SMC :: showscanwebmodule: PluginID = " + pluginID);
     log.info("SMC :: showscanwebmodule: scanWebID = " + scanWebID);
@@ -216,7 +216,7 @@ public class ScanWebModuleController extends HttpServlet {
       log.debug(" query = " + query);
     }
     
-    long scanWebID = Long.parseLong(idStr);
+    String scanWebID = idStr;
         
     try {
       requestPlugin(request, response, scanWebID, query, isPost);
@@ -230,7 +230,7 @@ public class ScanWebModuleController extends HttpServlet {
   
 
   protected void requestPlugin(HttpServletRequest request, HttpServletResponse response,
-      long scanWebID, String query, boolean isPost)
+      String scanWebID, String query, boolean isPost)
       throws Exception {
 
     String absoluteRequestPluginBasePath = getAbsoluteRequestPluginBasePath(request,
@@ -251,7 +251,7 @@ public class ScanWebModuleController extends HttpServlet {
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
 
-  protected ModelAndView generateErrorMAV(HttpServletRequest request, long scanWebID,
+  protected ModelAndView generateErrorMAV(HttpServletRequest request, String scanWebID,
       String msg, Throwable th) {
     
     ScanWebConfigTester pss = scanWebModuleEjb.getScanWebConfig(request, scanWebID);
@@ -325,7 +325,7 @@ public class ScanWebModuleController extends HttpServlet {
       ScanWebModuleLocal scanWebModuleEjb, ScanWebConfigTester scanWebConfig)
       throws Exception {
 
-    final long scanWebID = scanWebConfig.getScanWebID();
+    final String scanWebID = scanWebConfig.getScanWebID();
     
     scanWebModuleEjb.startScanWebProcess(scanWebConfig);
 
@@ -364,20 +364,20 @@ public class ScanWebModuleController extends HttpServlet {
   }
 
   protected static String getAbsoluteRequestPluginBasePath(HttpServletRequest request,
-      String webContext, long scanWebID) {
+      String webContext, String scanWebID) {
 
     String base = getAbsoluteControllerBase(request, webContext);
     return getRequestPluginBasePath(base, scanWebID);
   }
 
   public static String getRelativeRequestPluginBasePath(HttpServletRequest request,
-      String webContext, long scanWebID) {
+      String webContext, String scanWebID) {
 
     String base = getRelativeControllerBase(request, webContext);
     return getRequestPluginBasePath(base, scanWebID);
   }
 
-  private static String getRequestPluginBasePath(String base, long scanWebID) {
+  private static String getRequestPluginBasePath(String base, String scanWebID) {
     String absoluteRequestPluginBasePath = base + "/requestPlugin/" + scanWebID;
     return absoluteRequestPluginBasePath;
   }

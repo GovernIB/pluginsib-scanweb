@@ -13,7 +13,7 @@ import org.fundaciobit.pluginsib.core.utils.Metadata;
  */
 public class ScanWebConfig {
   
-  protected long scanWebID;
+  protected String scanWebID;
 
   protected String scanType;
   protected Set<String> flags;
@@ -55,7 +55,7 @@ public class ScanWebConfig {
    * @param languageUI
    * @param urlFinal
    */
-  public ScanWebConfig(long scanWebID, String scanType, Set<String> flags,
+  public ScanWebConfig(String scanWebID, String scanType, Set<String> flags,
       List<Metadata> metadades, ScanWebMode mode, String languageUI, String urlFinal) {
     super();
     this.scanWebID = scanWebID;
@@ -117,11 +117,11 @@ public class ScanWebConfig {
     this.languageUI = languageUI;
   }
 
-  public long getScanWebID() {
+  public String getScanWebID() {
     return scanWebID;
   }
 
-  public void setScanWebID(long scanWebID) {
+  public void setScanWebID(String scanWebID) {
     this.scanWebID = scanWebID;
   }
 

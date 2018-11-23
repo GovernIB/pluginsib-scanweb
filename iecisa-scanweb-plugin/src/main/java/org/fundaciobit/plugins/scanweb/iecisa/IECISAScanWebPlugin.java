@@ -191,7 +191,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   @Override
   public void requestGET(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
         request, response, true);
@@ -199,7 +199,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   @Override
   public void requestPOST(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
         request, response, false);
@@ -217,7 +217,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
    * 
    */
   protected void requestGETPOST(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, boolean isGet) {
 
     if (!absolutePluginRequestPath.endsWith("/")) {
@@ -286,7 +286,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public static final String INDEX = "index.html";
 
   protected void indexPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
 
     boolean debug = isDebug();
@@ -524,7 +524,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   
   protected void isFinishedRequest(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
     
     
@@ -582,7 +582,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public static final String JNLP = "jnlp/";
 
   protected void jnlpPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      long scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
+      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
       Locale languageUI) {
 
     String appletUrlBase = absolutePluginRequestPath + "applet/";
@@ -659,7 +659,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
 
   protected void finalPage(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
     
@@ -685,7 +685,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public static final String UPLOAD_SCANNED_FILE_PARAMETER = "scannedfileparam";
 
   protected void uploadPage(String absolutePluginRequestPath,
-      String relativePluginRequestPath, long scanWebID, String query,
+      String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
 
