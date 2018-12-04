@@ -28,3 +28,7 @@
 /scanweb-tester/scanweb-plugins/target
 /scanweb-tester/scanweb-war/target
 /scanweb-tester/scanweb-ear/target
+/filescan-plugin/.project
+/filescan-plugin/.settings
+/filescan-plugin/target
+/filescan-plugin/.classpath

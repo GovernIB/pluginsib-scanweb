@@ -15,6 +15,7 @@
     <module>dynamicwebtwain</module>
     <module>iecisa-scanweb-plugin</module>
     <module>caib-scanweb-plugin</module>
+    <module>filescan-plugin</module>
     <module>scanweb-tester</module>
   </modules>
   <dependencies>

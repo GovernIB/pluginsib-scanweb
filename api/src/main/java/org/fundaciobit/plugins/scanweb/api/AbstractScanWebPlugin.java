@@ -61,6 +61,12 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
   public AbstractScanWebPlugin(String propertyKeyBase) {
     super(propertyKeyBase);
   }
+  
+  
+  @Override
+  public ScanWebConfig getScanWebConfig(String scanWebID) {
+    return getTransaction(scanWebID);
+  }
 
   @Override
   public boolean filter(HttpServletRequest request, ScanWebConfig config) {

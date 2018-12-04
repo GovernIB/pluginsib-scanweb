@@ -41,6 +41,8 @@ public interface IScanWebPlugin extends IPlugin {
   // TODO , InfoPage
 
   public static final String SCANWEB_BASE_PROPERTY = IPLUGIN_BASE_PROPERTIES + "scanweb.";
+  
+  public static final String SCANWEB_PLUGINSIB_BASE_PROPERTY = IPLUGINSIB_BASE_PROPERTIES + "scanweb.";
 
   public String getName(Locale locale);
 
@@ -91,5 +93,8 @@ public interface IScanWebPlugin extends IPlugin {
    * @return
    */
   public Set<ScanWebMode> getSupportedScanWebModes();
+  
+  
+  public ScanWebConfig getScanWebConfig(String scanWebID);
 
 }
