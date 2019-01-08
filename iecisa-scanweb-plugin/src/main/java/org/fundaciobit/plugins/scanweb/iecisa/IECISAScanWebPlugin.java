@@ -1,15 +1,7 @@
 package org.fundaciobit.plugins.scanweb.iecisa;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.fundaciobit.plugins.scanweb.api.AbstractScanWebPlugin;
@@ -35,24 +26,8 @@ import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
 import org.fundaciobit.plugins.scanweb.api.ScannedPlainFile;
 import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
 import org.fundaciobit.plugins.scanweb.api.ScannedSignedFile;
-/*import org.fundaciobit.plugins.signature.api.CommonInfoSignature;
-import org.fundaciobit.plugins.signature.api.FileInfoSignature;
-import org.fundaciobit.plugins.signature.api.ITimeStampGenerator;
-import org.fundaciobit.plugins.signature.api.PdfVisibleSignature;
-import org.fundaciobit.plugins.signature.api.PolicyInfoSignature;
-import org.fundaciobit.plugins.signature.api.SecureVerificationCodeStampInfo;
-import org.fundaciobit.plugins.signature.api.SignaturesSet;
-import org.fundaciobit.plugins.signature.api.SignaturesTableHeader;
-import org.fundaciobit.plugins.signature.api.StatusSignature;
-import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
-import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin;
-import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin.InfoCertificate;
-*/
-import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.core.utils.PublicCertificatePrivateKeyPair;
 
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
  * 
@@ -104,29 +79,10 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     return "true".equals(getProperty(PROPERTY_BASE + "closewindowwhenfinish"));
   }
   
-  /*public String getKeyStore() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.keystore");
-  }
-  
-  public String getKeyStoreAlias() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.alias");
-  }
-  
-  public String getKeyStorePassword() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.password");
-  }
-  
-  public String getKeyStoreCertPassword() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.certpassword");
-  }
-  
-  public String getAsunto() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.asunto");
-  }*/
 
   @Override
   public String getName(Locale locale) {
-    return "Applet/JNLP ScanWeb";
+    return "JNLP ScanWeb";
   }
 
 
@@ -158,19 +114,14 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   protected static final Set<String> SUPPORTED_FLAG_1 = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
   
- /* protected static final Set<String> SUPPORTED_FLAG_2 = Collections
-      .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_SIGNED)));*/
 
   protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
       .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
-  
-  /*protected static final List<Set<String>> SUPPORTED_FLAGS_ONLYSIGN = Collections
-      .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_2)));*/
 
   @Override
   public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
     if (SCANTYPE_PDF.equals(scanType)) {
-      return /*forceSign()? SUPPORTED_FLAGS_ONLYSIGN :*/ SUPPORTED_FLAGS;
+      return SUPPORTED_FLAGS;
     }
     return null;
   }
@@ -611,7 +562,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     out.println("        <title>ScanWeb Applet</title>");
     out.println("        <vendor>IECISA</vendor>");
     out.println("        <homepage href=\"http://www.fundaciobit.org/\" />");
-    out.println("        <description>ScanWeb Applet de IECISA</description>");
+    out.println("        <description>ScanWeb Applet</description>");
     // out.println("         <icon href=\"" + absolutePluginRequestPath +
     // "/img/portafib.ico" + "\" />");
     out.println("    </information>");
@@ -621,9 +572,24 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     out.println("    <resources>");
     out.println("        <j2se version=\"1.6+\" java-vm-args=\"-Xmx1024m\" />");
     out.println("        <jar href=\"" + appletUrl + "\" main=\"true\" />");
-    out.println("        <property name=\"isJNLP\" value=\"true\"/>");
-    out.println("        <property name=\"closeWhenUpload\" value=\"" + closeWindowWhenFinish() + "\"/>");
+//    out.println("        <property name=\"isJNLP\" value=\"true\"/>");
+//    out.println("        <property name=\"closeWhenUpload\" value=\"" + closeWindowWhenFinish() + "\"/>");
     out.println("    </resources>");
+    
+    
+    
+
+  
+  out.println("    <application-desc");
+  out.println("      name=\"ScanWeb Applet\"");
+  out.println("      main-class=\"es.ieci.tecdoc.fwktd.applets.scan.ui.MainFrame\" >");
+  out.println("       <argument>servlet=" + absolutePluginRequestPath 
+      + UPLOAD_SCAN_FILE_PAGE + "</argument>");
+  out.println("       <argument>fileFormName=" + UPLOAD_SCANNED_FILE_PARAMETER + "</argument>");
+  out.println("       <argument>isJNLP=true</argument>");
+  out.println("       <argument>closeWhenUpload=true</argument>");
+  out.println("    </application-desc>");
+    /*
     out.println("    <applet-desc");
     out.println("      documentBase=\"" + appletUrlBase + "\"");
     out.println("      name=\"ScanWeb Applet de IECISA\"");
@@ -638,8 +604,11 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         + UPLOAD_SCAN_FILE_PAGE + "\"/>");
     out.println("       <param name=\"fileFormName\" value=\"" + UPLOAD_SCANNED_FILE_PARAMETER
         + "\"/>");
+        
+        
 
     out.println("   </applet-desc>");
+    */
     out.println("</jnlp>");
 
     out.flush();

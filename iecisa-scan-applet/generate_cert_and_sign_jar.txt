@@ -1,0 +1,18 @@
+
+
+
+# 
+
+keytool -keystore afirma.keystore -alias codesign -dname "CN=OTAE, OU=Govern Digital, O=Fundacio Bit, L=Palma, ST=Illes Balears, C=ES" -genkey  -keypass afirma -storepass afirma
+
+
+
+# Això ja es fa quan compiles !!!
+jarsigner -keystore keystore -storepass storepass -keypass keypass \
+   -signedjar paquete-firmado-1.0.jar paquete-1.0.jar fluidattacks
+   
+   
+   
+# Extreure certificat
+
+keytool -exportcert -keystore afirma.keystore -storepass afirma -alias codesign -file fundacio_bit_codesign_cert.csr

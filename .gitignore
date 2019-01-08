@@ -32,3 +32,8 @@
 /filescan-plugin/.settings
 /filescan-plugin/target
 /filescan-plugin/.classpath
+/iecisa-scan-applet/.settings
+/iecisa-scan-applet/.classpath
+/iecisa-scan-applet/.gitignore
+/iecisa-scan-applet/.project
+/iecisa-scan-applet/afirma.keystore_old

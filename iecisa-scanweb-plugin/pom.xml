@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <name>PluginsIB - Scan Web - IECISA - Plugin</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
@@ -74,8 +74,8 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-                  <artifactId>plugin-scanweb-iecisascanweb-applet-signed</artifactId>
-                  <version>3.0.0</version>
+                  <artifactId>pluginsib-scanweb-iecisascanweb-applet</artifactId>
+                  <version>3.0.1</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <destFileName>plugin-scanweb-iecisascanweb-applet.jar</destFileName>
