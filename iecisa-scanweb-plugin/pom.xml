@@ -74,7 +74,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-                  <artifactId>pluginsib-scanweb-iecisascanweb-applet</artifactId>
+                  <artifactId>pluginsib-scanweb-iecisascanweb-applet-signed</artifactId>
                   <version>3.0.1</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
