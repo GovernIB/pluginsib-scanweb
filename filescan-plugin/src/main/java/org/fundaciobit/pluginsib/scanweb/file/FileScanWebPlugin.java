@@ -271,6 +271,10 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
   private void uploadCertificateGET(String pluginRequestPath, String query,
       ScanWebConfig fullInfo, PrintWriter out, Locale locale) {
+    
+    out.println("<table border=0 width=\"100%\">");
+    out.println("<tr><td align=center>");
+
     out.println("<h3>" + getTraduccio("selectfile", locale) + "</h3><br/>");
 
     out.println("<form action=\"" + pluginRequestPath + UPLOAD_FILE_PAGE
@@ -293,6 +297,11 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         + "</button>");
 
     out.println("</form>");
+    
+
+    out.println("</td>");
+    out.println("</tr>");
+    out.println("</table>");
   }
 
   private void uploadCertificatePOST(String pluginRequestPath, HttpServletRequest request,
