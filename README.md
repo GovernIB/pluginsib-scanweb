@@ -1,5 +1,5 @@
 # ![Logo](https://github.com/GovernIB/maven/raw/binaris/pluginsib/projectinfo_Attachments/icon.jpg) pluginsib-scanweb-2.0
-"Plugins de cerca de dependències a repositoris"
+*Plugins de cerca de dependències a repositoris*
 
 **Implementacions**
 
