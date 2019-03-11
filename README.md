@@ -5,14 +5,14 @@
 > - Versió Estable: -
 > - Versió en Desenvolupament: __pluginsib-scanweb-2.0__ (branca [pluginsib-scanweb-2.0](../../tree/pluginsib-scanweb-2.0))
 
-**Descripció**
+***Descripció***
 
 Documents via web: Dynamic Web Twain, Digitalitzacio Corporativa CAIB i Applet/JNLP
 
 ***Documentació***
 
 
-**Enllaços**
+***Enllaços***
 
 Plugin procedent de [pluginsib-1.0/plugins-scanweb](https://github.com/GovernIB/pluginsib/tree/pluginsib-1.0/plugins-scanweb).  
 
