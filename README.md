@@ -1,4 +1,5 @@
 # ![Logo](https://github.com/GovernIB/maven/raw/binaris/pluginsib/projectinfo_Attachments/icon.jpg) pluginsib-scanweb  (pluginsib-2.0)
+*API i Plugins d'escaneig de documents en entorn Web*
 
 ***Versions***
 
