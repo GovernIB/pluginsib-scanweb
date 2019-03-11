@@ -7,7 +7,7 @@
 
 ***Descripció***
 
-Documents via web: Dynamic Web Twain, Digitalitzacio Corporativa CAIB i Applet/JNLP
+Escaneig de documents emprant un entorn web: Dynamic Web Twain i Applet/JNLP
 
 ***Documentació***
 
