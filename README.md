@@ -5,8 +5,8 @@
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
-caib-scanweb-plugin | -- | -- 
-dynamicwebtwain | -- | --
-iecisa-scan-applet | -- | --
-iecisa-scanweb-plugin | -- | --
-scanweb-tester | -- | --
+caib-scanweb-plugin | Escanetjador de documents via web en entorn CAIB | --
+dynamicwebtwain | Servei d'escaner de documents (Web TWAIN) via web de dynamsoft | --
+iecisa-scan-applet | Applet per escanejar documents de iecisa| --
+iecisa-scanweb-plugin | Plugin per escanejar documents de iecisa | --
+scanweb-tester | Implementació buida | --
