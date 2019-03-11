@@ -11,7 +11,8 @@ Directori | Descripció | Documentació
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
-caib-scanweb-plugin | Escanetjador de documents via web en entorn CAIB | --
+api | Escanetjador de documents via web en entorn CAIB | --
+caib-scanweb-plugin | Escanejador de documents via web en entorn CAIB | --
 dynamicwebtwain | Servei d'escaner de documents (Web TWAIN) via web de dynamsoft | --
 iecisa-scan-applet | Applet per escanejar documents de iecisa| --
 iecisa-scanweb-plugin | Plugin per escanejar documents de iecisa | --
