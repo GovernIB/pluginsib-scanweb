@@ -350,8 +350,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     String color = "Color";
     String res = "Resolució";
     String duplex = "Duplex";
-    String clean = "Borra actual";
-    String cleanAll = "Borra tot";
+    String clean = "Esborra actual";
+    String cleanAll = "Esborra tot";
     String msgErrorValidacio = "Hi ha errors en el camp del formulari.";
     String upError = "S\\'ha produït un error, i no s\\'ha pogut pujar el document escanejat.";
 
@@ -456,7 +456,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     DWObject.AcquireImage();\n"); 
 //   out.print(  "     Dynamsoft_OnReady();\n");
 //   out.print(  "     alert('Ha sortit de AcquireImage interna.');\n");
-   out.print(  "   }\n");
+   out.print(  "   } document.getElementById(\"finalScanButton\").style.display=\"block\";\n");
+   out.print(  "        document.getElementById(\"cleanAll\").style.display=\"block\";");
    out.print(  " }\n");
    out.print(  "\n");
    out.print(  " function btnRemoveSelectedImage_onclick() {\n");
@@ -476,6 +477,15 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     DWObject.RemoveAllImages();\n");
    out.print(  "   }\n");
    out.print(  "   $('#pestanyes a:first').tab('show')\n");
+   out.print(  " }\n");
+   out.print(  "\n");
+   out.print(  "\n");
+   out.print(  " function clickPuja() {\n" );
+ //  out.print(  "   setTimeout(function() {");
+   out.print(  "        document.getElementById(\"puja\").click();");
+//   out.print(  "        document.getElementById(\"scanb\").style.display=\"none\";");
+//   out.print(  "        document.getElementById(\"cleanAll\").style.display=\"block\";");
+ //  out.print(  "     )},1500) ;\n");
    out.print(  " }\n");
    out.print(  "\n");
    out.print(  " function UploadScan() {\n");
@@ -589,23 +599,19 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     // ----------------  FILA DE INFORMACIO DE FITXERS ESCANEJATS
     
     out.println("  <tr valign=\"top\" >");
-    out.println("    <td align=\"center\">");
+    out.println("    <td align=\"center\" style=\"padding-right:16%\" >");
 
     out.println("<br/>");
-    out.println("    <table style=\"border: 2px solid black;\">");
-    out.println("     <tr><td align=\"center\">");
-    out.println("      <div id=\"escanejats\" style=\"width:350px;\">");
-    
-    out.println("        <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\" src=\"" + absolutePluginRequestPath + WEBRESOURCE +"/img/ajax-loader2.gif" + "\"><br/>");
+    out.println("    <table style=\"border: 0px solid black;\">");
+    out.println("     <tr><td align=\"left\">");
+    out.println("      <div id=\"escanejats\" style=\"width:350px;font-size:15px\">");
+    out.println("      <ol><li>Introdueixi els documents dins l'escàner.</li><li>Configuri els següent paràmetres de l'escaneig:</li></ol>" );
+    //out.println("        <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\" src=\"" + absolutePluginRequestPath + WEBRESOURCE +"/img/ajax-loader2.gif" + "\"><br/>");
       
-    out.println("        <i>" +  getTraduccio("esperantservidor", languageUI) + "</i>");
+   // out.println("        <i>" +  getTraduccio("esperantservidor", languageUI) + "</i>");
     out.println("      </div>");
     out.println("     </td>");
-    if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
-      out.println("</tr><tr><td align=\"center\">");
-      out.println("<br/><button class=\"btn btn-success\" onclick=\"finalScanProcess()\">" + getTraduccio("final", languageUI) + "</button>");
-      out.println("</td>");
-    }
+    
     
     out.println("     </tr></table>");
     
@@ -614,21 +620,21 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     
     
    out.print(  "<div id=\"scanParams\" class=\"col-xs-6\">\n");
-   out.print(  " <div id=\"scanSourceGroup\" class=\"form-group col-xs-12\">\n");
+   out.print(  " <div id=\"scanSourceGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\" >\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
-   out.print(  "     <label for=\"scanSource\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + disp + "</label>\n");
+   out.print(  "     <label style=\"font-size:12px\" for=\"scanSource\"><span class=\"text-danger\">&bull;</span> " + disp + "</label>\n");
    out.print(  "     </div>\n");
-   out.print(  "     <div class=\"col-xs-8\">\n");
+   out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanSource\" class=\"chosen-select\">\n");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
    out.print(  "\n");
-   out.print(  " <div id=\"scanColorGroup\" class=\"form-group col-xs-12\">\n");
+   out.print(  " <div id=\"scanColorGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
-   out.print(  "     <label for=\"scanColor\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + color + "</label>\n");
+   out.print(  "     <label style=\"font-size:12px\" for=\"scanColor\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + color + "</label>\n");
    out.print(  "     </div>\n");
-   out.print(  "     <div class=\"col-xs-8\">\n");
+   out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanColor\" class=\"chosen-select\">\n");
    out.print(  "       <option value='N'>B/N</option>");
    out.print(  "       <option value='G' selected='selected'>Gris</option>");
@@ -637,11 +643,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
    out.print(  "\n");
-   out.print(  " <div id=\"scanResolutionGroup\" class=\"form-group col-xs-12\">\n");
+   out.print(  " <div id=\"scanResolutionGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
-   out.print(  "     <label for=\"scanResolution\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + res + "</label>\n");
+   out.print(  "     <label style=\"font-size:12px\" for=\"scanResolution\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + res + "</label>\n");
    out.print(  "     </div>\n");
-   out.print(  "     <div class=\"col-xs-8\">\n");
+   out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanResolution\" class=\"chosen-select\">\n");
    out.print(  "       <option value='200' selected='selected'>200</option>");
    out.print(  "       <option value='300'>300</option>");
@@ -651,11 +657,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
    out.print(  "\n");
-   out.print(  " <div id=\"scanDuplexGroup\" class=\"form-group col-xs-12\">\n");
+   out.print(  " <div id=\"scanDuplexGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
-   out.print(  "     <label for=\"scanDuplex\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + duplex + "</label>\n");
+   out.print(  "     <label style=\"font-size:12px\"for=\"scanDuplex\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + duplex + "</label>\n");
    out.print(  "     </div>\n");
-   out.print(  "     <div class=\"col-xs-8\">\n");
+   out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanDuplex\" class=\"chosen-select\">\n");
    out.print(  "       <option value='1' selected='selected'>Una cara</option>");
    out.print(  "       <option value='2'>Doble cara</option>");
@@ -664,15 +670,22 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  " </div>\n");
    out.print(  "\n");
 
-   out.print(  " <div id=\"scanButtonsGroup\" class=\"form-group col-xs-12\">\n");
+   out.print(  " <div id=\"scanButtonsGroup\" class=\"form-group col-xs-12 text-left\" style=\"padding-top: 3%\">\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\"></div>\n");
    out.print(  "     <div class=\"col-xs-8\">\n");
    out.print(  "<table><tr>\n");
-   out.print(  "     <td><button class=\"btn btn-primary\" type=\"button\" value='Scan' onclick='AcquireImage();return false;' >Scan</button></td>\n");
-   out.print(  "     <td><button class=\"btn btn-success\" type=\"button\" value='" + clean + "' onclick='pujarServidor();' >" + pujarServidor +"</button></td>\n");
+   out.print("     <ol start=\"3\"><li>Escaneji</li></ol>" );
+   out.print(  "     <td><button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >Escaneja</button></td>\n");
+   out.print(  "     <td><button id=\"cleanAll\" style=\"display:none\" class=\"btn btn-danger\" type=\"button\" value='" + cleanAll + "' onclick='btnRemoveAllImages_onclick();' >" + cleanAll + "</button></td>\n");
+   if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
+      out.println("</tr><tr><td align=\"center\">");
+      out.println("<br/><button id=\"finalScanButton\" style=\"display:none\" class=\"btn btn-success\" onclick='clickPuja();finalScanProcess();'>" + getTraduccio("final", languageUI) + "</button>");
+      out.println("</td>");
+    }
+   out.print(  "     <td style=\"display:none\"><button id=\"puja\"class=\"btn btn-success\" type=\"button\" value='" + clean + "' onclick='pujarServidor();' >" + pujarServidor +"</button></td>\n");
    out.print(  "</tr><tr>\n");    
-   out.print(  "     <td><button class=\"btn btn-warning\" type=\"button\" value='" + clean + "' onclick='btnRemoveSelectedImage_onclick();' >" + clean +"</button></td>\n");
-   out.print(  "     <td><button class=\"btn btn-danger\" type=\"button\" value='" + cleanAll + "' onclick='btnRemoveAllImages_onclick();' >" + cleanAll + "</button></td>\n");
+   out.print(  "     <td><button style=\"display:none\" class=\"btn btn-warning\" type=\"button\" value='" + clean + "' onclick='btnRemoveSelectedImage_onclick();' >" + clean +"</button></td>\n");
+   
    out.print(  "</tr></table>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
@@ -681,7 +694,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "\n");
 
    out.print(" </td><td>\n");
-    
+   out.print("<p style=\"text-align: center;\">Visualització prèvia</p>");
    out.print(  "<div id=\"scanContainerGroup\" class=\"col-xs-6\" style=\"margin-bottom: 5px;\">\n");
    out.print(  " <div id='dwtcontrolContainer'></div>");
    out.print(  "</div>");
