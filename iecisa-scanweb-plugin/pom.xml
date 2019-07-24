@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
   <name>PluginsIB - Scan Web - IECISA - Plugin</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>

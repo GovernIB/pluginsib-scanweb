@@ -7,12 +7,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,13 +24,13 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.fundaciobit.plugins.scanweb.api.AbstractScanWebPlugin;
+import org.fundaciobit.plugins.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.plugins.scanweb.api.ScanWebConfig;
 import org.fundaciobit.plugins.scanweb.api.ScanWebMode;
 import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
 import org.fundaciobit.plugins.scanweb.api.ScannedPlainFile;
 import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
 import org.fundaciobit.plugins.scanweb.api.ScannedSignedFile;
-
 import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
@@ -61,30 +65,28 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public IECISAScanWebPlugin(String propertyKeyBase) {
     super(propertyKeyBase);
   }
-  
-  
+
   public boolean isDebug() {
     return "true".equals(getProperty(PROPERTY_BASE + "debug"));
   }
-  
+
   public boolean forceJNLP() {
     return "true".equals(getProperty(PROPERTY_BASE + "forcejnlp"));
   }
-  
-  /*public boolean forceSign() {
-    return "true".equals(getProperty(PROPERTY_BASE + "forcesign"));
-  }*/
-  
+
+  /*
+   * public boolean forceSign() { return "true".equals(getProperty(PROPERTY_BASE +
+   * "forcesign")); }
+   */
+
   public boolean closeWindowWhenFinish() {
     return "true".equals(getProperty(PROPERTY_BASE + "closewindowwhenfinish"));
   }
-  
 
   @Override
   public String getName(Locale locale) {
     return "JNLP ScanWeb";
   }
-
 
   @Override
   public boolean filter(HttpServletRequest request, ScanWebConfig config) {
@@ -93,8 +95,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   @Override
   public String startScanWebTransaction(String absolutePluginRequestPath,
-      String relativePluginRequestPath, HttpServletRequest request, 
-      ScanWebConfig config) throws Exception {
+      String relativePluginRequestPath, HttpServletRequest request, ScanWebConfig config)
+      throws Exception {
 
     putTransaction(config);
     config.getStatus().setStatus(ScanWebStatus.STATUS_IN_PROGRESS);
@@ -102,9 +104,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     return relativePluginRequestPath + "/" + INDEX;
   }
 
-
   protected static final List<String> SUPPORTED_SCAN_TYPES = Collections
-      .unmodifiableList(new ArrayList<String>(Arrays.asList(SCANTYPE_PDF)));
+      .unmodifiableList(new ArrayList<String>(Arrays.asList(SCANTYPE_PDF, SCANTYPE_TIFF,
+          SCANTYPE_JPG, SCANTYPE_PNG, SCANTYPE_GIF)));
 
   @Override
   public List<String> getSupportedScanTypes() {
@@ -113,23 +115,22 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   protected static final Set<String> SUPPORTED_FLAG_1 = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
-  
 
   protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
       .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
 
   @Override
   public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
-    if (SCANTYPE_PDF.equals(scanType)) {
+    if (SUPPORTED_SCAN_TYPES.contains(scanType)) {
       return SUPPORTED_FLAGS;
     }
     return null;
   }
-  
+
   protected static final Set<ScanWebMode> SUPPORTED_MODES = Collections
-      .unmodifiableSet(new HashSet<ScanWebMode>(Arrays.asList(
-          ScanWebMode.ASYNCHRONOUS, ScanWebMode.SYNCHRONOUS)));
-  
+      .unmodifiableSet(new HashSet<ScanWebMode>(Arrays.asList(ScanWebMode.ASYNCHRONOUS,
+          ScanWebMode.SYNCHRONOUS)));
+
   @Override
   public Set<ScanWebMode> getSupportedScanWebModes() {
     return SUPPORTED_MODES;
@@ -174,11 +175,11 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     if (!absolutePluginRequestPath.endsWith("/")) {
       absolutePluginRequestPath = absolutePluginRequestPath + "/";
     }
-    
+
     if (!relativePluginRequestPath.endsWith("/")) {
       relativePluginRequestPath = relativePluginRequestPath + "/";
     }
-    
+
     ScanWebConfig fullInfo = getTransaction(scanWebID);
 
     if (fullInfo == null) {
@@ -193,8 +194,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
       Locale languageUI = new Locale(fullInfo.getLanguageUI());
 
       if (query.startsWith(ISFINISHED_PAGE)) {
-         isFinishedRequest(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
-             query, request, response, fullInfo, languageUI);
+        isFinishedRequest(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
+            query, request, response, fullInfo, languageUI);
       } else if (query.startsWith(INDEX)) {
 
         indexPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
@@ -214,14 +215,14 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
         uploadPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
             request, response, fullInfo, languageUI);
-      }  else if (query.startsWith(FINALPAGE)) {
+      } else if (query.startsWith(FINALPAGE)) {
 
         finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
             request, response, fullInfo, languageUI);
       } else {
 
-        super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath,
-            scanWebID, fullInfo, query, languageUI, request, response, isGet);
+        super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
+            fullInfo, query, languageUI, request, response, isGet);
       }
 
     }
@@ -237,17 +238,16 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public static final String INDEX = "index.html";
 
   protected void indexPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-      ScanWebConfig fullInfo, Locale languageUI) {
+      String scanWebID, String query, HttpServletRequest request,
+      HttpServletResponse response, ScanWebConfig fullInfo, Locale languageUI) {
 
     boolean debug = isDebug();
-    
-    String browser=request.getHeader("user-agent");
 
-    
-    
-    final boolean isIE = (browser != null ) && (browser.toLowerCase().indexOf("msie") != -1 || browser.indexOf("rv:11.0") != -1);
-    
+    String browser = request.getHeader("user-agent");
+
+    final boolean isIE = (browser != null)
+        && (browser.toLowerCase().indexOf("msie") != -1 || browser.indexOf("rv:11.0") != -1);
+
     if (debug) {
       log.info(" BROWSER= " + browser);
       log.info(" IS INTERNET EXPLORER = " + isIE);
@@ -256,171 +256,155 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     PrintWriter out;
     out = generateHeader(request, response, absolutePluginRequestPath,
         relativePluginRequestPath, languageUI);
-    
-    String tstyle = debug? "border: 2px solid red":"";
-    
+
+    String tstyle = debug ? "border: 2px solid red" : "";
+
     out.println("  <table style=\"min-height:200px;width:100%;height:100%;" + tstyle + "\">");
-    
-    // ----------------  FILA DE INFORMACIO DE FITXERS ESCANEJATS
-    
+
+    // ---------------- FILA DE INFORMACIO DE FITXERS ESCANEJATS
+
     out.println("  <tr valign=\"middle\">");
     out.println("    <td align=\"center\">");
-    //out.println("      <h3 style=\"padding:5px\">" + getTraduccio("llistatescanejats", languageUI) + "</h3>");
-    
+    // out.println("      <h3 style=\"padding:5px\">" + getTraduccio("llistatescanejats",
+    // languageUI) + "</h3>");
+
     out.println("    <table style=\"border: 2px solid black;\">");
     out.println("     <tr><td>");
     out.println("      <div id=\"escanejats\" style=\"width:400px;\">");
-    out.println("        <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\" src=\"" + absolutePluginRequestPath + WEBRESOURCE + "/img/ajax-loader2.gif" + "\">");
-    out.println("        &nbsp;&nbsp;<i>" +  getTraduccio("esperantservidor", languageUI) + "</i>");
+    out.println("        <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\" src=\""
+        + absolutePluginRequestPath + WEBRESOURCE + "/img/ajax-loader2.gif" + "\">");
+    out.println("        &nbsp;&nbsp;<i>" + getTraduccio("esperantservidor", languageUI)
+        + "</i>");
     out.println("      </div>");
     out.println("     </td>");
     if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
       out.println("<td>");
-      //out.println("<br/><input type=\"button\" class=\"btn btn-success\" value=\"" + getTraduccio("final", languageUI) + "\" onclick=\"finalScanProcess()\" />");
-      out.println("<button class=\"btn btn-success\" onclick=\"finalScanProcess()\">" + getTraduccio("final", languageUI) + "</button>");
+      // out.println("<br/><input type=\"button\" class=\"btn btn-success\" value=\"" +
+      // getTraduccio("final", languageUI) + "\" onclick=\"finalScanProcess()\" />");
+      out.println("<button class=\"btn btn-success\" onclick=\"finalScanProcess()\">"
+          + getTraduccio("final", languageUI) + "</button>");
       out.println("</td>");
     }
     out.println("     </tr></table>");
-    
 
     out.println("      <br/>");
-    //out.println("  <input type=\"button\" class=\"btn btn-primary\" onclick=\"gotoCancel()\" value=\"" + getTraduccio("cancel", locale) + "\">");
+    // out.println("  <input type=\"button\" class=\"btn btn-primary\" onclick=\"gotoCancel()\" value=\""
+    // + getTraduccio("cancel", locale) + "\">");
     out.println("    </td>");
     out.println("  </tr>");
     out.println("  <tr valign=\"middle\">");
     out.println("    <td align=\"center\">");
-    
-    
-    
-    // ------------------  APPLET O BOTO DE CARREGA D'APPLET
-    
-    String dstyle = debug? "border-style:double double double double;":"";
+
+    // ------------------ APPLET O BOTO DE CARREGA D'APPLET
+
+    String dstyle = debug ? "border-style:double double double double;" : "";
     out.println("<div style=\"" + dstyle + "\">");
     out.println("<center>");
-    
+
     boolean forceJNLP = forceJNLP();
 
-    if (forceJNLP || !isIE ) { // JNLP
+    if (forceJNLP || !isIE) { // JNLP
 
-      out.println(
-          "<script>\n\n"
-        + "  function downloadJNLP() {\n"
-        + "     location.href=\"" + relativePluginRequestPath   + JNLP + "\";\n"
-        + "     ocultar('botojnlp');\n"
-        + "     mostrar('missatgejnlp');\n"
-        + "  }\n"
-        + "\n\n"       
-        + " function mostrar(id) {\n"
-        + "    document.getElementById(id).style.display = 'block';\n"
-        + "};\n"
-        + "\n"
-        + " function ocultar(id){\n"
-        + "   document.getElementById(id).style.display = 'none';\n"
-        + " };\n"
-        + "\n"
-        + "</script>");
+      out.println("<script>\n\n" + "  function downloadJNLP() {\n" + "     location.href=\""
+          + relativePluginRequestPath + JNLP + "\";\n" + "     ocultar('botojnlp');\n"
+          + "     mostrar('missatgejnlp');\n" + "  }\n" + "\n\n" + " function mostrar(id) {\n"
+          + "    document.getElementById(id).style.display = 'block';\n" + "};\n" + "\n"
+          + " function ocultar(id){\n"
+          + "   document.getElementById(id).style.display = 'none';\n" + " };\n" + "\n"
+          + "</script>");
 
-      //+ "    document.write('<br/><br/><input type=\"button\" value=\"" + getTraduccio("pitja", languageUI) + "\" onclick=\"downloadJNLP()\" />');\n"
+      // + "    document.write('<br/><br/><input type=\"button\" value=\"" +
+      // getTraduccio("pitja", languageUI) + "\" onclick=\"downloadJNLP()\" />');\n"
       out.println("  <div id=\"missatgejnlp\" style=\"display: none;\" >");
       out.println("    <br/><br/><h4> S´està descarregant un arxiu jnlp.");
       out.println("     L´ha d´executar per obrir l´aplicació d´escaneig ... </h4><br/>");
       out.println("  </div>\n");
-      
+
       out.println("  <div id=\"botojnlp\" >");
-      out.println("    <input type=\"button\" class=\"btn btn-primary\" value=\"" + getTraduccio("pitja", languageUI) + "\" onclick=\"downloadJNLP();\" /><br/>");
-      //+ "     setTimeout(downloadJNLP, 1000);\n" // directament obrim el JNLP
-      out.println("  </div>");  
-    
+      out.println("    <input type=\"button\" class=\"btn btn-primary\" value=\""
+          + getTraduccio("pitja", languageUI) + "\" onclick=\"downloadJNLP();\" /><br/>");
+      // + "     setTimeout(downloadJNLP, 1000);\n" // directament obrim el JNLP
+      out.println("  </div>");
+
     } else {
-      // -----------  APPLET --------------------------
+      // ----------- APPLET --------------------------
       out.println("<script src=\"https://www.java.com/js/deployJava.js\"></script>\n");
-      
-      out.println(
-          "<script>\n\n"
-      + "   var attributes = {\n"
-      + "    id:'iecisa_scan',\n"
-      + "    code:'es.ieci.tecdoc.fwktd.applets.scan.applet.IdocApplet',\n"
-      + "    archive:'"
-      + absolutePluginRequestPath
-      + "applet/plugin-scanweb-iecisascanweb-applet.jar',\n"
-      + "    width: " + getWidth() + ",\n"        
-      + "    height: " + HEIGHT  + "\n"
-      + "   };\n"
-      + "   var parameters = {\n"
-      + "    servlet:'" + absolutePluginRequestPath + UPLOAD_SCAN_FILE_PAGE + "',\n"
-      + "    fileFormName:'" + UPLOAD_SCANNED_FILE_PARAMETER + "'\n"
-      + "   } ;\n"
-      + "   deployJava.runApplet(attributes, parameters, '1.6');");
+
+      out.println("<script>\n\n" + "   var attributes = {\n" + "    id:'iecisa_scan',\n"
+          + "    code:'es.ieci.tecdoc.fwktd.applets.scan.applet.IdocApplet',\n"
+          + "    archive:'" + absolutePluginRequestPath
+          + "applet/plugin-scanweb-iecisascanweb-applet.jar',\n" + "    width: " + getWidth()
+          + ",\n" + "    height: " + HEIGHT + "\n" + "   };\n" + "   var parameters = {\n"
+          + "    servlet:'" + absolutePluginRequestPath + UPLOAD_SCAN_FILE_PAGE + "',\n"
+          + "    fileFormName:'" + UPLOAD_SCANNED_FILE_PARAMETER + "'\n" + "   } ;\n"
+          + "   deployJava.runApplet(attributes, parameters, '1.6');");
       out.println("</script>");
     }
 
     out.println("</center></div>");
-   
-        
-    
-        //+ "    var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;\n"
-        //+ "    // Firefox 1.0+\n"
-        //+ "    var isFirefox = typeof InstallTrigger !== 'undefined';\n"
-        //+ "    // At least Safari 3+: \"[object HTMLElementConstructor]\"\n"
-        //+ "    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;\n"
-        //+ "    // Internet Explorer 6-11\n"
-        //+ "    var isIE = false || !!document.documentMode;\n"
-        //+ "    // Edge 20+\n"
-        //+ "    var isEdge = !isIE && !!window.StyleMedia;\n"
-        //+ "    // Chrome 1+\n"
-        //+ "    var isChrome = !!window.chrome && !!window.chrome.webstore;\n"
-        //+ "    // Blink engine detection\n"
-        //+ "    var isBlink = (isChrome || isOpera) && !!window.CSS;\n"
-        //+ "\n"
-        // + "    var home;\n"
-        // +
-        // "    home = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '"
-        // + context + "';\n"
-//        + "\n"
-//        + "   function escanejarAmbFinestra() {\n"
-//        + "    var scan;       \n"
-//        + "    scan = document.getElementById('iecisa_scan');\n"
-//        + "    var result;\n"
-//        + "    result = scan.showInWindow();\n"
-//        + "    if (result) {\n"
-//        + "      alert(\"" + getTraduccio("error.nofinestra", languageUI)+ "\" + result);\n"
-//        + "    } else {\n" 
-//        + "      // OK\n"
-//        + "    }\n"
-//        + "  }\n"
 
+    // +
+    // "    var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;\n"
+    // + "    // Firefox 1.0+\n"
+    // + "    var isFirefox = typeof InstallTrigger !== 'undefined';\n"
+    // + "    // At least Safari 3+: \"[object HTMLElementConstructor]\"\n"
+    // +
+    // "    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;\n"
+    // + "    // Internet Explorer 6-11\n"
+    // + "    var isIE = false || !!document.documentMode;\n"
+    // + "    // Edge 20+\n"
+    // + "    var isEdge = !isIE && !!window.StyleMedia;\n"
+    // + "    // Chrome 1+\n"
+    // + "    var isChrome = !!window.chrome && !!window.chrome.webstore;\n"
+    // + "    // Blink engine detection\n"
+    // + "    var isBlink = (isChrome || isOpera) && !!window.CSS;\n"
+    // + "\n"
+    // + "    var home;\n"
+    // +
+    // "    home = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '"
+    // + context + "';\n"
+    // + "\n"
+    // + "   function escanejarAmbFinestra() {\n"
+    // + "    var scan;       \n"
+    // + "    scan = document.getElementById('iecisa_scan');\n"
+    // + "    var result;\n"
+    // + "    result = scan.showInWindow();\n"
+    // + "    if (result) {\n"
+    // + "      alert(\"" + getTraduccio("error.nofinestra", languageUI)+ "\" + result);\n"
+    // + "    } else {\n"
+    // + "      // OK\n"
+    // + "    }\n"
+    // + "  }\n"
 
-        //+ "\n\n\n"
-        // + "   alert('IS CROME? ' + isChrome);"
-//        + "  if (!isIE) {\n"
-//        + "    document.write('<input type=\"button\" class=\"btn btn-primary\" value=\"" + getTraduccio("pitja", languageUI) + "\" onclick=\"escanejarAmbFinestra();\" /><br/>');\n"
-//        + "  }\n"
-//        + "\n\n"
-//
-//        + "  if (!isIE) {\n"
-//
-//        + "  }\n");
+    // + "\n\n\n"
+    // + "   alert('IS CROME? ' + isChrome);"
+    // + "  if (!isIE) {\n"
+    // + "    document.write('<input type=\"button\" class=\"btn btn-primary\" value=\"" +
+    // getTraduccio("pitja", languageUI) +
+    // "\" onclick=\"escanejarAmbFinestra();\" /><br/>');\n"
+    // + "  }\n"
+    // + "\n\n"
+    //
+    // + "  if (!isIE) {\n"
+    //
+    // + "  }\n");
 
-     if ((fullInfo.getMode() == ScanWebMode.SYNCHRONOUS))  {
-       out.println("<script>\n\n");
-       out.println("  function finalScanProcess() {");
-       out.println("    if (document.getElementById(\"escanejats\").innerHTML.indexOf(\"ajax\") !=-1) {");
-       out.println("      if (!confirm('" + getTraduccio("noenviats", languageUI) +  "')) {");
-       out.println("        return;");
-       out.println("      };");
-       out.println("    };");
-       out.println("    location.href=\"" + relativePluginRequestPath   + FINALPAGE + "\";");
-       out.println("  }\n");
-       out.println("</script>");
-     }
-     
-    
-        
+    if ((fullInfo.getMode() == ScanWebMode.SYNCHRONOUS)) {
+      out.println("<script>\n\n");
+      out.println("  function finalScanProcess() {");
+      out.println("    if (document.getElementById(\"escanejats\").innerHTML.indexOf(\"ajax\") !=-1) {");
+      out.println("      if (!confirm('" + getTraduccio("noenviats", languageUI) + "')) {");
+      out.println("        return;");
+      out.println("      };");
+      out.println("    };");
+      out.println("    location.href=\"" + relativePluginRequestPath + FINALPAGE + "\";");
+      out.println("  }\n");
+      out.println("</script>");
+    }
+
     out.println("  </td></tr>");
     out.println("</table>");
-    
-    
-    
+
     out.println("<script type=\"text/javascript\">");
 
     out.println();
@@ -434,14 +418,16 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     out.println("    } else {");
     out.println("        request = new ActiveXObject(\"Microsoft.XMLHTTP\");");
     out.println("    }");
-    out.println("    request.open('GET', '" + absolutePluginRequestPath + ISFINISHED_PAGE + "', false);");
-    out.println("    request.send();"); 
+    out.println("    request.open('GET', '" + absolutePluginRequestPath + ISFINISHED_PAGE
+        + "', false);");
+    out.println("    request.send();");
     out.println();
     out.println("    if ((request.status + '') == '" + HttpServletResponse.SC_OK + "') {");
     out.println("      clearTimeout(myTimer);");
     out.println("      myTimer = setInterval(function () {closeWhenSign()}, 4000);");
     out.println("      document.getElementById(\"escanejats\").innerHTML = 'Documents pujats:' + request.responseText;");
-    out.println("    } else if ((request.status + '') == '" + HttpServletResponse.SC_REQUEST_TIMEOUT + "') {"); // 
+    out.println("    } else if ((request.status + '') == '"
+        + HttpServletResponse.SC_REQUEST_TIMEOUT + "') {"); //
     out.println("      clearTimeout(myTimer);");
     out.println("      window.location.href = '" + fullInfo.getUrlFinal() + "';");
     out.println("    } else {");
@@ -453,7 +439,6 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     out.println();
     out.println("</script>");
 
-
     generateFooter(out);
 
   }
@@ -461,44 +446,40 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public int getWidth() {
     return 550;
   }
-  
-  
-  
 
   // ----------------------------------------------------------------------------
   // ----------------------------------------------------------------------------
-  // ------------------------------  IS_FINISHED   ------------------------------
+  // ------------------------------ IS_FINISHED ------------------------------
   // ----------------------------------------------------------------------------
   // ----------------------------------------------------------------------------
-  
+
   protected static final String ISFINISHED_PAGE = "isfinished";
 
-  
-  protected void isFinishedRequest(String absolutePluginRequestPath, String relativePluginRequestPath,
-      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-      ScanWebConfig fullInfo, Locale languageUI) {
-    
-    
-    
+  protected void isFinishedRequest(String absolutePluginRequestPath,
+      String relativePluginRequestPath, String scanWebID, String query,
+      HttpServletRequest request, HttpServletResponse response, ScanWebConfig fullInfo,
+      Locale languageUI) {
+
     List<ScannedDocument> list = fullInfo.getScannedFiles();
-    
+
     try {
-    if (list.size() == 0) {
+      if (list.size() == 0) {
         response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-    } else {
-      //  response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      
-      if (list.size() == 1) {
-        // "S'ha rebut <b>" +  list.size() + "</b> fitxer"
-        response.getWriter().println(getTraduccio("rebut.1.fitxer", languageUI, String.valueOf(list.size())));
       } else {
-        // "S'han rebut <b>" +  list.size() + "</b> fitxers"
-        response.getWriter().println(
-            getTraduccio("rebut.n.fitxers", languageUI, String.valueOf(list.size())));
+        // response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        if (list.size() == 1) {
+          // "S'ha rebut <b>" + list.size() + "</b> fitxer"
+          response.getWriter().println(
+              getTraduccio("rebut.1.fitxer", languageUI, String.valueOf(list.size())));
+        } else {
+          // "S'han rebut <b>" + list.size() + "</b> fitxers"
+          response.getWriter().println(
+              getTraduccio("rebut.n.fitxers", languageUI, String.valueOf(list.size())));
+        }
+        response.setStatus(HttpServletResponse.SC_OK);
       }
-      response.setStatus(HttpServletResponse.SC_OK);
-    }
-    
+
     } catch (IOException e) {
       e.printStackTrace();
       try {
@@ -506,12 +487,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
       } catch (IOException e1) {
         e1.printStackTrace();
       }
-      
-      
+
     }
   }
-  
-
 
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
@@ -520,9 +498,6 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   // -------------------------------------------------------------------------
 
   public static final String APPLET = "applet/";
-  
-
-
 
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
@@ -533,8 +508,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
   public static final String JNLP = "jnlp/";
 
   protected void jnlpPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-      Locale languageUI) {
+      String scanWebID, String query, HttpServletRequest request,
+      HttpServletResponse response, Locale languageUI) {
 
     String appletUrlBase = absolutePluginRequestPath + "applet/";
 
@@ -572,52 +547,45 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     out.println("    <resources>");
     out.println("        <j2se version=\"1.6+\" java-vm-args=\"-Xmx1024m\" />");
     out.println("        <jar href=\"" + appletUrl + "\" main=\"true\" />");
-//    out.println("        <property name=\"isJNLP\" value=\"true\"/>");
-//    out.println("        <property name=\"closeWhenUpload\" value=\"" + closeWindowWhenFinish() + "\"/>");
+    // out.println("        <property name=\"isJNLP\" value=\"true\"/>");
+    // out.println("        <property name=\"closeWhenUpload\" value=\"" +
+    // closeWindowWhenFinish() + "\"/>");
     out.println("    </resources>");
-    
-    
-    
 
-  
-  out.println("    <application-desc");
-  out.println("      name=\"ScanWeb Applet\"");
-  out.println("      main-class=\"es.ieci.tecdoc.fwktd.applets.scan.ui.MainFrame\" >");
-  out.println("       <argument>servlet=" + absolutePluginRequestPath 
-      + UPLOAD_SCAN_FILE_PAGE + "</argument>");
-  out.println("       <argument>fileFormName=" + UPLOAD_SCANNED_FILE_PARAMETER + "</argument>");
-  out.println("       <argument>isJNLP=true</argument>");
-  out.println("       <argument>closeWhenUpload=true</argument>");
-  out.println("    </application-desc>");
+    out.println("    <application-desc");
+    out.println("      name=\"ScanWeb Applet\"");
+    out.println("      main-class=\"es.ieci.tecdoc.fwktd.applets.scan.ui.MainFrame\" >");
+    out.println("       <argument>servlet=" + absolutePluginRequestPath
+        + UPLOAD_SCAN_FILE_PAGE + "</argument>");
+    out.println("       <argument>fileFormName=" + UPLOAD_SCANNED_FILE_PARAMETER
+        + "</argument>");
+    out.println("       <argument>isJNLP=true</argument>");
+    out.println("       <argument>closeWhenUpload=true</argument>");
+    out.println("    </application-desc>");
     /*
-    out.println("    <applet-desc");
-    out.println("      documentBase=\"" + appletUrlBase + "\"");
-    out.println("      name=\"ScanWeb Applet de IECISA\"");
-    out.println("      main-class=\"es.ieci.tecdoc.fwktd.applets.scan.applet.IdocApplet\"");
-    out.println("      width=\"" + getWidth() + " \"");
-    out.println("      height=\"" + HEIGHT + "\">");
-    out.println();
-
-    // ---------------- GLOBALS ----------------
-
-    out.println("       <param name=\"servlet\" value=\"" + absolutePluginRequestPath
-        + UPLOAD_SCAN_FILE_PAGE + "\"/>");
-    out.println("       <param name=\"fileFormName\" value=\"" + UPLOAD_SCANNED_FILE_PARAMETER
-        + "\"/>");
-        
-        
-
-    out.println("   </applet-desc>");
-    */
+     * out.println("    <applet-desc"); out.println("      documentBase=\"" + appletUrlBase +
+     * "\""); out.println("      name=\"ScanWeb Applet de IECISA\"");
+     * out.println("      main-class=\"es.ieci.tecdoc.fwktd.applets.scan.applet.IdocApplet\"");
+     * out.println("      width=\"" + getWidth() + " \""); out.println("      height=\"" +
+     * HEIGHT + "\">"); out.println();
+     * 
+     * // ---------------- GLOBALS ----------------
+     * 
+     * out.println("       <param name=\"servlet\" value=\"" + absolutePluginRequestPath +
+     * UPLOAD_SCAN_FILE_PAGE + "\"/>");
+     * out.println("       <param name=\"fileFormName\" value=\"" +
+     * UPLOAD_SCANNED_FILE_PARAMETER + "\"/>");
+     * 
+     * 
+     * 
+     * out.println("   </applet-desc>");
+     */
     out.println("</jnlp>");
 
     out.flush();
 
   }
-  
-  
-  
-  
+
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
   // --------------- FINAL PAGE (SINCRON MODE) -------------------------------
@@ -626,12 +594,10 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   public static final String FINALPAGE = "finalPage";
 
+  protected void finalPage(String absolutePluginRequestPath, String relativePluginRequestPath,
+      String scanWebID, String query, HttpServletRequest request,
+      HttpServletResponse response, ScanWebConfig fullInfo, Locale languageUI) {
 
-  protected void finalPage(String absolutePluginRequestPath,
-      String relativePluginRequestPath, String scanWebID, String query,
-      HttpServletRequest request, HttpServletResponse response,
-      ScanWebConfig fullInfo, Locale languageUI) {
-    
     log.debug("Entra dins FINAL_PAGE(...");
 
     try {
@@ -639,9 +605,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     } catch (IOException e) {
       log.error(e.getMessage(), e);
     }
-  
+
   }
-  
 
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
@@ -655,8 +620,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
   protected void uploadPage(String absolutePluginRequestPath,
       String relativePluginRequestPath, String scanWebID, String query,
-      HttpServletRequest request, HttpServletResponse response,
-      ScanWebConfig fullInfo, Locale languageUI) {
+      HttpServletRequest request, HttpServletResponse response, ScanWebConfig fullInfo,
+      Locale languageUI) {
 
     log.debug("Entra dins uploadPage(...");
 
@@ -668,8 +633,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
     FileItem fileItem = map.get(UPLOAD_SCANNED_FILE_PARAMETER);
     if (fileItem == null) {
-      log.error(" No s'ha rebut cap fitxer amb paràmetre "
-            + UPLOAD_SCANNED_FILE_PARAMETER);
+      log.error(" No s'ha rebut cap fitxer amb paràmetre " + UPLOAD_SCANNED_FILE_PARAMETER);
       return;
     }
 
@@ -686,43 +650,94 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     if (name != null) {
       name = FilenameUtils.getName(name);
     }
-    String mime = fileItem.getContentType();
-    if (mime == null) {
-      mime = "application/pdf";
-    }
-    
-    ScannedPlainFile singleScanFile = new ScannedPlainFile(name, mime, data);
-    
-    ScannedSignedFile scannedSignedFile = null;
-    
-    /*if (/*forceSign() || fullInfo.getFlags().contains(FLAG_SIGNED)) {
-          
-      try {
-        scannedSignedFile = signFile(fullInfo, languageUI, singleScanFile);
-        
-        singleScanFile = null;
-        
-      } catch (Exception e) {
 
-        log.error(" Error firmant document: " + e.getMessage(), e);
-        return;
+    final String scanTypeExpected = fullInfo.getScanType();
+
+    String mime = null;
+
+    if (IScanWebPlugin.SCANTYPE_PDF.equals(scanTypeExpected)) {
+
+      if (!is_pdf(data)) {
+        fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+        String errorMsg = getTraduccio("error.format", new Locale(fullInfo.getLanguageUI()),
+            scanTypeExpected);
+        log.error(errorMsg);
+        fullInfo.getStatus().setErrorMsg(errorMsg);
       }
-      
-    }*/
 
-    
+      mime = "application/pdf";
+
+    } else if (IScanWebPlugin.SCANTYPE_JPG.equals(scanTypeExpected)
+        || IScanWebPlugin.SCANTYPE_PNG.equals(scanTypeExpected)
+        || IScanWebPlugin.SCANTYPE_PDF.equals(scanTypeExpected)) {
+
+      String format = getImageFormat(data);
+      if (format == null) {
+        String errorMsg = "S'ha rebut un format d'imatge desconegut però es requeria "
+            + scanTypeExpected;
+        log.error(errorMsg);
+        fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+        fullInfo.getStatus().setErrorMsg(errorMsg);
+      } else {
+
+        boolean errorFormat = false;
+        if (IScanWebPlugin.SCANTYPE_JPG.equals(scanTypeExpected)) {
+          if (!"JPEG".equalsIgnoreCase(format)) {
+            errorFormat = true;
+          } else {
+            mime = "image/jpeg";
+          }
+        } else if (IScanWebPlugin.SCANTYPE_PNG.equals(scanTypeExpected)) {
+          if (!"png".equalsIgnoreCase(format)) {
+            errorFormat = true;
+          } else {
+            mime = "image/png";
+          }
+        } else if (IScanWebPlugin.SCANTYPE_GIF.equals(scanTypeExpected)) {
+          if (!"gif".equalsIgnoreCase(format)) {
+            errorFormat = true;
+          } else {
+            mime = "image/gif";
+          }
+        } else {
+          mime = "application/octet-stream";
+        }
+
+        if (errorFormat) {
+          String errorMsg = "S'ha rebut un format d'imatge " + format + " però es requeria "
+              + scanTypeExpected;
+          log.error(errorMsg);
+          fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+          fullInfo.getStatus().setErrorMsg(errorMsg);
+        }
+      }
+
+    } else if (IScanWebPlugin.SCANTYPE_TIFF.equals(scanTypeExpected)) {
+      // Suposam que és TIFF
+      mime = "image/tiff";
+    } else {
+      // Altre tipus ????
+      String m = fileItem.getContentType();
+      if (m == null) {
+        m = "application/octet-stream";
+      }
+      mime = m;
+    }
+
+    ScannedPlainFile singleScanFile = new ScannedPlainFile(name, mime, data);
+
+    ScannedSignedFile scannedSignedFile = null;
+
     final Date date = new Date(System.currentTimeMillis());
-    
+
     List<Metadata> metadatas = new ArrayList<Metadata>();
-    //metadatas.add(new Metadata("TipoDocumental", "TD99"));
-    //metadatas.add(new Metadata("EstadoElaboracion", "EE99"));
-    //metadatas.add(new Metadata("Identificador", Calendar.getInstance().get(Calendar.YEAR)
-    //    + "_" + fullInfo.getScannedFiles().size() + scanWebID));
+    // metadatas.add(new Metadata("TipoDocumental", "TD99"));
+    // metadatas.add(new Metadata("EstadoElaboracion", "EE99"));
+    // metadatas.add(new Metadata("Identificador", Calendar.getInstance().get(Calendar.YEAR)
+    // + "_" + fullInfo.getScannedFiles().size() + scanWebID));
     metadatas.add(new Metadata("FechaCaptura", date));
-    metadatas.add(new Metadata("VersionNTI", "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
-    
-    
-   
+    metadatas.add(new Metadata("VersionNTI",
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
 
     ScannedDocument scannedDoc = new ScannedDocument();
     scannedDoc.setMetadatas(metadatas);
@@ -730,218 +745,58 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     scannedDoc.setScanDate(date);
     scannedDoc.setScannedPlainFile(singleScanFile);
 
-
     fullInfo.getScannedFiles().add(scannedDoc);
   }
 
-  public static final  String username = "scanweb"; // configuracio
-  
-/*XXX  
-  public MiniAppletInServerSignatureServerPlugin plugin = null;
-  
-  
-  
-  protected ScannedSignedFile signFile(ScanWebConfig fullInfo, Locale languageUI,
-      ScannedPlainFile singleScanFile) throws Exception {
-    
-    
+  protected String getImageFormat(byte[] data) {
 
-      
-      final String filtreCertificats = "";
-      
-      
-      final String asuntoFirma = getAsunto();
-      // TODO es necessari?
-      String localizacion = null; // "localizacion";
+    ImageInputStream iis = null;
+    try {
+      iis = ImageIO.createImageInputStream(data);
 
-     
-      final  String administrationID = null; // No te sentit en API Firma En Servidor
-      PolicyInfoSignature policyInfoSignature = new PolicyInfoSignature();
-      policyInfoSignature.setPolicyIdentifier("2.16.724.1.3.1.1.2.1.9");
-      policyInfoSignature.setPolicyIdentifierHash("G7roucf600+f03r/o0bAOQ6WAs0=");
-      policyInfoSignature.setPolicyIdentifierHashAlgorithm("http://www.w3.org/2000/09/xmldsig#sha1");
-      policyInfoSignature.setPolicyUrlDocument("https://sede.060.gob.es/politica_de_firma_anexo_1.pdf");
-      
-      CommonInfoSignature commonInfoSignature = new CommonInfoSignature(languageUI.getLanguage(),
-          filtreCertificats, username, administrationID, policyInfoSignature);
+      // get all currently registered readers that recognize the image format
 
-      int signNumber = 1;
-      String languageSign = languageUI.getLanguage();
-      String signType = FileInfoSignature.SIGN_TYPE_PADES;
-      int signMode = FileInfoSignature.SIGN_MODE_IMPLICIT;
-      boolean userRequiresTimeStamp = false;
-      final String signID = String.valueOf(System.currentTimeMillis());
-      
-      */
-      
-      
-//      PdfReader reader = new PdfReader(new ByteArrayInputStream(singleScanFile.getData()));
-      /*
-      File sourcePre = File.createTempFile("ScanWebIECISASourceFile", "pdf");
-      FileOutputStream sourceOS = new FileOutputStream(sourcePre);
-      //convertirPdfToPdfa(reader, sourceOS);
-      FileUtils.writeByteArrayToFile(sourcePre, singleScanFile.getData());
-      //** falta alguna cosa !!!!
-     //reader.close();
-      sourceOS.flush();
-      sourceOS.close();
-      */
-      
-      /*
-      // 6.- Afegir propietats inicials
-      InputStream input3 = new ByteArrayInputStream(singleScanFile.getData()); //output2.toByteArray());
-      
-      File source = File.createTempFile("DigitalSourceFile", "pdf");
-      
-      //InputStream input3 = new FileInputStream(sourcePre);
-      
-      PdfReader reader = new PdfReader(input3);
-      FileOutputStream sourceFOS = new FileOutputStream(source);
-      PdfStamper stamper3 = new PdfStamper(reader, sourceFOS);
-     
-      Map<String, String> info = reader.getInfo();
-      info.put("IECISA_Scan_Web.version", "2.0.0");
-      stamper3.setMoreInfo(info);
-      stamper3.close();
-      
-      input3.close();
-      sourceFOS.close();
-      reader.close();
+      Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
 
-
-      
-      //FileUtils.writeByteArrayToFile(source, bytesDocumento);
-      String name = singleScanFile.getName();
-      
-      
-      final String signerEmail = null;
-
-
-      // TODO S'hauria d'obtenir de propietat
-      String signAlgorithm = FileInfoSignature.SIGN_ALGORITHM_SHA1;
-
-      int signaturesTableLocation = FileInfoSignature.SIGNATURESTABLELOCATION_WITHOUT;
-      final PdfVisibleSignature pdfInfoSignature = null;
-
-      final ITimeStampGenerator timeStampGenerator = null;
-
-      // Valors per defcte
-      final SignaturesTableHeader signaturesTableHeader = null;
-      final SecureVerificationCodeStampInfo csvStampInfo = null;
-
-      FileInfoSignature fileInfo = new FileInfoSignature(signID, source,
-          FileInfoSignature.PDF_MIME_TYPE, name, asuntoFirma, 
-          localizacion , signerEmail, signNumber,
-          languageSign, signType, signAlgorithm, signMode, signaturesTableLocation,
-          signaturesTableHeader, pdfInfoSignature, csvStampInfo, userRequiresTimeStamp,
-          timeStampGenerator);
-
-      final String signaturesSetID = String.valueOf(System.currentTimeMillis());
-      SignaturesSet signaturesSet = new SignaturesSet(signaturesSetID, commonInfoSignature,
-          new FileInfoSignature[] { fileInfo });
-
-      final String timestampUrlBase = null;
-      
-      
-      if (plugin == null) {
-        plugin = new MiniAppletInServerSignatureServerPlugin();
-        
-        String passwordks = getKeyStorePassword();
-        
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-        File ksFile = new File(getKeyStore());
-        ks.load(new FileInputStream(ksFile),passwordks.toCharArray()); 
-
-        String alias = getKeyStoreAlias();
-        String passwordCertificado =getKeyStoreCertPassword();
-  
-        //Obtener la clave privada
-        PrivateKey key = (PrivateKey)ks.getKey(alias, passwordCertificado.toCharArray()); 
-            
-        
-        
-        PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair;
-        publicCertificatePrivateKeyPair = new PublicCertificatePrivateKeyPair(
-            (X509Certificate)ks.getCertificate(alias), key);
-        
-        
-        DigitalInfoCertificate infoCertificate = new DigitalInfoCertificate(ksFile, publicCertificatePrivateKeyPair);
-        plugin.putInfoCertificate(username, infoCertificate);
-      
+      if (!iter.hasNext()) {
+        return null;
       }
-      try {
-        signaturesSet = plugin.signDocuments(signaturesSet, timestampUrlBase);
-      } finally {
-        source.delete();
-      }
-      
-      
-      StatusSignaturesSet sss = signaturesSet.getStatusSignaturesSet();
 
-      if (sss.getStatus() != StatusSignaturesSet.STATUS_FINAL_OK) {
-        System.err.println("Error General MSG = " + sss.getErrorMsg());
-        if (sss.getErrorException() != null) {
-          sss.getErrorException().printStackTrace();
-        }
-        throw new Exception(sss.getErrorMsg());
-      } else {
-        FileInfoSignature fis = signaturesSet.getFileInfoSignatureArray()[0];
-        StatusSignature status = fis.getStatusSignature();
-        if (status.getStatus() != StatusSignaturesSet.STATUS_FINAL_OK) {
-          if (status.getErrorException() != null) {
-            status.getErrorException().printStackTrace();
-          }
-          System.err.println("Error Firma 1. MSG = " + status.getErrorMsg());
-          throw new Exception(status.getErrorMsg());
-        } else {
-          File dest = status.getSignedData();
-          
-          byte[] output;
-          output = FileUtils.readFileToByteArray(dest);
+      // get the first reader
+      ImageReader reader = iter.next();
 
-          if (!dest.delete()) {
-            dest.deleteOnExit();
-          }
-          
-          return new ScannedSignedFile(name, output, ScannedSignedFile.PADES_SIGNATURE);
-
+      return reader.getFormatName();
+    } catch (Exception e) {
+      log.error("Error descobrint format de la imatge:" + e.getMessage());
+      return null;
+    } finally {
+      // close stream
+      if (iis != null) {
+        try {
+          iis.close();
+        } catch (IOException e) {
+          e.printStackTrace();
         }
       }
-    
-  }*/
-  
-  
-  /*
-  private class DigitalInfoCertificate implements InfoCertificate {
-    
-    final File f;
-    
-    final PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair;
-
-    */
-    /**
-     * @param f
-     * @param publicCertificatePrivateKeyPair
-     */
-  /*  
-  public DigitalInfoCertificate(File f,
-        PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair) {
-      super();
-      this.f = f;
-      this.publicCertificatePrivateKeyPair = publicCertificatePrivateKeyPair;
     }
-
-    public File getKeyStoreFile() {
-      return f;
-    }
-
-    public PublicCertificatePrivateKeyPair getPublicCertificatePrivateKeyPair(
-        InfoCertificate cinfo) throws Exception {
-
-      return this.publicCertificatePrivateKeyPair;
-    }
-    
   }
-  
-*/
+
+  public static final String username = "scanweb"; // configuracio
+
+  /**
+   * Test if the data in the given byte array represents a PDF file.
+   */
+  public static boolean is_pdf(byte[] data) {
+    if (data != null && data.length > 4 && data[0] == 0x25 && // %
+        data[1] == 0x50 && // P
+        data[2] == 0x44 && // D
+        data[3] == 0x46 && // F
+        data[4] == 0x2D) { // -
+
+      return true;
+
+    }
+    return false;
+  }
+
 }
