@@ -370,6 +370,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     // Carregam els texts en català per si hi ha algun problema al 
     // carregar els fitxers de missatges multiidioma
     String disp = "Dispositiu";
+    String safata = "Safata entrada document";
     String color = "Color";
     String res = "Resolució";
     String duplex = "Duplex";
@@ -379,6 +380,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     String upError = "S\\'ha produït un error, i no s\\'ha pogut pujar el document escanejat.";
 
     disp = getTraduccio("dwt.dispositiu", languageUI);
+    safata = getTraduccio("dwt.safata", languageUI);
     color = getTraduccio("dwt.color", languageUI);
     res = getTraduccio("dwt.resolucio", languageUI);
     duplex = getTraduccio("dwt.duplex", languageUI);
@@ -472,8 +474,14 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     } else {\n"); 
    out.print(  "       DWObject.IfDuplexEnabled = false;\n"); 
    out.print(  "     }\n");
-   out.print(  "     DWObject.IfFeederEnabled = false;\n"); 
+   out.print(  "     DWObject.MaxImagesInBuffer = 100;\n");
    out.print(  "     DWObject.IfShowUI = false;\n");
+   out.print(  "     if (document.getElementById('scanOrigen').value == 'A'){\n" ); 
+   out.print(  "       DWObject.IfFeederEnabled = true;\n");
+   out.print(  "       DWObject.XferCount = -1;\n");
+   out.print(  "     } else { \n"); 
+   out.print(  "       DWObject.IfFeederEnabled = false;\n");
+   out.print(  "     }\n");
    out.print(  "     DWObject.IfAutoDiscardBlankpages = true;\n");
    out.print(  "     DWObject.Resolution = parseInt(document.getElementById('scanResolution').value);\n" ); 
    out.print(  "     DWObject.AcquireImage();\n"); 
@@ -653,6 +661,19 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
    out.print(  "\n");
+
+   out.print(  " <div id=\"scanOrigenGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+   out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
+   out.print(  "     <label style=\"font-size:12px\" for=\"scanOrigen\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + safata + "</label>\n");
+   out.print(  "     </div>\n");
+   out.print(  "     <div class=\"col-xs-8 text-right\">\n");
+   out.print(  "       <select size=\"1\" id=\"scanOrigen\" class=\"chosen-select\">\n");
+   out.print(  "       <option value='S' selected='selected'>Principal</option>");
+   out.print(  "       <option value='A'>Alimentador</option>");
+   out.print(  "       </select>\n");
+   out.print(  "   </div>\n");
+   out.print(  " </div>\n");
+
    out.print(  " <div id=\"scanColorGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\">\n");
    out.print(  "     <label style=\"font-size:12px\" for=\"scanColor\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> " + color + "</label>\n");
