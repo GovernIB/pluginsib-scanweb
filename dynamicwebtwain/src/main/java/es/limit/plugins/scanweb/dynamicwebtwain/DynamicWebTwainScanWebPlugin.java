@@ -1,10 +1,9 @@
 package es.limit.plugins.scanweb.dynamicwebtwain;
 
-import java.io.ByteArrayInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,9 +11,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -44,25 +39,9 @@ import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
 import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
 import org.fundaciobit.plugins.scanweb.api.ScannedPlainFile;
 import org.fundaciobit.plugins.scanweb.api.ScannedSignedFile;
-/*XXX
-import org.fundaciobit.plugins.signature.api.CommonInfoSignature;
-import org.fundaciobit.plugins.signature.api.FileInfoSignature;
-import org.fundaciobit.plugins.signature.api.ITimeStampGenerator;
-import org.fundaciobit.plugins.signature.api.PdfVisibleSignature;
-import org.fundaciobit.plugins.signature.api.PolicyInfoSignature;
-import org.fundaciobit.plugins.signature.api.SecureVerificationCodeStampInfo;
-import org.fundaciobit.plugins.signature.api.SignaturesSet;
-import org.fundaciobit.plugins.signature.api.SignaturesTableHeader;
-import org.fundaciobit.plugins.signature.api.StatusSignature;
-import org.fundaciobit.plugins.signature.api.StatusSignaturesSet;
-import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin;
-import org.fundaciobit.plugins.signatureserver.miniappletinserver.MiniAppletInServerSignatureServerPlugin.InfoCertificate;
-*/
-import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.core.utils.PublicCertificatePrivateKeyPair;
 
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
+
 
 /**
  * 
@@ -212,9 +191,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
   protected static final Set<String> SUPPORTED_FLAG_1 = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
-  
-  /*protected static final Set<String> SUPPORTED_FLAG_2 = Collections
-      .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_SIGNED)));*/
+
 
   protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
       .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
@@ -222,7 +199,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
   @Override
   public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
     if (SCANTYPE_PDF.equals(scanType)) {
-      return /*forceSign()? SUPPORTED_FLAGS_ONLYSIGN :*/ SUPPORTED_FLAGS;
+      return SUPPORTED_FLAGS;
     }
     return null;
   }
@@ -553,7 +530,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     out.print(  "     DWObject.IfSSL = isSSL; // Set whether SSL is used\n" );
     out.print(  "     DWObject.HTTPPort = location.port != '' ? location.port : (isSSL ? 443 : 80);\n" );
     
-    out.print(  "     DWObject.HTTPPort = location.port == '' ? 80 : location.port;\n" );
+    //out.print(  "     DWObject.HTTPPort = location.port == '' ? 80 : location.port;\n" );
   }
     
 //   out.print(  "     var CurrentPathName = unescape(location.pathname);\n" );
@@ -993,183 +970,6 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
   public static final  String username = "scanweb"; // configuracio
   
   
-  
-  
- /*XXX
-  
-  public MiniAppletInServerSignatureServerPlugin plugin = null;
-  
-  
-  
-  protected ScannedSignedFile signFile(ScanWebConfig fullInfo, Locale languageUI,
-      ScannedPlainFile singleScanFile) throws Exception {
-    
-    
-
-      
-      final String filtreCertificats = "";
-      
-      
-      final String asuntoFirma = getAsunto();
-      // TODO es necessari?
-      String localizacion = null; // "localizacion";
-
-     
-      final  String administrationID = null; // No te sentit en API Firma En Servidor
-      PolicyInfoSignature policyInfoSignature = new PolicyInfoSignature();
-      policyInfoSignature.setPolicyIdentifier("2.16.724.1.3.1.1.2.1.9");
-      policyInfoSignature.setPolicyIdentifierHash("G7roucf600+f03r/o0bAOQ6WAs0=");
-      policyInfoSignature.setPolicyIdentifierHashAlgorithm("http://www.w3.org/2000/09/xmldsig#sha1");
-      policyInfoSignature.setPolicyUrlDocument("https://sede.060.gob.es/politica_de_firma_anexo_1.pdf");
-      
-      CommonInfoSignature commonInfoSignature = new CommonInfoSignature(languageUI.getLanguage(),
-          filtreCertificats, username, administrationID, policyInfoSignature);
-
-      int signNumber = 1;
-      String languageSign = languageUI.getLanguage();
-      String signType = FileInfoSignature.SIGN_TYPE_PADES;
-      int signMode = FileInfoSignature.SIGN_MODE_IMPLICIT;
-      boolean userRequiresTimeStamp = false;
-      final String signID = String.valueOf(System.currentTimeMillis());
-      
-      
-      
-      
-//      PdfReader reader = new PdfReader(new ByteArrayInputStream(singleScanFile.getData()));
-      /*
-      File sourcePre = File.createTempFile("ScanWebIECISASourceFile", "pdf");
-      FileOutputStream sourceOS = new FileOutputStream(sourcePre);
-      //convertirPdfToPdfa(reader, sourceOS);
-      FileUtils.writeByteArrayToFile(sourcePre, singleScanFile.getData());
-      //** falta alguna cosa !!!!
-     //reader.close();
-      sourceOS.flush();
-      sourceOS.close();
-      
-      
-      // 6.- Afegir propietats inicials
-      InputStream input3 = new ByteArrayInputStream(singleScanFile.getData()); //output2.toByteArray());
-      
-      File source = File.createTempFile("DigitalSourceFile", "pdf");
-      
-      //InputStream input3 = new FileInputStream(sourcePre);
-      
-      PdfReader reader = new PdfReader(input3);
-      FileOutputStream sourceFOS = new FileOutputStream(source);
-      PdfStamper stamper3 = new PdfStamper(reader, sourceFOS);
-     
-      Map<String, String> info = reader.getInfo();
-      info.put("DWT_Scan_Web.version", "2.0.0");
-      stamper3.setMoreInfo(info);
-      stamper3.close();
-      
-      input3.close();
-      sourceFOS.close();
-      reader.close();
-
-
-      
-      //FileUtils.writeByteArrayToFile(source, bytesDocumento);
-      String name = singleScanFile.getName();
-      
-      
-      final String signerEmail = null;
-
-
-      // TODO S'hauria d'obtenir de propietat
-      String signAlgorithm = FileInfoSignature.SIGN_ALGORITHM_SHA1;
-
-      int signaturesTableLocation = FileInfoSignature.SIGNATURESTABLELOCATION_WITHOUT;
-      final PdfVisibleSignature pdfInfoSignature = null;
-
-      final ITimeStampGenerator timeStampGenerator = null;
-
-      // Valors per defcte
-      final SignaturesTableHeader signaturesTableHeader = null;
-      final SecureVerificationCodeStampInfo csvStampInfo = null;
-
-      FileInfoSignature fileInfo = new FileInfoSignature(signID, source,
-          FileInfoSignature.PDF_MIME_TYPE, name, asuntoFirma, 
-          localizacion , signerEmail, signNumber,
-          languageSign, signType, signAlgorithm, signMode, signaturesTableLocation,
-          signaturesTableHeader, pdfInfoSignature, csvStampInfo, userRequiresTimeStamp,
-          timeStampGenerator);
-
-      final String signaturesSetID = String.valueOf(System.currentTimeMillis());
-      SignaturesSet signaturesSet = new SignaturesSet(signaturesSetID, commonInfoSignature,
-          new FileInfoSignature[] { fileInfo });
-
-      final String timestampUrlBase = null;
-      
-      
-      if (plugin == null) {
-        plugin = new MiniAppletInServerSignatureServerPlugin();
-        
-        String passwordks = getKeyStorePassword();
-        
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-        File ksFile = new File(getKeyStore());
-        ks.load(new FileInputStream(ksFile),passwordks.toCharArray()); 
-
-        String alias = getKeyStoreAlias();
-        String passwordCertificado =getKeyStoreCertPassword();
-  
-        //Obtener la clave privada
-        PrivateKey key = (PrivateKey)ks.getKey(alias, passwordCertificado.toCharArray()); 
-            
-        
-        
-        PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair;
-        publicCertificatePrivateKeyPair = new PublicCertificatePrivateKeyPair(
-            (X509Certificate)ks.getCertificate(alias), key);
-        
-        
-        DigitalInfoCertificate infoCertificate = new DigitalInfoCertificate(ksFile, publicCertificatePrivateKeyPair);
-        plugin.putInfoCertificate(username, infoCertificate);
-      
-      }
-      try {
-        signaturesSet = plugin.signDocuments(signaturesSet, timestampUrlBase);
-      } finally {
-        source.delete();
-      }
-      
-      
-      StatusSignaturesSet sss = signaturesSet.getStatusSignaturesSet();
-
-      if (sss.getStatus() != StatusSignaturesSet.STATUS_FINAL_OK) {
-        System.err.println("Error General MSG = " + sss.getErrorMsg());
-        if (sss.getErrorException() != null) {
-          sss.getErrorException().printStackTrace();
-        }
-        throw new Exception(sss.getErrorMsg());
-      } else {
-        FileInfoSignature fis = signaturesSet.getFileInfoSignatureArray()[0];
-        StatusSignature status = fis.getStatusSignature();
-        if (status.getStatus() != StatusSignaturesSet.STATUS_FINAL_OK) {
-          if (status.getErrorException() != null) {
-            status.getErrorException().printStackTrace();
-          }
-          System.err.println("Error Firma 1. MSG = " + status.getErrorMsg());
-          throw new Exception(status.getErrorMsg());
-        } else {
-          File dest = status.getSignedData();
-          
-          byte[] output;
-          output = FileUtils.readFileToByteArray(dest);
-
-          if (!dest.delete()) {
-            dest.deleteOnExit();
-          }
-          
-          return new ScannedSignedFile(name, output, ScannedSignedFile.PADES_SIGNATURE);
-
-        }
-      }
-    
-  }*/
-  
-  
   protected void retornarRecursDesdeDirectori(String absolutePluginRequestPath,
       String relativePluginRequestPath, String scanWebID, String query,
       HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
@@ -1244,36 +1044,5 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     }
   }
   
-  /*private class DigitalInfoCertificate implements InfoCertificate {
-    
-    final File f;
-    
-    final PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair;
-*/
-    
-    /**
-     * @param f
-     * @param publicCertificatePrivateKeyPair
-     */
-   /* public DigitalInfoCertificate(File f,
-        PublicCertificatePrivateKeyPair publicCertificatePrivateKeyPair) {
-      super();
-      this.f = f;
-      this.publicCertificatePrivateKeyPair = publicCertificatePrivateKeyPair;
-    }
-
-    public File getKeyStoreFile() {
-      return f;
-    }
-
-    public PublicCertificatePrivateKeyPair getPublicCertificatePrivateKeyPair(
-        InfoCertificate cinfo) throws Exception {
-
-      return this.publicCertificatePrivateKeyPair;
-    }
-    
-  }*/
-  
-
-  
+ 
 }
