@@ -35,6 +35,16 @@
       <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
       <version>3.0.0</version>
     </dependency>
+    <!--  <dependency>
+        <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+        <artifactId>pluginsib-scanweb-digitalib</artifactId>
+        <version>3.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+        <artifactId>pluginsib-scanweb-file</artifactId>
+        <version>3.0.0</version>
+      </dependency>-->
   </dependencies>
   <build>
     <finalName>scanweb_plugins</finalName>
