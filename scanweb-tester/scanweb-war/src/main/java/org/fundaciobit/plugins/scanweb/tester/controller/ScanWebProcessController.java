@@ -1,22 +1,8 @@
 package org.fundaciobit.plugins.scanweb.tester.controller;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.ejb.EJB;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.fundaciobit.plugins.documentcustody.api.AnnexCustody;
-import org.fundaciobit.plugins.scanweb.api.IScanWebPlugin;
-import org.fundaciobit.plugins.scanweb.api.ScanWebConfig;
-import org.fundaciobit.plugins.scanweb.api.ScanWebMode;
-import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
-import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
+import org.fundaciobit.plugins.scanweb.api.*;
 import org.fundaciobit.plugins.scanweb.tester.ejb.ScanWebModuleLocal;
 import org.fundaciobit.plugins.scanweb.tester.ejb.utils.ScanWebConfigTester;
 import org.fundaciobit.plugins.scanweb.tester.form.ScanWebConfigForm;
@@ -28,14 +14,14 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.ejb.EJB;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  *
@@ -170,33 +156,43 @@ public class ScanWebProcessController {
 
     int status = scanWebStatus.getStatus();
 
-    if (status == ScanWebStatus.STATUS_FINAL_ERROR) {
-      statusError = scanWebStatus;
-    } else if (status == ScanWebStatus.STATUS_CANCELLED) {
+    switch (status) {
+      case ScanWebStatus.STATUS_IN_PROGRESS:
+        HtmlUtils.saveMessageWarning(request, "El plugin ha retornat el control amb un estat no correcte IN PROGRESS. Per favor revisar el plugin ");
+      case ScanWebStatus.STATUS_FINAL_OK: {
 
-      if (scanWebStatus.getErrorMsg() == null) {
-        scanWebStatus.setErrorMsg("plugindescan.cancelat");
+        // Comprovam que s'hagin escanejat coses
+
+        List<ScannedDocument> listDocs = swc.getScannedFiles();
+
+        if (listDocs.size() == 0) {
+          statusError = new ScanWebStatus();
+          statusError.setErrorMsg(" L'usuari no ha escanejat cap fitxer.");
+        } else {
+          request.getSession().setAttribute(LAST_SCANNED_FILES, listDocs);
+          request.getSession().setAttribute(LAST_CONFIG, swc);
+        }
+        break;
       }
-      statusError = scanWebStatus;
-    } else if (status == ScanWebStatus.STATUS_IN_PROGRESS) {
-      // Comprovam que s'hagin escanejat coses
+      case ScanWebStatus.STATUS_FINAL_ERROR: {
+        statusError = scanWebStatus;
+        break;
+      }
+      case ScanWebStatus.STATUS_CANCELLED: {
 
-      List<ScannedDocument> listDocs = swc.getScannedFiles();
-
-      if (listDocs.size() == 0) {
+        if (scanWebStatus.getErrorMsg() == null) {
+          scanWebStatus.setErrorMsg("plugindescan.cancelat");
+        }
+        statusError = scanWebStatus;
+        break;
+      }
+      default: {
+        String inconsistentState = "El mòdul d´escaneig ha finalitzat inesperadament"
+           + " amb un estat desconegut " + status;
         statusError = new ScanWebStatus();
-        statusError.setErrorMsg(" L'usuari no ha escanejat cap fitxer.");
-      } else {
-        request.getSession().setAttribute(LAST_SCANNED_FILES, listDocs);
-        request.getSession().setAttribute(LAST_CONFIG, swc);
+        scanWebStatus.setErrorMsg(inconsistentState);
+        scanWebStatus.setErrorException(new Exception());
       }
-
-    } else {
-      String inconsistentState = "El mòdul d´escaneig ha finalitzat inesperadament"
-          + " amb un estat desconegut " + status;
-      statusError = new ScanWebStatus();
-      scanWebStatus.setErrorMsg(inconsistentState);
-      scanWebStatus.setErrorException(new Exception());
     }
 
     scanWebModuleEjb.closeScanWebProcess(request, scanWebID);
