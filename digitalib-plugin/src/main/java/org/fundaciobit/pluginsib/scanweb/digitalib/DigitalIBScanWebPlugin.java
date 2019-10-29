@@ -8,6 +8,7 @@ import org.fundaciobit.plugins.scanweb.api.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -273,8 +274,6 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
 
       ScanWebConfig fullInfo = getTransaction(scanWebID);
 
-      log.info(" XYZ ZZZ FILESCANEWEB query=" + query);
-
       if (fullInfo == null) {
          String titol = (isGet ? "GET" : "POST") + " " + getName(new Locale("ca"))
             + " PETICIO HA CADUCAT";
@@ -372,7 +371,6 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                   }
                }
 
-
                //Obtenim el fitxer escannejat
                ScannedPlainFile plainFile = new ScannedPlainFile(result.getScannedFile().getNom(), result.getScannedFile().getMime(),
                   result.getScannedFile().getData());
@@ -386,14 +384,32 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                fullInfo.getScannedFiles().add(doc);
                fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
 
-               log.info("XYZ ZZZ uploadCertificatePOST:: FINAL OK");
 
-               final String url;
-               url = fullInfo.getUrlFinal();
-               log.info("XYZ ZZZ Entra uploadCertificatePOST: redicreccionam a " + url);
+               if (ScanWebMode.ASYNCHRONOUS.equals(fullInfo.getMode())) {
+                  response.setContentType("text/html");
+                  response.setCharacterEncoding("utf-8");
 
-               sendRedirect(response, url);
-               return;
+                  PrintWriter out;
+                  try {
+                     out = response.getWriter();
+                  } catch (IOException e2) {
+                     log.error(e2.getMessage(), e2);
+                     return;
+                  }
+
+                  out.println("<html>");
+                  out.println("<body>");
+                  out.println("<p>Ha finalitzat l'escaneig correctament <p>"); //TODO falta traducció
+                  out.println("</body>");
+                  out.println("</html>");
+                  return;
+               } else {
+                  final String url;
+                  url = fullInfo.getUrlFinal();
+                  log.info("Redireccionam a " + url);
+                  sendRedirect(response, url);
+                  return;
+               }
 
             } // Final Case Firma OK
          } // Final Switch Firma

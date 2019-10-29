@@ -1,37 +1,19 @@
 package org.fundaciobit.plugins.scanweb.iecisa;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.fundaciobit.plugins.scanweb.api.*;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.fundaciobit.plugins.scanweb.api.AbstractScanWebPlugin;
-import org.fundaciobit.plugins.scanweb.api.IScanWebPlugin;
-import org.fundaciobit.plugins.scanweb.api.ScanWebConfig;
-import org.fundaciobit.plugins.scanweb.api.ScanWebMode;
-import org.fundaciobit.plugins.scanweb.api.ScanWebStatus;
-import org.fundaciobit.plugins.scanweb.api.ScannedPlainFile;
-import org.fundaciobit.plugins.scanweb.api.ScannedDocument;
-import org.fundaciobit.plugins.scanweb.api.ScannedSignedFile;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * 
