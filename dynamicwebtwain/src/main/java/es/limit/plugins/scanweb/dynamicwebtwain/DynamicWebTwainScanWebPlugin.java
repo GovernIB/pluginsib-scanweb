@@ -116,31 +116,6 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
   }
 	
 
-  /*public boolean forceSign() {
-    return "true".equals(getProperty(PROPERTY_BASE + "forcesign"));
-  }*/
-  
- /* public String getKeyStore() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.keystore");
-  }
-  
-  public String getKeyStoreAlias() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.alias");
-  }
-  
-  public String getKeyStorePassword() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.password");
-  }
-  
-  public String getKeyStoreCertPassword() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.certpassword");
-  }
-  
-  public String getAsunto() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "sign.asunto");
-  }*/
-	
-
 	/**
 	 * @param propertyKeyBase
 	 * @param properties
@@ -366,9 +341,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     upError = getTraduccio("dwt.error.upload", languageUI);
     msgErrorValidacio = getTraduccio("dwt.error.validacio", languageUI);
     String pujarServidor = getTraduccio("pujarServidor", languageUI);
-  
 
-    
     out.println("<script type=\"text/javascript\">");
     
     if ((fullInfo.getMode() == ScanWebMode.SYNCHRONOUS))  { 
@@ -464,8 +437,13 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     DWObject.AcquireImage();\n"); 
 //   out.print(  "     Dynamsoft_OnReady();\n");
 //   out.print(  "     alert('Ha sortit de AcquireImage interna.');\n");
-   out.print(  "   } document.getElementById(\"finalScanButton\").style.display=\"block\";\n");
-   out.print(  "        document.getElementById(\"cleanAll\").style.display=\"block\";");
+   out.print(  "   }\n");
+   if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
+     out.print(  "   document.getElementById(\"finalScanButton\").style.display=\"block\";\n");
+   } else {
+     out.print(  "   document.getElementById(\"puja\").style.display=\"block\";\n");
+   }
+   out.print(  "   document.getElementById(\"cleanAll\").style.display=\"block\";\n");
    out.print(  " }\n");
    out.print(  "\n");
    out.print(  " function btnRemoveSelectedImage_onclick() {\n");
@@ -489,8 +467,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "\n");
    out.print(  "\n");
    out.print(  " function clickPuja() {\n" );
+   
+   out.print(  "     pujarServidor();\n");
+   
  //  out.print(  "   setTimeout(function() {");
-   out.print(  "        document.getElementById(\"puja\").click();");
+ //  out.print(  "        document.getElementById(\"puja\").click();");
 //   out.print(  "        document.getElementById(\"scanb\").style.display=\"none\";");
 //   out.print(  "        document.getElementById(\"cleanAll\").style.display=\"block\";");
  //  out.print(  "     )},1500) ;\n");
@@ -702,10 +683,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
       out.println("</tr><tr><td align=\"center\">");
       out.println("<br/><button id=\"finalScanButton\" style=\"display:none\" class=\"btn btn-success\" onclick='clickPuja();finalScanProcess();'>" + getTraduccio("final", languageUI) + "</button>");
       out.println("</td>");
-    }
-   out.print(  "     <td style=\"display:none\"><button id=\"puja\"class=\"btn btn-success\" type=\"button\" value='" + clean + "' onclick='pujarServidor();' >" + pujarServidor +"</button></td>\n");
-   out.print(  "</tr><tr>\n");    
-   out.print(  "     <td><button style=\"display:none\" class=\"btn btn-warning\" type=\"button\" value='" + clean + "' onclick='btnRemoveSelectedImage_onclick();' >" + clean +"</button></td>\n");
+   } else {
+     out.print(  "     <td><button id=\"puja\" style=\"display:none\" class=\"btn btn-success\" type=\"button\" value='" + clean + "' onclick='pujarServidor();' >" + pujarServidor +"</button></td>\n");
+     //out.print(  "</tr><tr>\n");    
+     //out.print(  "     <td><button class=\"btn btn-warning\" type=\"button\" value='" + clean + "' onclick='btnRemoveSelectedImage_onclick();' >" + clean +"</button></td>\n");
+   }
    
    out.print(  "</tr></table>\n");
    out.print(  "   </div>\n");
@@ -803,6 +785,27 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
       ScanWebConfig fullInfo, Locale languageUI) {
     
     log.debug("Entra dins FINAL_PAGE(...");
+    
+    List<ScannedDocument> list = fullInfo.getScannedFiles();
+    if (isDebug()) {
+      log.info(" SCANID[" + fullInfo.getScanWebID()  + "].LIST.SIZE() = " + list.size());
+    }
+    
+    
+    ScanWebStatus status = fullInfo.getStatus();
+    int statusID = status.getStatus(); 
+    
+    if (statusID == ScanWebStatus.STATUS_IN_PROGRESS) {
+    
+      if (list.size() == 0) {
+        
+        status.setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+        status.setErrorMsg(getTraduccio("noenviats.error", languageUI));
+      } else {
+        
+        status.setStatus(ScanWebStatus.STATUS_FINAL_OK);
+      }
+    }
 
     try {
       response.sendRedirect(fullInfo.getUrlFinal());
@@ -908,6 +911,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     fullInfo.getScannedFiles().add(scannedDoc);
     
+    if (fullInfo.getMode() == ScanWebMode.ASYNCHRONOUS) {
+      // Marcar com finalitzat si ja hi ha un escaneig pujat
+      fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
+    }
+
     log.info("UPLOAD:: FINAL ");
   }
   

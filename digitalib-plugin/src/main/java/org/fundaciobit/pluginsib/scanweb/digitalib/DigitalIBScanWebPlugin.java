@@ -11,9 +11,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-/**
- * @author anadal
- *         Implementació del plugin per escannejar un document amb digital IB.
+/** 
+ * 
+ * Implementació del plugin per escannejar un document amb digital IB.
+ * 
+ * @author mgonzalez
+ * 
  */
 public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
 
@@ -397,11 +400,20 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                      return;
                   }
 
-                  out.println("<html>");
-                  out.println("<body>");
-                  out.println("<p>Ha finalitzat l'escaneig correctament <p>"); //TODO falta traducció
-                  out.println("</body>");
-                  out.println("</html>");
+                  
+                  out.println("<html>\n");
+                  out.println("<body>\n");
+                  out.println("<table border=0 width=\"100%\" height=\"300px\">\n");
+                  out.println("<tr><td align=center>\n");
+                  out.println("<p><h2>" + getTraduccio("finalproces", languageUI) + "</h2><p>\n");
+                  out.println("</td></tr>\n");
+                  out.println("</table>\n");
+                  out.println("</body>\n");
+                  out.println("</html>\n");
+
+                  out.flush();
+                  
+                  
                   return;
                } else {
                   final String url;

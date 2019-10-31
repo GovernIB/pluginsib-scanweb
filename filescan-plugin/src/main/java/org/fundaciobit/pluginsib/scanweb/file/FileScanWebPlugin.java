@@ -186,14 +186,11 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
           PrintWriter out = generateHeader(request, response, absolutePluginRequestPath,
               relativePluginRequestPath, languageUI);
-          uploadCertificateGET(relativePluginRequestPath, query, fullInfo, out, languageUI);
+          uploadFileGET(relativePluginRequestPath, query, fullInfo, out, languageUI);
 
           generateFooter(out);
         } else {
-
-          uploadCertificatePOST(relativePluginRequestPath, request, response, fullInfo,
-              languageUI);
-
+          uploadFilePOST(relativePluginRequestPath, request, response, fullInfo, languageUI);
         }
 
       } else if (query.startsWith("img")) {
@@ -205,10 +202,6 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
         cancel(request, response, fullInfo, languageUI);
 
-      } else if (query.startsWith(FINAL_PAGE)) {
-
-        finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
-            request, response, fullInfo, languageUI);
       } else {
 
         super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
@@ -230,33 +223,35 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
   protected void cancel(HttpServletRequest request, HttpServletResponse response,
       ScanWebConfig fullInfo, Locale languageUI) {
 
-    final String url;
-    url = fullInfo.getUrlFinal();
-
     fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_CANCELLED);
 
-    sendRedirect(response, url);
+    if (ScanWebMode.ASYNCHRONOUS.equals(fullInfo.getMode())) {
+      response.setContentType("text/html");
+      response.setCharacterEncoding("utf-8");
 
-  }
+      PrintWriter out;
+      try {
+        out = response.getWriter();
+      } catch (IOException e2) {
+        log.error(e2.getMessage(), e2);
+        return;
+      }
 
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
-  // --------------- FINAL PAGE (SINCRON MODE) -------------------------------
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
+      out.println("<html>\n");
+      out.println("<body>\n");
+      out.println("<table border=0 width=\"100%\" height=\"300px\">\n");
+      out.println("<tr><td align=center>\n");
+      out.println("<p><h2>" + getTraduccio("cancelat", languageUI) + "</h2><p>\n");
+      out.println("</td></tr>\n");
+      out.println("</table>\n");
+      out.println("</body>\n");
+      out.println("</html>\n");
 
-  public static final String FINAL_PAGE = "finalPage";
-
-  protected void finalPage(String absolutePluginRequestPath, String relativePluginRequestPath,
-      String scanWebID, String query, HttpServletRequest request,
-      HttpServletResponse response, ScanWebConfig fullInfo, Locale languageUI) {
-
-    log.debug("Entra dins FINAL_PAGE(...");
-
-    try {
-      response.sendRedirect(fullInfo.getUrlFinal());
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
+      out.flush();
+    } else {
+      final String url;
+      url = fullInfo.getUrlFinal();
+      sendRedirect(response, url);
     }
 
   }
@@ -269,9 +264,9 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
   private static final String UPLOAD_FILE_PAGE = "uploadFile";
 
-  private void uploadCertificateGET(String pluginRequestPath, String query,
-      ScanWebConfig fullInfo, PrintWriter out, Locale locale) {
-    
+  private void uploadFileGET(String pluginRequestPath, String query, ScanWebConfig fullInfo,
+      PrintWriter out, Locale locale) {
+
     out.println("<table border=0 width=\"100%\">");
     out.println("<tr><td align=center>");
 
@@ -297,14 +292,13 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         + "</button>");
 
     out.println("</form>");
-    
 
     out.println("</td>");
     out.println("</tr>");
     out.println("</table>");
   }
 
-  private void uploadCertificatePOST(String pluginRequestPath, HttpServletRequest request,
+  private void uploadFilePOST(String pluginRequestPath, HttpServletRequest request,
       HttpServletResponse response, ScanWebConfig fullInfo, Locale locale) {
 
     log.info("XYZ ZZZ Entra uploadCertificatePOST");
@@ -344,11 +338,45 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
       log.info("XYZ ZZZ uploadCertificatePOST:: FINAL OK");
 
-      final String url;
-      url = swc.getUrlFinal();
-      log.info("XYZ ZZZ Entra uploadCertificatePOST: redicreccionam a " + url);
+      // final String url;
+      // url = swc.getUrlFinal();
+      // log.info("XYZ ZZZ Entra uploadCertificatePOST: redicreccionam a " + url);
+      // sendRedirect(response, url);
 
-      sendRedirect(response, url);
+      log.debug("Entra dins FINAL_PAGE(...");
+
+      if (ScanWebMode.ASYNCHRONOUS.equals(fullInfo.getMode())) {
+        response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
+
+        PrintWriter out;
+        try {
+          out = response.getWriter();
+        } catch (IOException e2) {
+          log.error(e2.getMessage(), e2);
+          return;
+        }
+
+        out.println("<html>\n");
+        out.println("<body>\n");
+        out.println("<table border=0 width=\"100%\" height=\"300px\">\n");
+        out.println("<tr><td align=center>\n");
+        out.println("<p><h2>" + getTraduccio("final", locale) + "</h2><p>\n");
+        out.println("</td></tr>\n");
+        out.println("</table>\n");
+        out.println("</body>\n");
+        out.println("</html>\n");
+
+        out.flush();
+
+        return;
+      } else {
+        try {
+          response.sendRedirect(fullInfo.getUrlFinal());
+        } catch (IOException e) {
+          log.error(e.getMessage(), e);
+        }
+      }
 
     } catch (Exception e) {
       // XYZ ZZZ

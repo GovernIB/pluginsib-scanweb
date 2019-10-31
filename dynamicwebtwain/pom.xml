@@ -4,7 +4,7 @@
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <name>PluginsIB - Scan Web - DynamicWebTwain</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
