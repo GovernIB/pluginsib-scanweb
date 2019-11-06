@@ -15,7 +15,6 @@
     <module>scanweb-ejb</module>
     <module>scanweb-war</module>
     <module>scanweb-ear</module>
-    <module>scanweb-plugins</module>
   </modules>
   <dependencies>
     <dependency>

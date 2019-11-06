@@ -32,19 +32,45 @@
       <version>1.4</version>
     </dependency>
     <!-- ====================================== -->
-    <!-- =========   PLUGIN DE SCANWEB  ======= -->
+    <!-- ===========  API DE SCANWEB  ========= -->
     <!-- ====================================== -->
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-api</artifactId>
       <version>3.0.0</version>
     </dependency>
-    <!--XXX<dependency>
-      <groupId>org.fundaciobit.plugins</groupId>
-      <artifactId>plugin-scanweb-api</artifactId>
-      <version>${scanweb.api.version}</version>
-    </dependency>-->
+
+    <!-- ====================================== -->
+    <!-- =========  PLUGINS DE SCANWEB  ======= -->
+    <!-- ====================================== -->
+    <!--  IMPLEMENTACIONS -->
+    <dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-caib</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-file</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-digitalib</artifactId>
+      <version>3.0.1</version>
+    </dependency>
   </dependencies>
+
   <build>
     <finalName>scanweb</finalName>
     <plugins>
