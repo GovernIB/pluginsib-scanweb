@@ -4,11 +4,14 @@ import org.fundaciobit.apisib.apiscanwebsimple.v1.ApiScanWebSimple;
 import org.fundaciobit.apisib.apiscanwebsimple.v1.beans.*;
 import org.fundaciobit.apisib.apiscanwebsimple.v1.jersey.ApiScanWebSimpleJersey;
 import org.fundaciobit.plugins.scanweb.api.*;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -48,7 +51,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
 
   // Propietats del plugin
   public String getProfile() throws Exception {
-    return getPropertyRequired(PROPERTY_BASE + "profile");
+    return getProperty(PROPERTY_BASE + "profile");
   }
 
   public String getUrl() throws Exception {
@@ -72,125 +75,34 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
   public boolean filter(HttpServletRequest request, ScanWebConfig config) {
     return super.filter(request, config);
   }
+  
+  
+  
+  
+  
+  
 
   @Override
   public String startScanWebTransaction(String absolutePluginRequestPath,
       String relativePluginRequestPath, HttpServletRequest request, ScanWebConfig config)
       throws Exception {
 
-    ApiScanWebSimple api = null;
-    String transactionID = null;
-    final String languageUI = config.getLanguageUI();
 
-    // Agafam l'api de DigitalIB
-    api = getApiScanWebSimple();
-
-    // Obtenim els diferents profiles definits a DIGITALIB
-    ScanWebSimpleAvailableProfiles profiles = api.getAvailableProfiles(languageUI);
-
-    List<ScanWebSimpleAvailableProfile> profilesList = profiles.getAvailableProfiles();
-
-    // Si no hi ha profiles definits llançam excepció
-    if (profilesList == null || profilesList.size() == 0) {
-      // TODO FALTA TRADUIR
-      throw new Exception("NO HI HA PERFILS PER AQUEST USUARI APLICACIÓ");
-    }
-
-    
-
-    // Obtenim el profile amb el que volem fer feina(el que ens indicaran des de l'aplicació
-    // que l'emplearà.
+    // Obtenim el profile amb el que volem fer feina. Pot ser null i es 
+    // mostrarà a l'usuari el perfil a usar
     final String profileCode = getProfile();
-
-    // Seleccionam el perfil indicat
-    ScanWebSimpleProfileRequest profileRequest = new ScanWebSimpleProfileRequest(profileCode, languageUI);
-    ScanWebSimpleAvailableProfile scanWebProfileSelected = api.getProfile(profileRequest);
-
-    // Si val null es que el perfil no existeix
-    if (scanWebProfileSelected == null) {
-      // TODO TRADUCCIÓ
-      throw new Exception(
-          "NO EXISTEIX EL PERFIL AMB CODI " + profileCode);
+    
+    String redirectUrl;
+    
+    if(profileCode == null) {
+      // Saltam a la pantalla de Selecció de Perfil
+      redirectUrl = relativePluginRequestPath + "/" + SELECCIONA_PERFIL;
+    } else {
+      redirectUrl = relativePluginRequestPath + "/" + POSTSELECTEDPROFILE + "/" + profileCode;
     }
-
-    {
-
-      final int view = ScanWebSimpleGetTransactionIdRequest.VIEW_FULLSCREEN;
-
-      // TODO recollir de l'aplicació
-      String funcionariUsername = "u06666";
-
-      ScanWebSimpleGetTransactionIdRequest transacctionIdRequest;
-
-      switch (scanWebProfileSelected.getProfileType()) {
-
-        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-
-          transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode, view,
-              languageUI, funcionariUsername);
-
-        break;
-
-        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE: {
-          ScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters();
-
-          transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode, view,
-              languageUI, funcionariUsername, signatureParameters);
-        }
-
-        break;
-
-        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY: {
-
-          // XYZ ZZZ ZZZ 
-          throw new Exception("Pefils de tipus Firma i Arxivat no es suporten.");
-          /*
-          ScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters();
-
-          ScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
-          arxiuRequiredParameters = getArxiuRequiredParameters();
-
-          // See getArxiuOptionalParameters() sample
-          ScanWebSimpleArxiuOptionalParameters arxiuOptionalParameters = null;
-
-          transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode, view,
-              languageUI, funcionariUsername, signatureParameters, arxiuRequiredParameters,
-              arxiuOptionalParameters);
-              */
-        }
-
-
-        default:
-          // TODO XYZ ZZZ ZZZ TRADUCCIO
-          throw new Exception("Tipus de perfil desconegut "
-              + scanWebProfileSelected.getProfileType());
-
-      }
-
-      // Enviam la part comu de la transacció
-      transactionID = api.getTransactionID(transacctionIdRequest);
-      log.info("languageUI = |" + languageUI + "|");
-      log.info("TransactionID = |" + transactionID + "|");
-    }
-
-    // Url de retorn de digitalIB a Plugin
-    final String returnUrl = absolutePluginRequestPath + "/" + FINAL_PAGE + "/"
-        + config.getScanWebID();
-
-    log.info("Url retorn de digitalIB a Plugin: " + returnUrl);
-
-    ScanWebSimpleStartTransactionRequest startTransactionInfo;
-    startTransactionInfo = new ScanWebSimpleStartTransactionRequest(transactionID, returnUrl);
-
-    // Url per anar a Digital IB
-    String redirectUrl = api.startTransaction(startTransactionInfo);
-
-    log.info("RedirectUrl  a digitalIB: " + redirectUrl);
 
     putTransaction(config);
     config.getStatus().setStatus(ScanWebStatus.STATUS_IN_PROGRESS);
-
-    this.digitalibTransactions.put(config.getScanWebID(), startTransactionInfo);
 
     return redirectUrl;
   }
@@ -275,9 +187,9 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
       relativePluginRequestPath = relativePluginRequestPath + "/";
     }
 
-    ScanWebConfig fullInfo = getTransaction(scanWebID);
+    ScanWebConfig config = getTransaction(scanWebID);
 
-    if (fullInfo == null) {
+    if (config == null) {
       String titol = (isGet ? "GET" : "POST") + " " + getName(new Locale("ca"))
           + " PETICIO HA CADUCAT";
 
@@ -286,21 +198,282 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
 
     } else {
 
-      Locale languageUI = new Locale(fullInfo.getLanguageUI());
+      Locale locale = new Locale(config.getLanguageUI());
 
-      if (query.startsWith(FINAL_PAGE)) {
+      if (query.startsWith(SELECCIONA_PERFIL)) {
+        seleccionaPerfil(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
+            query, request, response, config, locale);
+      } else if (query.startsWith(POSTSELECTEDPROFILE)) {
+        
+        postSelectedProfile(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
+            query, request, response, config, locale);
+      } else if (query.startsWith(FINAL_PAGE)) {
 
         finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
-            request, response, fullInfo, languageUI);
+            request, response, config, locale);
       } else {
 
         super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
-            fullInfo, query, languageUI, request, response, isGet);
+            config, query, locale, request, response, isGet);
       }
 
     }
 
   }
+  
+  
+  
+  
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // ----------------------- CONNECTA AMB DIGITAL IB -------------------------------
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  
+  public static final String POSTSELECTEDPROFILE = "postSelectedProfile";
+
+  protected void postSelectedProfile(String absolutePluginRequestPath, 
+      String relativePluginRequestPath,
+      String scanWebID, String query, HttpServletRequest request,
+      HttpServletResponse response, ScanWebConfig config, Locale locale) {
+    
+    
+    log.info(" ENTRA DINS postSelectedProfile:  query => ]" + query  + "[" );
+        
+    final String languageUI = locale.getLanguage();
+    ApiScanWebSimple api = null;
+    String transactionID = null;
+    try {
+    
+    final String profileCode = query.substring(query.indexOf('/') + 1);
+    log.info(" ENTRA DINS postSelectedProfile:  profileCode => ]" + profileCode  + "[" );
+
+    // Seleccionam el perfil indicat
+    ScanWebSimpleProfileRequest profileRequest = new ScanWebSimpleProfileRequest(profileCode,
+        languageUI);
+    
+    // Agafam l'api de DigitalIB
+    api = getApiScanWebSimple();
+    
+    ScanWebSimpleAvailableProfile scanWebProfileSelected = api.getProfile(profileRequest);
+
+    // Si val null es que el perfil no existeix
+    if (scanWebProfileSelected == null) {
+      // TODO TRADUCCIÓ
+      throw new Exception("NO EXISTEIX EL PERFIL AMB CODI " + profileCode);
+    }
+
+    {
+
+      final int view = ScanWebSimpleGetTransactionIdRequest.VIEW_FULLSCREEN;
+
+      // TODO recollir de l'aplicació
+      String funcionariUsername = "u06666";
+
+      ScanWebSimpleGetTransactionIdRequest transacctionIdRequest;
+
+      switch (scanWebProfileSelected.getProfileType()) {
+
+        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
+
+          transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode, view,
+              languageUI, funcionariUsername);
+
+        break;
+
+        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE: {
+          ScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters();
+
+          transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode, view,
+              languageUI, funcionariUsername, signatureParameters);
+        }
+
+        break;
+
+        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY: {
+
+          // XYZ ZZZ ZZZ
+          throw new Exception("Pefils de tipus Firma i Arxivat no es suporten.");
+          /*
+           * ScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters();
+           * 
+           * ScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
+           * arxiuRequiredParameters = getArxiuRequiredParameters();
+           * 
+           * // See getArxiuOptionalParameters() sample ScanWebSimpleArxiuOptionalParameters
+           * arxiuOptionalParameters = null;
+           * 
+           * transacctionIdRequest = new ScanWebSimpleGetTransactionIdRequest(profileCode,
+           * view, languageUI, funcionariUsername, signatureParameters,
+           * arxiuRequiredParameters, arxiuOptionalParameters);
+           */
+        }
+
+        default:
+          // TODO XYZ ZZZ ZZZ TRADUCCIO
+          throw new Exception("Tipus de perfil desconegut "
+              + scanWebProfileSelected.getProfileType());
+
+      }
+
+      // Enviam la part comu de la transacció
+      transactionID = api.getTransactionID(transacctionIdRequest);
+      log.info("languageUI = |" + languageUI + "|");
+      log.info("TransactionID = |" + transactionID + "|");
+    }
+
+    // Url de retorn de digitalIB a Plugin
+    final String returnUrl = absolutePluginRequestPath + FINAL_PAGE + "/"
+        + config.getScanWebID();
+
+    log.info("Url retorn de digitalIB a Plugin: " + returnUrl);
+
+    ScanWebSimpleStartTransactionRequest startTransactionInfo;
+    startTransactionInfo = new ScanWebSimpleStartTransactionRequest(transactionID, returnUrl);
+    
+    this.digitalibTransactions.put(config.getScanWebID(), startTransactionInfo);
+
+    // Url per anar a Digital IB
+    String redirectUrl = api.startTransaction(startTransactionInfo);
+
+    log.info("RedirectUrl  a digitalIB: " + redirectUrl);
+    
+    response.sendRedirect(redirectUrl);
+
+    } catch(Exception e) {
+      // TODO: handle exception
+      log.error(" Error Realitzant la comunicació amb DigitalIB: " + e.getMessage(), e);
+      
+      if (api != null && transactionID != null) {
+        try {
+          api.closeTransaction(transactionID);
+        } catch (Throwable th) {
+          th.printStackTrace();
+        }
+      }
+      log.info("Redireccionam a " + config.getUrlFinal());
+      try {
+        response.sendRedirect(config.getUrlFinal());
+      } catch (IOException e2) {
+        log.error(e.getMessage(), e2);
+      }
+    
+    }
+
+    
+  }
+  
+  
+  
+  
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // ----------------------- SELECCIONA PERFIL -------------------------------
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  
+  public static final String SELECCIONA_PERFIL = "seleccionaPerfil";
+
+  protected void seleccionaPerfil(String absolutePluginRequestPath, 
+      String relativePluginRequestPath,
+      String scanWebID, String query, HttpServletRequest request,
+      HttpServletResponse response, ScanWebConfig fullInfo, Locale languageUI) {
+
+    ApiScanWebSimple api = null;
+  try {
+    
+    api = getApiScanWebSimple();
+    
+    ScanWebSimpleAvailableProfiles profiles = api.getAvailableProfiles(languageUI.getLanguage());
+    
+    if (profiles == null || profiles.getAvailableProfiles() == null 
+        || profiles.getAvailableProfiles().size() == 0) {
+      throw new Exception("No hi ha perfils disponibles per aquest usuari aplicació (" + getUsername() + ")");
+    }
+    
+    
+    List<ScanWebSimpleAvailableProfile> profilesList =  profiles.getAvailableProfiles();
+    
+    response.setContentType("text/html");
+    response.setCharacterEncoding("utf-8");
+
+    PrintWriter out = generateHeader(request, response, absolutePluginRequestPath, relativePluginRequestPath, languageUI);
+
+    out.println("<table border=0 width=\"100%\" height=\"300px\">\n");
+    out.println("<tr><td align=center>\n");
+
+    out.println(" <div class=\"lead\" style=\"margin-bottom:10px; text-align:center;\">");
+
+    // Selección del Perfil de Escaneo 
+    out.println(getTraduccio("plugindescan.seleccio.title", languageUI));
+    
+    out.println("  <br/>");
+    out.println("  <h5 style=\"line-height: 10px; margin-top: 0px; margin-bottom: 0px;\">");
+    
+    // Seleccione el perfil d´escaneo que quiera realizar
+    out.println(getTraduccio("plugindescan.seleccio.subtitle", languageUI));
+    
+    out.println("  </h5>");
+    out.println("   <br/>");
+
+    out.println(" <br/>");
+    out.println("  <div class=\"well\" style=\"max-width: 400px; margin: 0 auto 10px;\">");
+    for(ScanWebSimpleAvailableProfile profile : profilesList) {
+      
+      String url = absolutePluginRequestPath +  POSTSELECTEDPROFILE + "/" + URLEncoder.encode(profile.getCode());
+      
+      out.println("     <button type=\"button\" class=\"btn btn-large btn-block btn-primary\" "
+          + "onclick=\"location.href='" + url  + "'\">");
+      out.println("     <b>" + profile.getName()+ "</b><br>");
+      out.println("     <small style=\"color: white\">");
+      out.println("     <i>" + profile.getDescription() + "</i>");
+      out.println("     </small>");
+      out.println("     </button>");
+    }
+    out.println("  </div>");
+      
+    out.println("  <br/>");
+      
+    out.println("</div>");
+  
+    out.println("</td></tr>\n");
+    out.println("</table>\n");
+
+    generateFooter(out);
+
+
+    out.flush();
+
+
+  } catch (Exception e) {
+    // TODO: handle exception
+    e.printStackTrace();
+    
+    ScanWebStatus status = fullInfo.getStatus();
+    
+    status.setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+  
+    status.setErrorMsg(" Error mostrant la pàgina de selecció de Perfils: " + e.getMessage());
+    
+    status.setErrorException(e);
+    
+    log.info("Error: Redireccionam a " + fullInfo.getUrlFinal());
+
+    try {
+      response.sendRedirect(fullInfo.getUrlFinal());
+    } catch (IOException e2) {
+      log.error(e2.getMessage(), e2);
+    }
+  }
+
+  
+
+
+  }
+  
+  
+  
+  
 
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
@@ -368,24 +541,90 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         case ScanWebSimpleStatus.STATUS_FINAL_OK: // = 2;
         {
 
-          {// Obtenim la info del document detached si el te.
-            ScanWebSimpleFile detachedSignInfo = result.getDetachedSignatureFile();
+          ScannedPlainFile plainFile;
+          ScannedSignedFile signedFile;
 
-            if (detachedSignInfo != null) {
-              // TODO s'ha d'arreglar si se volen només pdf o tots els tipus.
+          ScanWebSimpleFile signed = result.getSignedFile();
+          if (signed != null) {
 
-              throw new Exception("No soportam detached");
+            Boolean attachedDocument;
+
+            ScanWebSimpleFile detached = result.getDetachedSignatureFile();
+            if (detached != null) {
+
+              plainFile = new ScannedPlainFile(detached.getNom(), detached.getMime(),
+                  detached.getData());
+
+              attachedDocument = true;
+            } else {
+              attachedDocument = false;
+
+              plainFile = null;
             }
-          }
 
-          // Obtenim el fitxer escannejat
-          ScannedPlainFile plainFile = new ScannedPlainFile(result.getScannedFile().getNom(),
-              result.getScannedFile().getMime(), result.getScannedFile().getData());
+            signedFile = new ScannedSignedFile(signed.getNom(), signed.getMime(),
+                signed.getData(), result.getSignedFileInfo().getSignType(), attachedDocument);
+
+          } else {
+
+            // Obtenim el fitxer escannejat
+            plainFile = new ScannedPlainFile(result.getScannedFile().getNom(), result
+                .getScannedFile().getMime(), result.getScannedFile().getData());
+
+            signedFile = null;
+
+          }
 
           ScannedDocument doc = new ScannedDocument();
 
           doc.setScanDate(new Date());
           doc.setScannedPlainFile(plainFile);
+          doc.setScannedSignedFile(signedFile);
+
+          List<Metadata> metadatas = new ArrayList<Metadata>();
+
+          ScanWebSimpleFormMetadatas form = result.getFormMetadatas();
+
+          metadatas.add(new Metadata("title", form.getTransactionName()));
+
+          ScanWebSimpleScannedFileInfo scannedFileInfo = result.getScannedFileInfo();
+
+          if (scannedFileInfo.getPixelType() != null) {
+            metadatas.add(new Metadata("pixelType", scannedFileInfo.getPixelType()));
+          }
+
+          String pixelType;
+          if (scannedFileInfo.getPixelType() == null) {
+            pixelType = null;
+          } else {
+            
+            switch (scannedFileInfo.getPixelType()) {
+  
+              case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_BLACK_WHITE:
+                pixelType = "Blanc i negre";
+              break;
+              case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_GRAY:
+                pixelType = "Escala de grisos";
+              break;
+  
+              case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_COLOR:
+                pixelType = "Color";
+              break;
+  
+              default:
+               pixelType = null;
+            }
+          }
+
+          if (pixelType != null) {
+            metadatas.add(new Metadata("pixelType.string", pixelType));
+          }
+
+          if (scannedFileInfo.getPppResolution() != null) {
+            metadatas.add(new Metadata("pppResolution", scannedFileInfo.getPppResolution()));
+          } 
+
+          doc.setMetadatas(metadatas);
 
           fullInfo.getScannedFiles().add(doc);
           fullInfo.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
@@ -510,7 +749,6 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
     return missatges.get(signatureID);
   }
 
-  ;
 
   protected ApiScanWebSimple getApiScanWebSimple() throws Exception {
 
@@ -533,59 +771,57 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
   }
 
   /*
-  private ScanWebSimpleArxiuRequiredParameters getArxiuRequiredParameters() {
-    final List<String> interessats = new ArrayList<String>(Arrays.asList("12345678X",
-        "87654321Z"));
-
-    
-//     * ScanWebSimpleArxiuRequiredParameters.CIUTADA
-//     * ScanWebSimpleArxiuRequiredParameters.ORIGEN_ADMINISTRACIO
-     
-    final int origen = ScanWebSimpleArxiuRequiredParameters.DOCUMENTORIGEN_ADMINISTRACIO;
-
-
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_ORIGINAL
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_CF
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_DP
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_PR
-
-    final String documentEstatElaboracio = ScanWebSimpleArxiuRequiredParameters.DOCUMENTELABORATIONSTATE_ORIGINAL;
-
-
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_RESOLUCIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ACORD
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CONTRACTE
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CONVENI
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DECLARACIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_COMUNICACIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_NOTIFICACIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_PUBLICACIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_JUSTIFICANT_RECEPCIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ACTA
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CERTIFICAT
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DILIGENCIA
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_INFORME
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_SOLICITUD
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DENUNCIA
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALEGACIO
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_RECURS
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_COMUNICACIO_CIUTADA
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_FACTURA
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES_INCAUTATS
-//     * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES
- 
-    final String documentTipus = ScanWebSimpleArxiuRequiredParameters.DOCUMENTTYPE_RESOLUCIO;
-
-    String ciutadaNif = "11223344C";
-
-    String ciutadaNom = "Pep Gonella";
-
-    List<String> organs = new ArrayList<String>(Arrays.asList("A04013511"));
-
-    ScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
-    arxiuRequiredParameters = new ScanWebSimpleArxiuRequiredParameters(ciutadaNif, ciutadaNom,
-        documentEstatElaboracio, documentTipus, origen, interessats, organs);
-    return arxiuRequiredParameters;
-  }
-*/
+   * private ScanWebSimpleArxiuRequiredParameters getArxiuRequiredParameters() { final
+   * List<String> interessats = new ArrayList<String>(Arrays.asList("12345678X", "87654321Z"));
+   * 
+   * 
+   * // * ScanWebSimpleArxiuRequiredParameters.CIUTADA // *
+   * ScanWebSimpleArxiuRequiredParameters.ORIGEN_ADMINISTRACIO
+   * 
+   * final int origen = ScanWebSimpleArxiuRequiredParameters.DOCUMENTORIGEN_ADMINISTRACIO;
+   * 
+   * 
+   * // * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_ORIGINAL // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_CF // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_DP // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_PR
+   * 
+   * final String documentEstatElaboracio =
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTELABORATIONSTATE_ORIGINAL;
+   * 
+   * 
+   * // * @see ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_RESOLUCIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ACORD // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CONTRACTE // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CONVENI // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DECLARACIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_COMUNICACIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_NOTIFICACIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_PUBLICACIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_JUSTIFICANT_RECEPCIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ACTA // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CERTIFICAT // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DILIGENCIA // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_INFORME // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_SOLICITUD // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_DENUNCIA // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALEGACIO // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_RECURS // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_COMUNICACIO_CIUTADA // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_FACTURA // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES_INCAUTATS // * @see
+   * ScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES
+   * 
+   * final String documentTipus = ScanWebSimpleArxiuRequiredParameters.DOCUMENTTYPE_RESOLUCIO;
+   * 
+   * String ciutadaNif = "11223344C";
+   * 
+   * String ciutadaNom = "Pep Gonella";
+   * 
+   * List<String> organs = new ArrayList<String>(Arrays.asList("A04013511"));
+   * 
+   * ScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters; arxiuRequiredParameters =
+   * new ScanWebSimpleArxiuRequiredParameters(ciutadaNif, ciutadaNom, documentEstatElaboracio,
+   * documentTipus, origen, interessats, organs); return arxiuRequiredParameters; }
+   */
 }
