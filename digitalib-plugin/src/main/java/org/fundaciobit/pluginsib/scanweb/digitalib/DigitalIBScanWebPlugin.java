@@ -742,12 +742,9 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
    */
   private ScanWebSimpleSignatureParameters getSignatureParameters(List<Metadata> metadatas) {
 
-    final String funcionariNom = getPropertyMetadata(PROPERTY_BASE + "functionary.fullname",
-        metadatas);
-    final String funcionariNif = getPropertyMetadata(PROPERTY_BASE
-        + "functionary.administrationid", metadatas);
-    final String languageDoc = getPropertyMetadata(PROPERTY_BASE + "document.language",
-        metadatas);
+    final String funcionariNom = getPropertyMetadata("functionary.fullname", metadatas);
+    final String funcionariNif = getPropertyMetadata("functionary.administrationid", metadatas);
+    final String languageDoc = getPropertyMetadata("document.language", metadatas);
 
     ScanWebSimpleSignatureParameters signatureParameters;
     signatureParameters = new ScanWebSimpleSignatureParameters(languageDoc, funcionariNom,
