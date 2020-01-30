@@ -594,7 +594,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     out.println("    <table style=\"border: 0px solid black;\">");
     out.println("     <tr><td align=\"left\">");
     out.println("      <div id=\"escanejats\" style=\"width:350px;font-size:15px\">");
-    out.println("      <ol><li>Introdueixi els documents dins l'escàner.</li><li>Configuri els següent paràmetres de l'escaneig:</li></ol>" );
+    out.println("      <ol><li>Introdueix els documents dins l'escàner.</li><li>Configura els següent paràmetres de l'escaneig:</li></ol>" );
     //out.println("        <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\" src=\"" + absolutePluginRequestPath + WEBRESOURCE +"/img/ajax-loader2.gif" + "\"><br/>");
       
    // out.println("        <i>" +  getTraduccio("esperantservidor", languageUI) + "</i>");
@@ -638,8 +638,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     </div>\n");
    out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanColor\" class=\"chosen-select\">\n");
-   out.print(  "       <option value='N'>B/N</option>");
-   out.print(  "       <option value='G' selected='selected'>Gris</option>");
+   out.print(  "       <option value='N' selected='selected'>B/N</option>");
+   out.print(  "       <option value='G'>Gris</option>");
    out.print(  "       <option value='C'>Color</option>");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
@@ -676,7 +676,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "   <div class=\"col-xs-4 pull-left etiqueta_regweb control-label\"></div>\n");
    out.print(  "     <div class=\"col-xs-8\">\n");
    out.print(  "<table><tr>\n");
-   out.print("     <ol start=\"3\"><li>Escaneji</li></ol>" );
+   out.print("     <ol start=\"3\"><li>Escaneja</li></ol>" );
    out.print(  "     <td><button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >Escaneja</button></td>\n");
    out.print(  "     <td><button id=\"cleanAll\" style=\"display:none\" class=\"btn btn-danger\" type=\"button\" value='" + cleanAll + "' onclick='btnRemoveAllImages_onclick();' >" + cleanAll + "</button></td>\n");
    if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
