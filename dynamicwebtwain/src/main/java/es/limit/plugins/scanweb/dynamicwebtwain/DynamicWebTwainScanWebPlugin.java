@@ -343,6 +343,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     String pujarServidor = getTraduccio("pujarServidor", languageUI);
 
     out.println("<script type=\"text/javascript\">");
+    out.print("window.onload = setCookiesOption;");
     
     if ((fullInfo.getMode() == ScanWebMode.SYNCHRONOUS))  { 
       out.println("  function finalScanProcess() {");
@@ -383,6 +384,38 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     out.println("  }");
     out.println();
     out.println();
+    out.println(" function setCookie(cname, cvalue, exdays) {");
+    out.println("    var d = new Date();");
+    out.println("    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));");
+    out.println("    var expires = \"expires=\"+d.toUTCString();");
+    out.println("    document.cookie = cname + \"=\" + cvalue + \";\" + expires + \";path=/\";");
+    out.println(" }");
+    out.println();
+    out.println(" function getCookie(cname) {");
+    out.println("    var name = cname + \"=\";");
+    out.println("    var ca = document.cookie.split(';');");
+    out.println("    for(var i = 0; i < ca.length; i++) {");
+    out.println("        var c = ca[i];");
+    out.println("        while (c.charAt(0) == ' ') {");
+    out.println("            c = c.substring(1);");
+    out.println("        }");
+    out.println("        if (c.indexOf(name) == 0) {");
+    out.println("            return c.substring(name.length, c.length);");
+    out.println("        }");
+    out.println("    }");
+    out.println("    return \"\";");
+    out.println(" }");
+    out.println();
+    out.println(" function setCookiesOption() {");
+    out.println("    var cookie = getCookie(\"config\").split('|');");
+    out.println("    if (cookie != '') {");
+    out.println("    	$('#scanColor').val(cookie[0]);");
+    out.println("    	$('#scanDuplex').val(cookie[1]);");
+    out.println("    	$('#scanOrigen').val(cookie[2]);");
+    out.println("    	$('#scanResolution').val(cookie[3]);");
+    out.println("    }");
+    out.println(" }");
+    
     out.println("</script>");
         
    out.print(  "<script>");
@@ -412,28 +445,38 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     DWObject.SelectSourceByIndex(document.getElementById('scanSource').selectedIndex);\n"); 
    out.print(  "     DWObject.OpenSource();\n"); 
    out.print(  "     DWObject.IfDisableSourceAfterAcquire = true;\n");
+   out.print(  "     var config = '';\n");
    out.print(  "     if (document.getElementById('scanColor').value == 'N'){\n" ); 
-   out.print(  "       DWObject.PixelType = EnumDWT_PixelType.TWPT_BW;\n"); 
+   out.print(  "       DWObject.PixelType = EnumDWT_PixelType.TWPT_BW;\n");
+   out.print(  "       config += 'N|';\n"); 
    out.print(  "     } else if (document.getElementById('scanColor').value == 'G'){\n"); 
    out.print(  "       DWObject.PixelType = EnumDWT_PixelType.TWPT_GRAY;\n" );
+   out.print(  "       config += 'G|';\n");
    out.print(  "     } else { //if (document.getElementById('scanColor').value == 'C'){\n"); 
    out.print(  "       DWObject.PixelType = EnumDWT_PixelType.TWPT_RGB;\n" );
+   out.print(  "       config += 'C|';\n");
    out.print(  "     }\n");
    out.print(  "     if (DWObject.Duplex > 0 && document.getElementById('scanDuplex').value == '2'){\n" ); 
-   out.print(  "       DWObject.IfDuplexEnabled = true;\n"); 
+   out.print(  "       DWObject.IfDuplexEnabled = true;\n");
+   out.print(  "       config += '2|';\n");
    out.print(  "     } else {\n"); 
-   out.print(  "       DWObject.IfDuplexEnabled = false;\n"); 
+   out.print(  "       DWObject.IfDuplexEnabled = false;\n");
+   out.print(  "       config += '1|';\n");
    out.print(  "     }\n");
    out.print(  "     DWObject.MaxImagesInBuffer = 100;\n");
    out.print(  "     DWObject.IfShowUI = false;\n");
    out.print(  "     if (document.getElementById('scanOrigen').value == 'A'){\n" ); 
    out.print(  "       DWObject.IfFeederEnabled = true;\n");
    out.print(  "       DWObject.XferCount = -1;\n");
+   out.print(  "       config += 'A|';\n");
    out.print(  "     } else { \n"); 
    out.print(  "       DWObject.IfFeederEnabled = false;\n");
+   out.print(  "       config += 'S|';\n");
    out.print(  "     }\n");
    out.print(  "     DWObject.IfAutoDiscardBlankpages = true;\n");
    out.print(  "     DWObject.Resolution = parseInt(document.getElementById('scanResolution').value);\n" ); 
+   out.print(  "     config += document.getElementById('scanResolution').value;\n");
+   out.print(  "     setCookie(\"config\", config, 365);\n");
    out.print(  "     DWObject.AcquireImage();\n"); 
 //   out.print(  "     Dynamsoft_OnReady();\n");
 //   out.print(  "     alert('Ha sortit de AcquireImage interna.');\n");
@@ -570,10 +613,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     }
     
     out.print(  "    closeWhenSign();\n");  
-   out.print(  " };\n");
-    
-   out.print(  "</script>");
-   out.print(  "\n");
+   out.print(  " };\n"); 
+
+   out.println(  "</script>");
+   out.println(  "\n");
     
     
     // Taula que ho engloba tot
@@ -626,8 +669,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     </div>\n");
    out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanOrigen\" class=\"chosen-select\">\n");
-   out.print(  "       <option value='S' selected='selected'>Principal</option>");
-   out.print(  "       <option value='A'>Alimentador</option>");
+   out.print(  "         <option value='S' selected='selected'>Principal</option>");
+   out.print(  "         <option value='A'>Alimentador</option>");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
@@ -638,9 +681,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     </div>\n");
    out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanColor\" class=\"chosen-select\">\n");
-   out.print(  "       <option value='N' selected='selected'>B/N</option>");
-   out.print(  "       <option value='G'>Gris</option>");
-   out.print(  "       <option value='C'>Color</option>");
+   out.print(  "         <option value='N' selected='selected'>B/N</option>");
+   out.print(  "         <option value='G'>Gris</option>");
+   out.print(  "         <option value='C'>Color</option>");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
@@ -651,10 +694,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     </div>\n");
    out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanResolution\" class=\"chosen-select\">\n");
-   out.print(  "       <option value='200' selected='selected'>200</option>");
-   out.print(  "       <option value='300'>300</option>");
-   out.print(  "       <option value='400'>400</option>");
-   out.print(  "       <option value='600'>600</option>");
+   out.print(  "         <option value='200' selected='selected'>200</option>");
+   out.print(  "         <option value='300'>300</option>");
+   out.print(  "         <option value='400'>400</option>");
+   out.print(  "         <option value='600'>600</option>");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
@@ -665,8 +708,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
    out.print(  "     </div>\n");
    out.print(  "     <div class=\"col-xs-8 text-right\">\n");
    out.print(  "       <select size=\"1\" id=\"scanDuplex\" class=\"chosen-select\">\n");
-   out.print(  "       <option value='1' selected='selected'>Una cara</option>");
-   out.print(  "       <option value='2'>Doble cara</option>");
+   out.print(  "         <option value='1' selected='selected'>Una cara</option>");
+   out.print(  "         <option value='2'>Doble cara</option>");
    out.print(  "       </select>\n");
    out.print(  "   </div>\n");
    out.print(  " </div>\n");
@@ -708,7 +751,6 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
      // Taula que ho engloba tot i centra el contingut
     out.println("  </td></tr></table>");
     
-
     generateFooter(out);
     
     out.flush();
