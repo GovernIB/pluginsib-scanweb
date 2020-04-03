@@ -4,7 +4,7 @@
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
   <name>PluginsIB - Scan Web - DynamicWebTwain</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
@@ -39,7 +39,6 @@
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-api</artifactId>
       <version>3.0.0</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
