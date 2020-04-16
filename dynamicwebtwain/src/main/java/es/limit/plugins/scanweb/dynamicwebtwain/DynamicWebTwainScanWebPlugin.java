@@ -66,65 +66,63 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin
   static {
 
     // mapPaperSizeDWT2API.put(0, None);
-    mapPaperSizeDWT2API.put(1, MetadataConstants.PAPER_SIZE_A4);
-    mapPaperSizeDWT2API.put(2, MetadataConstants.PAPER_SIZE_JISB5);
-    mapPaperSizeDWT2API.put(3, MetadataConstants.PAPER_SIZE_USLETTER);
-    mapPaperSizeDWT2API.put(4, MetadataConstants.PAPER_SIZE_USLEGAL);
-    mapPaperSizeDWT2API.put(5, MetadataConstants.PAPER_SIZE_A5);
-    mapPaperSizeDWT2API.put(6, MetadataConstants.PAPER_SIZE_B4);
-    mapPaperSizeDWT2API.put(7, MetadataConstants.PAPER_SIZE_B6);
-    mapPaperSizeDWT2API.put(9, MetadataConstants.PAPER_SIZE_USLEDGER);
-    mapPaperSizeDWT2API.put(10, MetadataConstants.PAPER_SIZE_USEXECUTIVE);
-    mapPaperSizeDWT2API.put(11, MetadataConstants.PAPER_SIZE_A3);
-    mapPaperSizeDWT2API.put(12, MetadataConstants.PAPER_SIZE_B3);
-    mapPaperSizeDWT2API.put(13, MetadataConstants.PAPER_SIZE_A6);
-    mapPaperSizeDWT2API.put(14, MetadataConstants.PAPER_SIZE_C4);
-    mapPaperSizeDWT2API.put(15, MetadataConstants.PAPER_SIZE_C5);
-    mapPaperSizeDWT2API.put(16, MetadataConstants.PAPER_SIZE_C6);
-    mapPaperSizeDWT2API.put(17, MetadataConstants.PAPER_SIZE_4A0);
-    mapPaperSizeDWT2API.put(18, MetadataConstants.PAPER_SIZE_2A0);
-    mapPaperSizeDWT2API.put(19, MetadataConstants.PAPER_SIZE_A0);
-    mapPaperSizeDWT2API.put(20, MetadataConstants.PAPER_SIZE_A1);
-    mapPaperSizeDWT2API.put(21, MetadataConstants.PAPER_SIZE_A2);
-    mapPaperSizeDWT2API.put(22, MetadataConstants.PAPER_SIZE_A7);
-    mapPaperSizeDWT2API.put(23, MetadataConstants.PAPER_SIZE_A8);
-    mapPaperSizeDWT2API.put(24, MetadataConstants.PAPER_SIZE_A9);
-    mapPaperSizeDWT2API.put(25, MetadataConstants.PAPER_SIZE_A10);
-    mapPaperSizeDWT2API.put(26, MetadataConstants.PAPER_SIZE_ISOB0);
-    mapPaperSizeDWT2API.put(27, MetadataConstants.PAPER_SIZE_ISOB1);
-    mapPaperSizeDWT2API.put(28, MetadataConstants.PAPER_SIZE_ISOB2);
-    mapPaperSizeDWT2API.put(29, MetadataConstants.PAPER_SIZE_ISOB5);
-    mapPaperSizeDWT2API.put(30, MetadataConstants.PAPER_SIZE_ISOB7);
-    mapPaperSizeDWT2API.put(31, MetadataConstants.PAPER_SIZE_ISOB8);
-    mapPaperSizeDWT2API.put(32, MetadataConstants.PAPER_SIZE_ISOB9);
-    mapPaperSizeDWT2API.put(33, MetadataConstants.PAPER_SIZE_ISOB10);
-    mapPaperSizeDWT2API.put(34, MetadataConstants.PAPER_SIZE_JISB0);
-    mapPaperSizeDWT2API.put(35, MetadataConstants.PAPER_SIZE_JISB1);
-    mapPaperSizeDWT2API.put(36, MetadataConstants.PAPER_SIZE_JISB2);
-    mapPaperSizeDWT2API.put(37, MetadataConstants.PAPER_SIZE_JISB3);
-    mapPaperSizeDWT2API.put(38, MetadataConstants.PAPER_SIZE_JISB4);
-    mapPaperSizeDWT2API.put(39, MetadataConstants.PAPER_SIZE_JISB6);
-    mapPaperSizeDWT2API.put(40, MetadataConstants.PAPER_SIZE_JISB7);
-    mapPaperSizeDWT2API.put(41, MetadataConstants.PAPER_SIZE_JISB8);
-    mapPaperSizeDWT2API.put(42, MetadataConstants.PAPER_SIZE_JISB9);
-    mapPaperSizeDWT2API.put(43, MetadataConstants.PAPER_SIZE_JISB10);
-    mapPaperSizeDWT2API.put(44, MetadataConstants.PAPER_SIZE_C0);
-    mapPaperSizeDWT2API.put(45, MetadataConstants.PAPER_SIZE_C1);
-    mapPaperSizeDWT2API.put(46, MetadataConstants.PAPER_SIZE_C2);
-    mapPaperSizeDWT2API.put(47, MetadataConstants.PAPER_SIZE_C3);
-    mapPaperSizeDWT2API.put(48, MetadataConstants.PAPER_SIZE_C7);
-    mapPaperSizeDWT2API.put(49, MetadataConstants.PAPER_SIZE_C8);
-    mapPaperSizeDWT2API.put(50, MetadataConstants.PAPER_SIZE_C9);
-    mapPaperSizeDWT2API.put(51, MetadataConstants.PAPER_SIZE_C10);
-    mapPaperSizeDWT2API.put(52, MetadataConstants.PAPER_SIZE_USEXECUTIVE);
-    mapPaperSizeDWT2API.put(53, MetadataConstants.PAPER_SIZE_BUSINESSCARD);
+    mapPaperSizeDWT2API.put(1, MetadataConstants.PaperSizeConstants.A4);
+    mapPaperSizeDWT2API.put(2, MetadataConstants.PaperSizeConstants.JISB5);
+    mapPaperSizeDWT2API.put(3, MetadataConstants.PaperSizeConstants.USLETTER);
+    mapPaperSizeDWT2API.put(4, MetadataConstants.PaperSizeConstants.USLEGAL);
+    mapPaperSizeDWT2API.put(5, MetadataConstants.PaperSizeConstants.A5);
+    mapPaperSizeDWT2API.put(6, MetadataConstants.PaperSizeConstants.B4);
+    mapPaperSizeDWT2API.put(7, MetadataConstants.PaperSizeConstants.B6);
+    mapPaperSizeDWT2API.put(9, MetadataConstants.PaperSizeConstants.USLEDGER);
+    mapPaperSizeDWT2API.put(10, MetadataConstants.PaperSizeConstants.USEXECUTIVE);
+    mapPaperSizeDWT2API.put(11, MetadataConstants.PaperSizeConstants.A3);
+    mapPaperSizeDWT2API.put(12, MetadataConstants.PaperSizeConstants.B3);
+    mapPaperSizeDWT2API.put(13, MetadataConstants.PaperSizeConstants.A6);
+    mapPaperSizeDWT2API.put(14, MetadataConstants.PaperSizeConstants.C4);
+    mapPaperSizeDWT2API.put(15, MetadataConstants.PaperSizeConstants.C5);
+    mapPaperSizeDWT2API.put(16, MetadataConstants.PaperSizeConstants.C6);
+    mapPaperSizeDWT2API.put(19, MetadataConstants.PaperSizeConstants.A0);
+    mapPaperSizeDWT2API.put(20, MetadataConstants.PaperSizeConstants.A1);
+    mapPaperSizeDWT2API.put(21, MetadataConstants.PaperSizeConstants.A2);
+    mapPaperSizeDWT2API.put(22, MetadataConstants.PaperSizeConstants.A7);
+    mapPaperSizeDWT2API.put(23, MetadataConstants.PaperSizeConstants.A8);
+    mapPaperSizeDWT2API.put(24, MetadataConstants.PaperSizeConstants.A9);
+    mapPaperSizeDWT2API.put(25, MetadataConstants.PaperSizeConstants.A10);
+    mapPaperSizeDWT2API.put(26, MetadataConstants.PaperSizeConstants.ISOB0);
+    mapPaperSizeDWT2API.put(27, MetadataConstants.PaperSizeConstants.ISOB1);
+    mapPaperSizeDWT2API.put(28, MetadataConstants.PaperSizeConstants.ISOB2);
+    mapPaperSizeDWT2API.put(29, MetadataConstants.PaperSizeConstants.ISOB5);
+    mapPaperSizeDWT2API.put(30, MetadataConstants.PaperSizeConstants.ISOB7);
+    mapPaperSizeDWT2API.put(31, MetadataConstants.PaperSizeConstants.ISOB8);
+    mapPaperSizeDWT2API.put(32, MetadataConstants.PaperSizeConstants.ISOB9);
+    mapPaperSizeDWT2API.put(33, MetadataConstants.PaperSizeConstants.ISOB10);
+    mapPaperSizeDWT2API.put(34, MetadataConstants.PaperSizeConstants.JISB0);
+    mapPaperSizeDWT2API.put(35, MetadataConstants.PaperSizeConstants.JISB1);
+    mapPaperSizeDWT2API.put(36, MetadataConstants.PaperSizeConstants.JISB2);
+    mapPaperSizeDWT2API.put(37, MetadataConstants.PaperSizeConstants.JISB3);
+    mapPaperSizeDWT2API.put(38, MetadataConstants.PaperSizeConstants.JISB4);
+    mapPaperSizeDWT2API.put(39, MetadataConstants.PaperSizeConstants.JISB6);
+    mapPaperSizeDWT2API.put(40, MetadataConstants.PaperSizeConstants.JISB7);
+    mapPaperSizeDWT2API.put(41, MetadataConstants.PaperSizeConstants.JISB8);
+    mapPaperSizeDWT2API.put(42, MetadataConstants.PaperSizeConstants.JISB9);
+    mapPaperSizeDWT2API.put(43, MetadataConstants.PaperSizeConstants.JISB10);
+    mapPaperSizeDWT2API.put(44, MetadataConstants.PaperSizeConstants.C0);
+    mapPaperSizeDWT2API.put(45, MetadataConstants.PaperSizeConstants.C1);
+    mapPaperSizeDWT2API.put(46, MetadataConstants.PaperSizeConstants.C2);
+    mapPaperSizeDWT2API.put(47, MetadataConstants.PaperSizeConstants.C3);
+    mapPaperSizeDWT2API.put(48, MetadataConstants.PaperSizeConstants.C7);
+    mapPaperSizeDWT2API.put(49, MetadataConstants.PaperSizeConstants.C8);
+    mapPaperSizeDWT2API.put(50, MetadataConstants.PaperSizeConstants.C9);
+    mapPaperSizeDWT2API.put(51, MetadataConstants.PaperSizeConstants.C10);
+    mapPaperSizeDWT2API.put(52, MetadataConstants.PaperSizeConstants.USEXECUTIVE);
+    mapPaperSizeDWT2API.put(53, MetadataConstants.PaperSizeConstants.BUSINESSCARD);
 
     /**
      * 
      */
-    mapProfunditatColor.put("0", MetadataConstants.PROFUNDIDAD_COLOR_BW);
-    mapProfunditatColor.put("1", MetadataConstants.PROFUNDIDAD_COLOR_GRAY);
-    mapProfunditatColor.put("2", MetadataConstants.PROFUNDIDAD_COLOR_DEEP_COLOR);
+    mapProfunditatColor.put("0", MetadataConstants.ProfundidadColorConstants.BW);
+    mapProfunditatColor.put("1", MetadataConstants.ProfundidadColorConstants.GRAY);
+    mapProfunditatColor.put("2", MetadataConstants.ProfundidadColorConstants.COLOR);
 
   }
 
@@ -1076,13 +1074,24 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin
               metadatas.add(new Metadata(name, value));
             } else {
               metadatas.add(new Metadata(MetadataConstants.PAPER_SIZE, api_paper_size));
+              
+              Map<String, String> values =  MetadataConstants._PAPER_SIZE.getAllowedValues();
+              
+              String dimensions = values.get(api_paper_size);
+              
+              if (dimensions != null && dimensions.trim().length() != 0) {
+                dimensions = dimensions.replace('x', ',');
+                metadatas.add(new Metadata(MetadataConstants.EEMGDE_TAMANO_DIMENSIONES_FISICAS, dimensions));
+                metadatas.add(new Metadata(MetadataConstants.EEMGDE_TAMANO_UNIDADES, MetadataConstants.TamanoUnidades.MILIMETRO));
+              }
+              
             }
 
           } else if ("PixelType".equals(name)) {
-            metadatas.add(new Metadata(MetadataConstants.PROFUNDIDAD_COLOR,
+            metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR,
                 mapProfunditatColor.get(value)));
           } else if ("Resolution".equals(name)) {
-            metadatas.add(new Metadata(MetadataConstants.RESOLUTION, Long.valueOf(value)));
+            metadatas.add(new Metadata(MetadataConstants.EEMGDE_RESOLUCION, Long.valueOf(value)));
           } else {
             metadatas.add(new Metadata(name, value));
           }
