@@ -4,7 +4,7 @@
 ***Versions***
 
 > - Versió Estable: __pluginsib-scanweb-2.0__ (branca [pluginsib-scanweb-2.0](../../tree/pluginsib-scanweb-2.0))
-> - Versió en Desenvolupament: __pluginsib-scanweb-3.0__ (branca [pluginsib-scanweb-3.0](../../tree/pluginsib-scanweb-3.0))
+> - Versió en Desenvolupament: __pluginsib-scanweb-4.0__ (branca [pluginsib-scanweb-4.0](../../tree/pluginsib-scanweb-4.0))
 
 ***Descripció***
 
