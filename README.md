@@ -1,4 +1,4 @@
-# ![Logo](https://github.com/GovernIB/maven/raw/binaris/pluginsib/projectinfo_Attachments/icon.jpg) pluginsib-scanweb-2.0
+# ![Logo](https://github.com/GovernIB/maven/raw/binaris/pluginsib/projectinfo_Attachments/icon.jpg) pluginsib-scanweb-3.0
 *API i Plugins d'escaneig de documents en entorn Web*
 
 #### ***Documentació***
@@ -12,7 +12,6 @@ Nom | Descripció | Enllaç
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
 api | API de ScanWeb | --
-caib-scanweb-plugin | Escanejador de documents via web en entorn CAIB | DEPRECAT
 dynamicwebtwain | Servei d'escàner de documents (Web TWAIN) via web de dynamsoft | --
 iecisa-scan-applet | Applet per escanejar documents | --
 iecisa-scanweb-plugin | Plugin per escanejar documents emprant Applet iecisa-scan-applet  | --
