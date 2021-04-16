@@ -1,4 +1,4 @@
-package org.fundaciobit.plugins.scanweb.tester.utils;
+package org.fundaciobit.pluginsib.scanweb.tester.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +47,7 @@ public class HtmlUtils {
   private static void addMessage(HttpServletRequest request, String type, String missatge) {
     HttpSession session = request.getSession();
     
+    @SuppressWarnings("unchecked")
     Map<String, List<String>> missatges = (Map<String, List<String>>)session.getAttribute(MISSATGES);
     
     if (missatges == null) {

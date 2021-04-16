@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +22,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
+import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
@@ -79,36 +79,31 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
     public String startScanWebTransaction(String absolutePluginRequestPath, String relativePluginRequestPath,
             HttpServletRequest request, ScanWebRequest scanWebRequest) throws Exception {
 
-        ScanWebStatus status = putScanWebRequest(scanWebRequest, DEFAULT_TIME_BY_TRANSACTION);
+        ScanWebStatus status = putScanWebRequest(scanWebRequest, System.currentTimeMillis() + DEFAULT_TIME_BY_TRANSACTION);
         status.setStatus(ScanWebStatus.STATUS_IN_PROGRESS);
 
         return relativePluginRequestPath + "/" + UPLOAD_FILE_PAGE;
     }
 
-    protected static final List<String> SUPPORTED_SCAN_TYPES = Collections
-            .unmodifiableList(new ArrayList<String>(Arrays.asList(SCANTYPE_PDF)));
+
 
     @Override
-    public List<String> getSupportedScanTypes() {
+    public Set<String> getSupportedScanTypes() {
+        final Set<String> SUPPORTED_SCAN_TYPES = Collections
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
-    protected static final Set<String> SUPPORTED_FLAG_1 = Collections
-            .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
 
-    /*
-     * protected static final Set<String> SUPPORTED_FLAG_2 = Collections
-     * .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_SIGNED)));
-     */
-
-
-    protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
-            .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
 
     @Override
-    public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
-        if (SCANTYPE_PDF.equals(scanType)) {
-            return /* forceSign()? SUPPORTED_FLAGS_ONLYSIGN : */SUPPORTED_FLAGS;
+    public Set<String> getSupportedFlagsByScanType(String scanType) {
+        if (SCANTYPE_MIME_PDF.equals(scanType)) {
+            
+            final Set<String> SUPPORTED_FLAGS = Collections
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
+            
+            return SUPPORTED_FLAGS;
         }
         return null;
     }
@@ -154,6 +149,11 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         log.info(" XYZ ZZZ FILESCANEWEB query=" + query);
 
         if (scanWebRequest == null || scanWebResult == null) {
+
+            log.error("scanWebRequest o  scanWebResult val null !!!");
+            log.error("scanWebRequest: " + scanWebRequest);
+            log.error("scanWebResult:  " + scanWebResult);
+
             String titol = (isGet ? "GET" : "POST") + " " + getName(new Locale("ca")) + " PETICIO HA CADUCAT";
 
             requestTimeOutError(absolutePluginRequestPath, relativePluginRequestPath, query, String.valueOf(scanWebID),
@@ -169,7 +169,7 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
                     PrintWriter out = generateHeader(request, response, absolutePluginRequestPath,
                             relativePluginRequestPath, languageUI);
-                    uploadFileGET(relativePluginRequestPath, query, scanWebRequest, scanWebResult, out, languageUI);
+                    uploadFileGET(relativePluginRequestPath, query, scanWebID, scanWebRequest, scanWebResult, out, languageUI);
 
                     generateFooter(out);
                 } else {
@@ -248,10 +248,20 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
     private static final String UPLOAD_FILE_PAGE = "uploadFile";
 
-    private void uploadFileGET(String pluginRequestPath, String query, ScanWebRequest scanWebRequest,
+    private void uploadFileGET(String pluginRequestPath, String query, String scanWebID, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResult, PrintWriter out, Locale locale) {
 
         out.println("<table border=0 width=\"100%\">");
+
+        StringBuffer str = getMessagesInHtml(scanWebID);
+        
+        if (str.length() != 0) {
+            out.println("<tr><td align=center>\n");
+            out.println(str.toString());
+            out.println("</td></tr>\n");
+        }
+
+        
         out.println("<tr><td align=center>");
 
         out.println("<h3>" + getTraduccio("selectfile", locale) + "</h3><br/>");
@@ -279,6 +289,42 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         out.println("</td>");
         out.println("</tr>");
         out.println("</table>");
+        
+        clearMessages(scanWebID);
+    }
+
+    protected StringBuffer getMessagesInHtml(String scanWebID) {
+        StringBuffer str = new StringBuffer("");
+        Map<String, List<String> > messages = getMessages(scanWebID);
+        if (messages != null && messages.size() != 0) {
+            
+          for(String level : messages.keySet()) {
+              
+              List<String> avisos = messages.get(level);
+              
+              String tipus;
+              
+              if (level.equals(ERROR)) {
+                  tipus = "alert-error";
+              } else if(level.equals(WARN)) {
+                  tipus = "alert-warning";
+              } else if(level.equals(SUCCESS)) {
+                  tipus = "alert-success";
+              } else if(level.equals(INFO)) {
+                  tipus = "alert-info";
+              } else {
+                  tipus = "";
+              }
+              
+              for (String av : avisos) {
+                  str.append("<div class=\"alert ").append(tipus).append("alert-error\">\n");
+                  str.append(av).append("\n");
+                  str.append("</div>\n");
+              }
+              
+          }
+        }
+        return str;
     }
 
     private void uploadFilePOST(String pluginRequestPath, HttpServletRequest request, HttpServletResponse response,
@@ -296,9 +342,35 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         if (uf == null || uf.getSize() == 0) {
 
             log.info("XYZ ZZZ uploadCertificatePOST:: Error no hi ha fitxers pujats");
+            
+          //error.noseleccionatfitxer=No ha seleccionado ningún fitxer. Vuelva a intentarlo
 
-            saveMessageError(scanWebID, getTraduccio("error.noseleccionatp12", locale));
-            sendRedirect(response, pluginRequestPath + "/" + UPLOAD_FILE_PAGE);
+            saveMessageError(scanWebID, getTraduccio("error.noseleccionatfitxer", locale));
+            sendRedirect(response, pluginRequestPath + UPLOAD_FILE_PAGE);
+            return;
+        }
+        
+        //  XYZ ZZZ TODO VALIDAR SI EL FITXER PUJAT ES del tipus requerit
+        //  scanWebRequest.getScanType() == uf.getContentType()
+        
+        
+        String scannedFileFormat = null;
+        if ("application/pdf".equals(uf.getContentType())) {
+            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_PDF;
+        } else if ("image/gif".equals(uf.getContentType())) {
+            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_GIF;
+        } else if ("image/jpeg".equals(uf.getContentType())) {
+            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_JPG;
+        } else if ("image/png".equals(uf.getContentType())) {
+            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_PNG;
+        } else if ("image/tiff".equals(uf.getContentType())) {
+            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_TIFF;
+        }
+        
+        if (scannedFileFormat == null || !scannedFileFormat.equals(scanWebRequest.getScanType())) { 
+            //error.tipusincorrecte=Ha seleccionado un fichero de tipo {0} y se requiere que sea de tipo {1}.
+            saveMessageError(scanWebID, getTraduccio("error.tipusincorrecte", locale, uf.getContentType() , scanWebRequest.getScanType() + "(SCANFORMAT:" + scannedFileFormat +")" ));
+            sendRedirect(response, pluginRequestPath + UPLOAD_FILE_PAGE);
             return;
         }
 
@@ -313,6 +385,9 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
             doc.setScanDate(new Date());
             doc.setScannedPlainFile(plainFile);
+            
+            doc.setScannedFileFormat(scannedFileFormat);
+            
 
             scanWebResult.getScannedDocuments().add(doc);
             scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
@@ -446,66 +521,6 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
     }
 
-    // ----------------------------------------------------------------------------
-    // ----------------------------------------------------------------------------
-    // ------------------- MISSATGES ---------------------------------------
-    // ----------------------------------------------------------------------------
-    // ----------------------------------------------------------------------------
-
-    public static final String ERROR = "error";
-
-    public static final String WARN = "warn";
-
-    public static final String SUCCESS = "success";
-
-    public static final String INFO = "info";
-
-    private Map<String, Map<String, List<String>>> missatges = new HashMap<String, Map<String, List<String>>>();
-
-    public void saveMessageInfo(String signatureID, String missatge) {
-        addMessage(signatureID, INFO, missatge);
-    }
-
-    public void saveMessageWarning(String signatureID, String missatge) {
-        addMessage(signatureID, WARN, missatge);
-
-    }
-
-    public void saveMessageSuccess(String signatureID, String missatge) {
-        addMessage(signatureID, SUCCESS, missatge);
-    }
-
-    public void saveMessageError(String signatureID, String missatge) {
-        addMessage(signatureID, ERROR, missatge);
-    }
-
-    public void addMessage(String signatureID, String type, String missatge) {
-
-        Map<String, List<String>> missatgesBySignID = missatges.get(signatureID);
-
-        if (missatgesBySignID == null) {
-            missatgesBySignID = new HashMap<String, List<String>>();
-            missatges.put(signatureID, missatgesBySignID);
-        }
-
-        List<String> missatgesTipus = missatgesBySignID.get(type);
-
-        if (missatgesTipus == null) {
-            missatgesTipus = new ArrayList<String>();
-            missatgesBySignID.put(type, missatgesTipus);
-        }
-
-        missatgesTipus.add(missatge);
-
-    }
-
-    public void clearMessages(String signatureID) {
-        missatges.remove(signatureID);
-    }
-
-    public Map<String, List<String>> getMessages(String signatureID) {
-        return missatges.get(signatureID);
-    }
 
     @Override
     public boolean isMassiveScanAllowed() {

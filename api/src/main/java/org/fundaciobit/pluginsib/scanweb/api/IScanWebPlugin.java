@@ -1,6 +1,6 @@
 package org.fundaciobit.pluginsib.scanweb.api;
 
-import java.util.List;
+
 import java.util.Locale;
 import java.util.Set;
 
@@ -16,25 +16,27 @@ import org.fundaciobit.pluginsib.core.IPlugin;
  */
 public interface IScanWebPlugin extends IPlugin {
 
-    public static final String SCANTYPE_TIFF = "tif";
+    public static final String SCANTYPE_MIME_TIFF = "image/tiff";
 
-    public static final String SCANTYPE_JPG = "jpg";
+    public static final String SCANTYPE_MIME_JPG = "image/jpeg";
 
-    public static final String SCANTYPE_PNG = "png";
+    public static final String SCANTYPE_MIME_PNG = "image/png";
 
-    public static final String SCANTYPE_PDF = "pdf";
+    public static final String SCANTYPE_MIME_GIF = "image/gif";
+    
+    public static final String SCANTYPE_MIME_PDF = "application/pdf";
 
-    public static final String SCANTYPE_GIF = "gif";
-
-    public static final String FLAG_NON_SIGNED = "NonSigned";
+    public static final String FLAG_PLAIN = "PlainDoc";
 
     public static final String FLAG_SIGNED = "Signed";
+    
+    /** Firma amb Segell de Temps */
+    public static final String FLAG_SIGNED_WITH_TIMESTAMP = "Signed_With_Timestamp";
 
     /** Codi segur de verificació */
-    public static final String FLAG_CSV = "CSV";
+    public static final String FLAG_SIGNED_AND_CUSTODY = "Signed_And_Custody";
 
-    /** Segell de Temps */
-    public static final String FLAG_TIMESTAMP = "Timestamp";
+
 
     /** Pàgina o imatge addicional amb la informació de l'escaneig */
     // TODO , InfoPage
@@ -71,7 +73,7 @@ public interface IScanWebPlugin extends IPlugin {
     public void cleanScannedFiles(String scanWebID, HttpServletRequest request);
 
     // JPG, PNG, GIF, TIFF, PDF, ...
-    public List<String> getSupportedScanTypes();
+    public Set<String> getSupportedScanTypes();
 
     //
     /**
@@ -82,7 +84,7 @@ public interface IScanWebPlugin extends IPlugin {
      * @param scanType
      * @return
      */
-    public List<Set<String>> getSupportedFlagsByScanType(String scanType);
+    public Set<String> getSupportedFlagsByScanType(String scanType);
 
     /**
      * Modes suportats: SINCRON i/o ASINCRON

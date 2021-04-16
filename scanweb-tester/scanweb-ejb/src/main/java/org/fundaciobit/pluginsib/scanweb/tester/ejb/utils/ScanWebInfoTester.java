@@ -1,6 +1,5 @@
 package org.fundaciobit.pluginsib.scanweb.tester.ejb.utils;
 
-
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebResult;
 
@@ -17,8 +16,12 @@ public class ScanWebInfoTester {
 
     protected Long pluginID = null;
 
+    protected final long expiryTransaction;
+
     public ScanWebInfoTester(ScanWebRequest scanWebRequest) {
         this.scanWebRequest = scanWebRequest;
+        this.expiryTransaction = System.currentTimeMillis() + 20 * 60 * 1000;
+        this.scanWebResult = new ScanWebResult();
     }
 
     public Long getPluginID() {
@@ -33,13 +36,16 @@ public class ScanWebInfoTester {
         return scanWebResult;
     }
 
-    public void setScanWebResult(ScanWebResult scanWebResult) {
-        this.scanWebResult = scanWebResult;
-    }
-
     public ScanWebRequest getScanWebRequest() {
         return scanWebRequest;
     }
 
-    
+    public long getExpiryTransaction() {
+        return expiryTransaction;
+    }
+
+    public void setScanWebResult(ScanWebResult scanWebResult) {
+        this.scanWebResult = scanWebResult;
+    }
+
 }

@@ -110,20 +110,17 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
 
         // (2) Comprovar Support de Tipus d'escaneig
         final String scanType = config.getScanType();
-        List<String> types = getSupportedScanTypes();
+        Set<String> types = getSupportedScanTypes();
         if (!types.contains(scanType)) {
             return false;
         }
 
         // (3) Comprovar Support dels flags
-        final Set<String> flagsRequired = config.getFlags();
-        if (flagsRequired == null || flagsRequired.size() == 0) {
-            // L'usuari Indica que accepta qualsevol FLAG
-            return true;
-        }
-        final List<Set<String>> suported = getSupportedFlagsByScanType(scanType);
-        for (Set<String> flags : suported) {
-            if (flags.equals(flagsRequired)) {
+        final String flag = config.getFlag();
+       
+        final Set<String> suported = getSupportedFlagsByScanType(scanType);
+        for (String flagSuport : suported) {
+            if (flag.equals(flagSuport)) {
                 return true;
             }
         }
@@ -415,6 +412,70 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
         return tempDir;
 
     }
+    
+    
+
+    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+    // ------------------- MISSATGES D'ERROR, AVIS, INFO, ...    ------------------
+    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+
+    public static final String ERROR = "error";
+
+    public static final String WARN = "warn";
+
+    public static final String SUCCESS = "success";
+
+    public static final String INFO = "info";
+
+    private Map<String, Map<String, List<String>>> missatges = new HashMap<String, Map<String, List<String>>>();
+
+    public void saveMessageInfo(String scanWebID, String missatge) {
+        addMessage(scanWebID, INFO, missatge);
+    }
+
+    public void saveMessageWarning(String scanWebID, String missatge) {
+        addMessage(scanWebID, WARN, missatge);
+
+    }
+
+    public void saveMessageSuccess(String scanWebID, String missatge) {
+        addMessage(scanWebID, SUCCESS, missatge);
+    }
+
+    public void saveMessageError(String scanWebID, String missatge) {
+        addMessage(scanWebID, ERROR, missatge);
+    }
+
+    public void addMessage(String scanWebID, String type, String missatge) {
+
+        Map<String, List<String>> missatgesBySignID = missatges.get(scanWebID);
+
+        if (missatgesBySignID == null) {
+            missatgesBySignID = new HashMap<String, List<String>>();
+            missatges.put(scanWebID, missatgesBySignID);
+        }
+
+        List<String> missatgesTipus = missatgesBySignID.get(type);
+
+        if (missatgesTipus == null) {
+            missatgesTipus = new ArrayList<String>();
+            missatgesBySignID.put(type, missatgesTipus);
+        }
+
+        missatgesTipus.add(missatge);
+
+    }
+
+    public void clearMessages(String scanWebID) {
+        missatges.remove(scanWebID);
+    }
+
+    public Map<String, List<String>> getMessages(String scanWebID) {
+        return missatges.get(scanWebID);
+    }
+    
 
     // ---------------------------------------------------------------------------
     // ---------------------------------------------------------------------------

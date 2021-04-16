@@ -1,9 +1,12 @@
 package org.fundaciobit.pluginsib.scanweb.tester.ejb;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.ejb.Stateless;
@@ -112,7 +115,7 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
     ScanWebInfoTester ss = getScanWebInfoTester(request, scanWebID);
     
     if (ss == null) {
-      response.sendRedirect("/index.jsp");
+      response.sendRedirect(request.getContextPath());
       return;
     }
     
@@ -210,18 +213,18 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
     // Fer net peticions caducades
     // Check si existeix algun proces de escaneig caducat s'ha d'esborrar
     // Com a mínim cada minut es revisa si hi ha caducats
-      /*
+      
     Long now = System.currentTimeMillis();
 
     final long un_minut_en_ms = 60 * 60 * 1000;
 
     if (now + un_minut_en_ms > lastCheckScanProcessCaducades) {
       lastCheckScanProcessCaducades = now;
-      Map<String, ScanWebConfigTester> keysToDelete = new HashMap<String, ScanWebConfigTester>();
+      Map<String, ScanWebInfoTester> keysToDelete = new HashMap<String, ScanWebInfoTester>();
 
       Set<String> ids = scanWebConfigMap.keySet();
       for (String id : ids) {
-        ScanWebConfigTester ss = scanWebConfigMap.get(id);
+          ScanWebInfoTester ss = scanWebConfigMap.get(id);
         if (now > ss.getExpiryTransaction()) {
           keysToDelete.put(id, ss);
           SimpleDateFormat sdf = new SimpleDateFormat();
@@ -234,13 +237,13 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
       if (keysToDelete.size() != 0) {
         synchronized (scanWebConfigMap) {
 
-          for (Entry<String, ScanWebConfigTester> pss : keysToDelete.entrySet()) {
+          for (Entry<String, ScanWebInfoTester> pss : keysToDelete.entrySet()) {
             closeScanWebProcess(request, pss.getKey(), pss.getValue());
           }
         }
       }
     }
-    */
+    
 
     return scanWebConfigMap.get(scanWebID);
   }
@@ -255,28 +258,5 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
   }
   
   
-  @Override
-  public Set<String> getDefaultFlags(ScanWebInfoTester ss) throws Exception  {
-    
-    long pluginID = ss.getPluginID();
-    
-    IScanWebPlugin scanWebPlugin;
-    try {
-      scanWebPlugin = ScanWebPluginManager.getInstanceByPluginID(pluginID);
-    } catch (Exception e) {
-
-      String msg = "plugin.scanweb.noexist: " + String.valueOf(pluginID);
-      throw new Exception(msg);
-    }
-    if (scanWebPlugin == null) {
-      String msg = "plugin.scanweb.noexist: " + String.valueOf(pluginID);
-      throw new Exception(msg);
-    }
-    
-    List<Set<String>> supFlags = scanWebPlugin.getSupportedFlagsByScanType(ss.getScanWebRequest().getScanType());
-    
-    return supFlags.get(0);
-    
-  }
 
 }

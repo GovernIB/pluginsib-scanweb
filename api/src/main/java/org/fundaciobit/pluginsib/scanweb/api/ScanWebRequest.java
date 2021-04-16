@@ -1,7 +1,7 @@
 package org.fundaciobit.pluginsib.scanweb.api;
 
 import java.util.List;
-import java.util.Set;
+
 
 import org.fundaciobit.pluginsib.core.utils.Metadata;
 
@@ -16,7 +16,7 @@ public class ScanWebRequest {
 
     protected String scanType;
 
-    protected Set<String> flags;
+    protected String flag;
 
     protected ScanWebMode mode;
 
@@ -40,12 +40,12 @@ public class ScanWebRequest {
         super();
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, Set<String> flags, ScanWebMode mode, String languageUI, String username,
+    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI, String username,
             String urlFinal, List<Metadata> metadades) {
         super();
         this.scanWebID = scanWebID;
         this.scanType = scanType;
-        this.flags = flags;
+        this.flag = flag;
         this.additionalMetadatas = metadades;
         this.mode = mode;
         this.languageUI = languageUI;
@@ -53,12 +53,12 @@ public class ScanWebRequest {
         this.urlFinal = urlFinal;
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, Set<String> flags, ScanWebMode mode, String languageUI,
+    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI,
             String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo) {
         super();
         this.scanWebID = scanWebID;
         this.scanType = scanType;
-        this.flags = flags;
+        this.flag = flag;
         this.additionalMetadatas = metadades;
         this.mode = mode;
         this.languageUI = languageUI;
@@ -67,13 +67,13 @@ public class ScanWebRequest {
         this.signatureInfo = signatureInfo;
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, Set<String> flags, ScanWebMode mode, String languageUI,
+    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI,
             String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo,
             ScanWebRequestCustodyInfo custodyInfo) {
         super();
         this.scanWebID = scanWebID;
         this.scanType = scanType;
-        this.flags = flags;
+        this.flag = flag;
         this.additionalMetadatas = metadades;
         this.mode = mode;
         this.languageUI = languageUI;
@@ -99,12 +99,12 @@ public class ScanWebRequest {
         this.scanType = scanType;
     }
 
-    public Set<String> getFlags() {
-        return flags;
+    public String getFlag() {
+        return flag;
     }
 
-    public void setFlags(Set<String> flags) {
-        this.flags = flags;
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
     public String getUrlFinal() {

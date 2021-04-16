@@ -27,7 +27,7 @@
 
   <servlet>
     <servlet-name>PluginScanWebRequests</servlet-name>
-    <servlet-class>org.fundaciobit.plugins.scanweb.tester.controller.ScanWebModuleController</servlet-class>
+    <servlet-class>org.fundaciobit.pluginsib.scanweb.tester.controller.ScanWebModuleController</servlet-class>
   </servlet>
 
   <servlet-mapping>

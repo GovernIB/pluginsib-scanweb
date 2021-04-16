@@ -1,4 +1,4 @@
-<%@page import="org.fundaciobit.plugins.scanweb.tester.utils.HtmlUtils"%>
+<%@page import="org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@ include file="/WEB-INF/views/include.jsp"%>

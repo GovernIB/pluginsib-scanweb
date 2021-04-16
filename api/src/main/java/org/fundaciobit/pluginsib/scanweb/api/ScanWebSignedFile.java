@@ -9,50 +9,34 @@ import org.fundaciobit.plugins.documentcustody.api.SignatureCustody;
  */
 public class ScanWebSignedFile extends SignatureCustody {
 
-  /**
-   * 
-   */
-  public ScanWebSignedFile() {
-    super();
-  }
+    protected ScanWebResultSignInfo signInfo;
 
-  /**
-   * @param sc
-   */
-  public ScanWebSignedFile(SignatureCustody sc) {
-    super(sc);
-  }
+    /**
+     * 
+     */
+    public ScanWebSignedFile() {
+        super();
+    }
 
-  /**
-   * @param name
-   * @param data
-   * @param signatureType
-   * @param attachedDocument
-   */
-  public ScanWebSignedFile(String name, byte[] data, String signatureType,
-      Boolean attachedDocument) {
-    super(name, data, signatureType, attachedDocument);
-  }
+    /**
+     * @param name
+     * @param mime
+     * @param data
+     * @param signatureType
+     * @param attachedDocument
+     */
+    public ScanWebSignedFile(String name, String mime, byte[] data, String signatureType, Boolean attachedDocument,
+            ScanWebResultSignInfo signInfo) {
+        super(name, mime, data, signatureType, attachedDocument);
+        this.signInfo = signInfo;
+    }
 
-  /**
-   * @param name
-   * @param data
-   * @param signatureType
-   */
-  public ScanWebSignedFile(String name, byte[] data, String signatureType) {
-    super(name, data, signatureType);
-  }
+    public ScanWebResultSignInfo getSignInfo() {
+        return signInfo;
+    }
 
-  /**
-   * @param name
-   * @param mime
-   * @param data
-   * @param signatureType
-   * @param attachedDocument
-   */
-  public ScanWebSignedFile(String name, String mime, byte[] data, String signatureType,
-      Boolean attachedDocument) {
-    super(name, mime, data, signatureType, attachedDocument);
-  }
+    public void setSignInfo(ScanWebResultSignInfo signInfo) {
+        this.signInfo = signInfo;
+    }
 
 }

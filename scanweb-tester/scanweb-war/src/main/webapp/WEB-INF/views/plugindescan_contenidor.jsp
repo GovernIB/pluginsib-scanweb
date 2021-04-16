@@ -2,7 +2,7 @@
 
 <style>
     body{
-        background-image: url("/img/bg.png");
+        background-image: url("<c:url value="/img/bg.png"/>");
          background-repeat: repeat;
     }
 </style>

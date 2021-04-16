@@ -1,3 +1,4 @@
+<%@page import="org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin"%>
 <%@ include file="/WEB-INF/views/html_header.jsp"%>
 
 <h3 class="tabs_involved">
@@ -25,21 +26,18 @@
               </form:select>
            </td>
          </tr>
-         
-         
+
          <tr>
-          <td><label>Caracteristiques &nbsp;(*)</label></td>
+          <td><label>Caracter&iacute;stiques &nbsp;(*)</label></td>
             <td>
-              <form:errors path="type" cssClass="errorField alert alert-error" />
+              <form:errors path="flag" cssClass="errorField alert alert-error" />
+              <form:select path="flag" id="flag"  onchange="canviatFlag()">
                 <c:forEach items="${supportedFlags}" var="flag">
-                   &nbsp;&nbsp;&nbsp;<form:checkbox path="flags" value="${flag}"/>${flag}
+                   <form:option value="${flag}"  >${flag} </form:option>
                 </c:forEach>
-                <br/>
-                <i><small>Nota: si no selecciona cap caracter&iacute;stica llavors s'acceptar&agrave; la primera que suporti el plugin</small></i>
+              </form:select>
            </td>
          </tr>
-         
-        
 
          <tr>
           <td><label>Mode &nbsp;(*)</label></td>
@@ -52,7 +50,7 @@
          </tr>
          
          <tr>
-          <td><label>Idioma UI &nbsp;(*)</label></td>
+          <td><label>Idioma de la UI &nbsp;(*)</label></td>
             <td>
           <form:errors path="langUI" cssClass="errorField alert alert-error" />
           <form:select path="langUI">
@@ -61,6 +59,46 @@
           </form:select>
            </td>
          </tr>
+         
+         
+         <tr>
+          <td><label>Username &nbsp;(*)</label></td>
+            <td>
+          <form:errors path="username" cssClass="errorField alert alert-error" />
+          <form:input  path="username" />
+           </td>
+         </tr>
+         
+         <tr id="nomtr" style="visibility: none">
+          <td><label>Nom complet &nbsp;(*)</label></td>
+            <td>
+          <form:errors path="nom" cssClass="errorField alert alert-error" />
+          <form:input  path="nom" />
+           </td>
+         </tr>
+         
+         
+         <tr id="niftr" style="visibility: none">
+          <td><label>NIF &nbsp;(*)</label></td>
+            <td>
+          <form:errors path="nif" cssClass="errorField alert alert-error" />
+          <form:input  path="nif" />
+           </td>
+         </tr>
+         
+         <tr id="langDoctr" style="visibility: none">
+          <td><label>Idioma del Document &nbsp;</label></td>
+            <td>
+          <form:errors path="langDoc" cssClass="errorField alert alert-error" />
+          <form:select path="langDoc">
+          <form:option value="" selected="true" ></form:option>
+            <form:option value="ca" >Catal&agrave;</form:option>
+            <form:option value="es" >Castell&agrave;</form:option>
+          </form:select>
+           </td>
+         </tr>
+         
+         
      </tbody>
     </table>
     
@@ -77,6 +115,26 @@
    </div>
   
 </form:form>
+
+<script>
+    function canviatFlag() {
+    	var d = document.getElementById("flag").value;
+    	
+    	if (d == '<%=IScanWebPlugin.FLAG_PLAIN %>') {
+    	   document.getElementById("nomtr").style.display = 'none';
+    	   document.getElementById("niftr").style.display = 'none';
+    	   document.getElementById("langDoctr").style.display = 'none';
+    	} else {
+
+           document.getElementById("nomtr").style.display = '';
+           document.getElementById("niftr").style.display = '';
+           document.getElementById("langDoctr").style.display = '';
+    	}
+    }
+
+    canviatFlag();
+
+</script>
 
 
 <%@ include file="/WEB-INF/views/html_footer.jsp"%>

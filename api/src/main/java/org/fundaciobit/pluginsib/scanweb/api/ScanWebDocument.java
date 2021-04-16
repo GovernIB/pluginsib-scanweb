@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
 
 /**
  * 
@@ -11,16 +12,6 @@ import org.fundaciobit.pluginsib.core.utils.Metadata;
  *
  */
 public class ScanWebDocument {
-
-    public static final String FORMAT_FILE_PDF = "pdf";
-
-    public static final String FORMAT_FILE_JPG = "jpg";
-
-    public static final String FORMAT_FILE_TIFF = "tif";
-
-    public static final String FORMAT_FILE_PNG = "png";
-
-    public static final String FORMAT_FILE_GIF = "gif";
 
     public static final int PIXEL_TYPE_BLACK_WHITE = 0;
 
@@ -45,11 +36,29 @@ public class ScanWebDocument {
      **/
     protected Integer pppResolution;
 
-    /** Null significa que no ho sab. Exemples BMP JPEG TIFF PNG PDF **/
-    protected String formatFile;
+    /**
+     * Null significa que no ho sab. Els valors són els mateixos que SCANTYPE_MIME_*
+     * de IScanWebPlugin.
+     * 
+     * @see IScanWebPlugin.SCANTYPE_MIME_TIFF = "image/tiff";
+     * @see IScanWebPlugin.SCANTYPE_MIME_JPG = "image/jpeg";
+     * @see IScanWebPlugin.SCANTYPE_MIME_PNG = "image/png";
+     * @see IScanWebPlugin.SCANTYPE_MIME_GIF = "image/gif";
+     * @see IScanWebPlugin.SCANTYPE_MIME_PDF = "application/pdf";
+     * 
+     **/
+    protected String scannedFileFormat;
 
     /** Null significa que no ho sab. **/
     protected Boolean ocr;
+
+    protected Boolean duplex;
+
+    /**
+     * @see MetadataConstants.PAPER_SIZE
+     * @see MetadataConstants._PAPER_SIZE
+     */
+    protected String paperSize;
 
     protected String documentLanguage;
 
@@ -64,7 +73,7 @@ public class ScanWebDocument {
 
     public ScanWebDocument(String transactionName, ScanWebPlainFile scannedPlainFile,
             ScanWebSignedFile scannedSignedFile, Date scanDate, Integer pixelType, Integer pppResolution,
-            String formatFile, Boolean ocr, String documentLanguage, List<Metadata> additionalMetadatas) {
+            String scannedFileFormat, Boolean ocr, String documentLanguage, List<Metadata> additionalMetadatas) {
         super();
         this.transactionName = transactionName;
         this.scannedPlainFile = scannedPlainFile;
@@ -72,7 +81,7 @@ public class ScanWebDocument {
         this.scanDate = scanDate;
         this.pixelType = pixelType;
         this.pppResolution = pppResolution;
-        this.formatFile = formatFile;
+        this.scannedFileFormat = scannedFileFormat;
         this.ocr = ocr;
         this.documentLanguage = documentLanguage;
         this.additionalMetadatas = additionalMetadatas;
@@ -126,12 +135,12 @@ public class ScanWebDocument {
         this.pppResolution = pppResolution;
     }
 
-    public String getFormatFile() {
-        return formatFile;
+    public String getScannedFileFormat() {
+        return scannedFileFormat;
     }
 
-    public void setFormatFile(String formatFile) {
-        this.formatFile = formatFile;
+    public void setScannedFileFormat(String scannedFileFormat) {
+        this.scannedFileFormat = scannedFileFormat;
     }
 
     public Boolean getOcr() {
@@ -140,6 +149,26 @@ public class ScanWebDocument {
 
     public void setOcr(Boolean ocr) {
         this.ocr = ocr;
+    }
+
+    public Boolean getDuplex() {
+        return duplex;
+    }
+
+    public void setDuplex(Boolean duplex) {
+        this.duplex = duplex;
+    }
+
+    /**
+     * @see MetadataConstants.PAPER_SIZE
+     * @see MetadataConstants._PAPER_SIZE
+     */
+    public String getPaperSize() {
+        return paperSize;
+    }
+
+    public void setPaperSize(String paperSize) {
+        this.paperSize = paperSize;
     }
 
     public String getDocumentLanguage() {

@@ -220,39 +220,36 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     public String startScanWebTransaction(String absolutePluginRequestPath, String relativePluginRequestPath,
             HttpServletRequest request, ScanWebRequest scanWebRequest) throws Exception {
 
-        ScanWebStatus status = putScanWebRequest(scanWebRequest, DEFAULT_TIME_BY_TRANSACTION);
+        ScanWebStatus status = putScanWebRequest(scanWebRequest,
+                System.currentTimeMillis() + DEFAULT_TIME_BY_TRANSACTION);
         status.setStatus(ScanWebStatus.STATUS_IN_PROGRESS);
 
         return relativePluginRequestPath + "/" + INDEX;
     }
 
-    protected static final List<String> SUPPORTED_SCAN_TYPES = Collections
-            .unmodifiableList(new ArrayList<String>(Arrays.asList(SCANTYPE_PDF)));
-
     @Override
-    public List<String> getSupportedScanTypes() {
+    public Set<String> getSupportedScanTypes() {
+        final Set<String> SUPPORTED_SCAN_TYPES = Collections
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
-    protected static final Set<String> SUPPORTED_FLAG_1 = Collections
-            .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
-
-    protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
-            .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
-
     @Override
-    public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
-        if (SCANTYPE_PDF.equals(scanType)) {
+    public Set<String> getSupportedFlagsByScanType(String scanType) {
+        if (SCANTYPE_MIME_PDF.equals(scanType)) {
+            final Set<String> SUPPORTED_FLAGS = Collections
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
             return SUPPORTED_FLAGS;
         }
         return null;
     }
 
-    protected static final Set<ScanWebMode> SUPPORTED_MODES = Collections.unmodifiableSet(
-            new HashSet<ScanWebMode>(Arrays.asList(ScanWebMode.ASYNCHRONOUS, ScanWebMode.SYNCHRONOUS)));
 
     @Override
     public Set<ScanWebMode> getSupportedScanWebModes() {
+        final Set<ScanWebMode> SUPPORTED_MODES = Collections.unmodifiableSet(
+                new HashSet<ScanWebMode>(
+                        Arrays.asList(ScanWebMode.SYNCHRONOUS, ScanWebMode.ASYNCHRONOUS)));
         return SUPPORTED_MODES;
     }
 
@@ -1015,9 +1012,14 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             List<Metadata> metadatas = doc.getAdditionalMetadatas();
 
             Enumeration<?> enumera = request.getParameterNames();
+
+            log.info(" -------------------   PARAMS DWT ----------------");
+
             while (enumera.hasMoreElements()) {
                 String name = (String) enumera.nextElement();
                 String value = request.getParameter(name);
+
+                log.info("   * PARAM[" + name + "] => {" + value + "}");
                 try {
                     if ("PageSize".equals(name)) {
 
@@ -1025,7 +1027,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                         if (api_paper_size == null) {
                             metadatas.add(new Metadata(name, value));
                         } else {
-                            metadatas.add(new Metadata(MetadataConstants.PAPER_SIZE, api_paper_size));
+                            // metadatas.add(new Metadata(MetadataConstants.PAPER_SIZE, api_paper_size));
+                            doc.setPaperSize(api_paper_size);
 
                             Map<String, String> values = MetadataConstants._PAPER_SIZE.getAllowedValues();
 
@@ -1038,14 +1041,23 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                                 metadatas.add(new Metadata(MetadataConstants.EEMGDE_TAMANO_UNIDADES,
                                         MetadataConstants.TamanoUnidades.MILIMETRO));
                             }
-
                         }
 
                     } else if ("PixelType".equals(name)) {
-                        metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR,
-                                mapProfunditatColor.get(value)));
+
+                        doc.setPixelType(mapProfunditatColor.get(value));
+
+                        // metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR,
+                        // mapProfunditatColor.get(value)));
                     } else if ("Resolution".equals(name)) {
-                        metadatas.add(new Metadata(MetadataConstants.EEMGDE_RESOLUCION, Long.valueOf(value)));
+                        // metadatas.add(new Metadata(MetadataConstants.EEMGDE_RESOLUCION,
+                        // Long.valueOf(value)));
+
+                        doc.setPppResolution(Integer.valueOf(value));
+                    } else if ("IfDuplexEnabled".equals(name)) {
+                        doc.setDuplex(Boolean.valueOf(value));
+                    } else if ("eni:idioma".equals(name)) {
+                        doc.setDocumentLanguage(value);
                     } else {
                         metadatas.add(new Metadata(name, value));
                     }
@@ -1056,6 +1068,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                 }
 
             }
+            log.info("");
+            log.info("");
 
         }
 
@@ -1075,7 +1089,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     public static final String UPLOAD_PAGE = "upload";
 
     protected void uploadPage(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
-            String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest fullInfo,
+            String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResults, Locale languageUI) {
 
         log.debug("Entra dins uploadPage(...");
@@ -1132,7 +1146,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
         ScanWebSignedFile scannedSignedFile = null;
 
-        if (/* forceSign() || */fullInfo.getFlags().contains(FLAG_SIGNED)) {
+        if (FLAG_SIGNED.equals(scanWebRequest.getFlag())) {
 
             try {
                 // scannedSignedFile = signFile(fullInfo, languageUI, singleScanFile);
@@ -1152,10 +1166,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         scannedDoc.setScannedSignedFile(scannedSignedFile);
         scannedDoc.setScanDate(date);
         scannedDoc.setScannedPlainFile(singleScanFile);
+        scannedDoc.setScannedFileFormat(IScanWebPlugin.SCANTYPE_MIME_PDF);
 
         scanWebResults.getScannedDocuments().add(scannedDoc);
 
-        if (fullInfo.getMode() == ScanWebMode.ASYNCHRONOUS) {
+        if (scanWebRequest.getMode() == ScanWebMode.ASYNCHRONOUS) {
             // Marcar com finalitzat si ja hi ha un escaneig pujat
             scanWebResults.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
         }

@@ -4,7 +4,15 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.scanweb.api.*;
+import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
+import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebResult;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebSignedFile;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -13,7 +21,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 
 /**
  * 
@@ -81,25 +100,30 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         return relativePluginRequestPath + "/" + INDEX;
     }
 
-    protected static final List<String> SUPPORTED_SCAN_TYPES = Collections.unmodifiableList(new ArrayList<String>(
-            Arrays.asList(SCANTYPE_PDF, SCANTYPE_TIFF, SCANTYPE_JPG, SCANTYPE_PNG, SCANTYPE_GIF)));
+    final Set<String> SUPPORTED_SCAN_TYPES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF, SCANTYPE_MIME_TIFF, SCANTYPE_MIME_JPG, SCANTYPE_MIME_PNG, SCANTYPE_MIME_GIF)));
 
     @Override
-    public List<String> getSupportedScanTypes() {
+    public Set<String> getSupportedScanTypes() {
+
         return SUPPORTED_SCAN_TYPES;
     }
 
     protected static final Set<String> SUPPORTED_FLAG_1 = Collections
-            .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_NON_SIGNED)));
-
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
 
     protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
             .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
 
     @Override
-    public List<Set<String>> getSupportedFlagsByScanType(String scanType) {
+    public Set<String> getSupportedFlagsByScanType(String scanType) {
         if (SUPPORTED_SCAN_TYPES.contains(scanType)) {
+
+            final Set<String> SUPPORTED_FLAGS = Collections
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
+
             return SUPPORTED_FLAGS;
+
         }
         return null;
     }
@@ -555,7 +579,21 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResults, Locale languageUI) {
 
-        log.debug("Entra dins FINAL_PAGE(...");
+        if(isDebug()) {
+          log.info("Entra dins FINAL_PAGE(...");
+        }
+        
+        
+        if (scanWebResults.getStatus().getStatus() == ScanWebStatus.STATUS_IN_PROGRESS) {
+        
+            if (scanWebResults.getScannedDocuments().size() == 0) {
+                scanWebResults.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
+                scanWebResults.getStatus().setErrorMsg(getTraduccio("noenviatcapdoc", languageUI));
+            } else {
+                scanWebResults.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
+            }
+        }
+
 
         try {
             response.sendRedirect(scanWebRequest.getUrlFinal());
@@ -579,7 +617,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResult, Locale languageUI) {
 
-        log.debug("Entra dins uploadPage(...");
+        if (isDebug()) {
+          log.info("Entra dins uploadPage(...)");
+        }
 
         Map<String, FileItem> map = super.readFilesFromRequest(request, response);
 
@@ -610,7 +650,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
         String mime = null;
 
-        if (IScanWebPlugin.SCANTYPE_PDF.equals(scanTypeExpected)) {
+        if (IScanWebPlugin.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
 
             if (!is_pdf(data)) {
                 scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
@@ -622,9 +662,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
 
             mime = "application/pdf";
 
-        } else if (IScanWebPlugin.SCANTYPE_JPG.equals(scanTypeExpected)
-                || IScanWebPlugin.SCANTYPE_PNG.equals(scanTypeExpected)
-                || IScanWebPlugin.SCANTYPE_PDF.equals(scanTypeExpected)) {
+        } else if (IScanWebPlugin.SCANTYPE_MIME_JPG.equals(scanTypeExpected)
+                || IScanWebPlugin.SCANTYPE_MIME_PNG.equals(scanTypeExpected)
+                || IScanWebPlugin.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
 
             String format = getImageFormat(data);
             if (format == null) {
@@ -635,19 +675,19 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             } else {
 
                 boolean errorFormat = false;
-                if (IScanWebPlugin.SCANTYPE_JPG.equals(scanTypeExpected)) {
+                if (IScanWebPlugin.SCANTYPE_MIME_JPG.equals(scanTypeExpected)) {
                     if (!"JPEG".equalsIgnoreCase(format)) {
                         errorFormat = true;
                     } else {
                         mime = "image/jpeg";
                     }
-                } else if (IScanWebPlugin.SCANTYPE_PNG.equals(scanTypeExpected)) {
+                } else if (IScanWebPlugin.SCANTYPE_MIME_PNG.equals(scanTypeExpected)) {
                     if (!"png".equalsIgnoreCase(format)) {
                         errorFormat = true;
                     } else {
                         mime = "image/png";
                     }
-                } else if (IScanWebPlugin.SCANTYPE_GIF.equals(scanTypeExpected)) {
+                } else if (IScanWebPlugin.SCANTYPE_MIME_GIF.equals(scanTypeExpected)) {
                     if (!"gif".equalsIgnoreCase(format)) {
                         errorFormat = true;
                     } else {
@@ -666,7 +706,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 }
             }
 
-        } else if (IScanWebPlugin.SCANTYPE_TIFF.equals(scanTypeExpected)) {
+        } else if (IScanWebPlugin.SCANTYPE_MIME_TIFF.equals(scanTypeExpected)) {
             // Suposam que és TIFF
             mime = "image/tiff";
         } else {

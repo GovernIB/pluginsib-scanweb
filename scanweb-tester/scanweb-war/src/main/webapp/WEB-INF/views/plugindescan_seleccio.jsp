@@ -1,4 +1,4 @@
-<%@page import="org.fundaciobit.plugins.scanweb.tester.controller.ScanWebModuleController"%>
+<%@page import="org.fundaciobit.pluginsib.scanweb.tester.controller.ScanWebModuleController"%>
 <%@ include file="/WEB-INF/views/html_header.jsp"%>
 
 <style>

@@ -1,4 +1,4 @@
-package org.fundaciobit.plugins.scanweb.tester.form;
+package org.fundaciobit.pluginsib.scanweb.tester.form;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -31,6 +31,10 @@ public class ScanWebConfigValidator implements Validator {
     // Valors Not Null
     ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "genapp.validation.required",
         new Object[] { "type" });
+    
+    
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "genapp.validation.required",
+            new Object[] { "username" });
 /*
     ValidationUtils.rejectIfEmptyOrWhitespace(errors, "flags", "genapp.validation.required",
         new Object[] { "flags" });

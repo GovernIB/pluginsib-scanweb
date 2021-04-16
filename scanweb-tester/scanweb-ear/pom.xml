@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-tester-ear</artifactId>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
   <packaging>ear</packaging>
   <name>PluginsIB - Scan Web - Tester - EAR</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
     <artifactId>pluginsib-scanweb-tester</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
   </parent>
   <dependencies>
     <!-- Internes -->
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-api</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.0</version>
     </dependency>
 
     <!-- ====================================== -->
@@ -47,27 +47,22 @@
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
-      <version>3.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-caib</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
-      <version>3.0.1</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-file</artifactId>
-      <version>3.0.1</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-digitalib</artifactId>
-      <version>3.0.4</version>
+      <version>4.0.0</version>
     </dependency>
   </dependencies>
 
@@ -93,7 +88,7 @@
           <defaultLibBundleDir>lib</defaultLibBundleDir>
           <jboss>
             <version>5</version>
-            <loader-repository>org.fundaciobit.plugins:loader=scanweb.ear</loader-repository>
+            <loader-repository>org.fundaciobit.pluginsib:loader=scanweb.ear</loader-repository>
             <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
           </jboss>
           <modules>
