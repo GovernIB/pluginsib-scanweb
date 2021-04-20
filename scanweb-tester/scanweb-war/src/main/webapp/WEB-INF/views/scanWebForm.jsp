@@ -13,7 +13,16 @@
     <div class="tab_container" style="width:auto;">
     
     <table class="tdformlabel table-condensed table table-bordered marTop10" style="width:auto;" > 
-    <tbody>      
+    <tbody>   
+
+        <tr>
+          <td><label>TransactionName &nbsp;(*)</label></td>
+          <td>
+              <form:errors path="transactionName" cssClass="errorField alert alert-error" />
+              <form:input  cssClass="input-xxlarge" path="transactionName" />
+          </td>
+        </tr>
+     
 
         <tr>
           <td><label>Tipus &nbsp;(*)</label></td>
@@ -69,8 +78,10 @@
            </td>
          </tr>
          
+         
+         
          <tr id="nomtr" style="visibility: none">
-          <td><label>Nom complet &nbsp;(*)</label></td>
+          <td><label>Nom complet funcionari &nbsp;(*)</label></td>
             <td>
           <form:errors path="nom" cssClass="errorField alert alert-error" />
           <form:input  path="nom" />
@@ -79,10 +90,18 @@
          
          
          <tr id="niftr" style="visibility: none">
-          <td><label>NIF &nbsp;(*)</label></td>
+          <td><label>NIF del funcionari&nbsp;(*)</label></td>
             <td>
           <form:errors path="nif" cssClass="errorField alert alert-error" />
           <form:input  path="nif" />
+           </td>
+         </tr>
+         
+         <tr id="functionaryUnitDIR3tr" style="visibility: none">
+          <td><label>Unitat DIR3 del funcionari</label></td>
+            <td>
+          <form:errors path="functionaryUnitDIR3" cssClass="errorField alert alert-error" />
+          <form:input  path="functionaryUnitDIR3" />
            </td>
          </tr>
          
@@ -97,6 +116,10 @@
           </form:select>
            </td>
          </tr>
+         
+         
+         
+         
          
          
      </tbody>
@@ -124,11 +147,12 @@
     	   document.getElementById("nomtr").style.display = 'none';
     	   document.getElementById("niftr").style.display = 'none';
     	   document.getElementById("langDoctr").style.display = 'none';
+    	   document.getElementById("functionaryUnitDIR3tr").style.display = 'none';
     	} else {
-
            document.getElementById("nomtr").style.display = '';
            document.getElementById("niftr").style.display = '';
            document.getElementById("langDoctr").style.display = '';
+           document.getElementById("functionaryUnitDIR3tr").style.display = '';
     	}
     }
 

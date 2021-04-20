@@ -9,68 +9,74 @@ import java.util.Properties;
  */
 public class Plugin {
 
-  long pluginID;// PK
-  String nom;
-  String descripcioCurta;
-  java.lang.String classe;
-  Properties properties;
+    long pluginID;// PK
+    String nom;
+    String descripcioCurta;
+    java.lang.String classe;
+    Properties properties;
+    boolean massiveScan;
 
-  /** Constructor Buit */
-  public Plugin() {
-  }
+    /** Constructor Buit */
+    public Plugin() {
+    }
 
-  /** Constructor amb tots els camps */
-  public Plugin(long pluginID, String nom, String descripcioCurta, java.lang.String classe,
-      Properties properties) {
-    this.pluginID = pluginID;
-    this.nom = nom;
-    this.descripcioCurta = descripcioCurta;
-    this.classe = classe;
-    this.properties = properties;
+    /** Constructor amb tots els camps */
+    public Plugin(long pluginID, String nom, String descripcioCurta, java.lang.String classe, Properties properties,
+            boolean massiveScan) {
+        this.pluginID = pluginID;
+        this.nom = nom;
+        this.descripcioCurta = descripcioCurta;
+        this.classe = classe;
+        this.properties = properties;
 
-  }
+    }
 
-  public long getPluginID() {
-    return (pluginID);
-  };
+    public long getPluginID() {
+        return (pluginID);
+    };
 
-  public void setPluginID(long _pluginID_) {
-    this.pluginID = _pluginID_;
-  };
+    public void setPluginID(long _pluginID_) {
+        this.pluginID = _pluginID_;
+    };
 
-  public String getNom() {
-    return (nom);
-  };
+    public String getNom() {
+        return (nom);
+    };
 
-  public void setNom(String _nom_) {
-    this.nom = _nom_;
-  };
+    public void setNom(String _nom_) {
+        this.nom = _nom_;
+    };
 
-  public String getDescripcioCurta() {
-    return (descripcioCurta);
-  };
+    public String getDescripcioCurta() {
+        return (descripcioCurta);
+    };
 
-  public void setDescripcioCurta(String _descripcioCurta_) {
-    this.descripcioCurta = _descripcioCurta_;
-  };
+    public void setDescripcioCurta(String _descripcioCurta_) {
+        this.descripcioCurta = _descripcioCurta_;
+    };
 
-  public java.lang.String getClasse() {
-    return (classe);
-  };
+    public java.lang.String getClasse() {
+        return (classe);
+    };
 
-  public void setClasse(java.lang.String _classe_) {
-    this.classe = _classe_;
-  };
+    public void setClasse(java.lang.String _classe_) {
+        this.classe = _classe_;
+    };
 
-  public Properties getProperties() {
-    return (properties);
-  };
+    public Properties getProperties() {
+        return (properties);
+    };
 
-  public void setProperties(Properties _properties_) {
-    this.properties = _properties_;
-  }
-  
-  
-  
+    public void setProperties(Properties _properties_) {
+        this.properties = _properties_;
+    }
+
+    public boolean isMassiveScan() {
+        return massiveScan;
+    }
+
+    public void setMassiveScan(boolean massiveScan) {
+        this.massiveScan = massiveScan;
+    }
 
 }

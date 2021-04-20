@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.core.utils.PluginsManager;
 
 /**
@@ -126,24 +127,28 @@ public class ScanWebPluginManager {
               String value = pluginProperties.getProperty(key);
               
               // Posam la mateixa BASE a totes les propietats de totes els plugins
-              
               String nomFinal = key.substring(base.length());
-              
-              
               properties.put(PROPERTIES_BASE + nomFinal, value);
           }
-          
         }
+
         
-        
+        Plugin plugin = new Plugin(pluginID, nom, descripcioCurta, classe, properties,false);
+        try {
+            IScanWebPlugin pluginInstance = getInstanceByPlugin(plugin);
+            plugin.setMassiveScan(pluginInstance.isMassiveScanAllowed());
+        } catch (Exception e) {            
+            log.error("Error instanciant plugin " + nom + " amb id " + pluginID + ": " + e.getMessage(), e);
+        }
+
         log.info(" -------------  PLUGIN " + pluginID + "------------------");
         log.info("nom: " + nom);
         log.info("descripcioCurta: " + descripcioCurta);
         log.info("classe: " + classe);
         log.info("properties: " + properties);
-        
-        
-        tmpplugins.add(new Plugin(pluginID, nom, descripcioCurta, classe, properties));
+        log.info("massiveScan: " + plugin.isMassiveScan());
+
+        tmpplugins.add(plugin);
         
       }
       
@@ -186,15 +191,7 @@ public class ScanWebPluginManager {
         addPluginToCache(pluginID, plugin);
       }
 
-      Properties prop = plugin.getProperties();
-
-      instance = (IScanWebPlugin) PluginsManager.instancePluginByClassName(
-          plugin.getClasse(), PROPERTIES_BASE, prop);
-
-      if (instance == null) {
-        throw new Exception("plugin.donotinstantiate: " + plugin.getNom() + " ("
-            + plugin.getClasse() + ")");
-      }
+      instance = getInstanceByPlugin(plugin);
 
       instancesCache.put(pluginID, instance);
 
@@ -203,5 +200,29 @@ public class ScanWebPluginManager {
     return instance;
 
   }
+
+protected static IScanWebPlugin getInstanceByPlugin(Plugin plugin) throws Exception {
+    IScanWebPlugin instance;
+    Properties prop = plugin.getProperties();
+
+      instance = (IScanWebPlugin) PluginsManager.instancePluginByClassName(
+          plugin.getClasse(), PROPERTIES_BASE, prop);
+
+      if (instance == null) {
+        throw new Exception("plugin.donotinstantiate: " + plugin.getNom() + " ("
+            + plugin.getClasse() + ")");
+      }
+    return instance;
+}
+  
+  
+
+  public static ScanWebPlainFile getDocumentsSeparator(Long pluginID, String languageUI) throws Exception {
+      IScanWebPlugin plugin = getInstanceByPluginID(pluginID);
+      ScanWebPlainFile separator = plugin.getSeparatorForMassiveScan(languageUI);
+      return separator;
+  }
+  
+  
 
 }

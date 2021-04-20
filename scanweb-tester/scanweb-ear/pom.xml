@@ -49,21 +49,31 @@
       <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
       <version>4.0.0</version>
     </dependency>
+
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
       <version>4.0.0</version>
     </dependency>
+
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-file</artifactId>
       <version>4.0.0</version>
     </dependency>
+
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-digitalib</artifactId>
       <version>4.0.0</version>
     </dependency>
+
+	<dependency>
+      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+      <artifactId>pluginsib-scanweb-digitalibmassive</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>

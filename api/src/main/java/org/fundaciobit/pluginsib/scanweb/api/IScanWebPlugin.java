@@ -117,6 +117,6 @@ public interface IScanWebPlugin extends IPlugin {
      * 
      * @return
      */
-    public ScanWebPlainFile getSeparatorForMassiveScan();
+    public ScanWebPlainFile getSeparatorForMassiveScan(String languageUI) throws Exception;
 
 }

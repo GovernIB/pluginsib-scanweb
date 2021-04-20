@@ -13,6 +13,8 @@ import org.fundaciobit.pluginsib.core.utils.Metadata;
 public class ScanWebRequest {
     
     protected String scanWebID;
+    
+    protected String transactionName;
 
     protected String scanType;
 
@@ -40,10 +42,11 @@ public class ScanWebRequest {
         super();
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI, String username,
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI, String username,
             String urlFinal, List<Metadata> metadades) {
         super();
         this.scanWebID = scanWebID;
+        this.transactionName = transactionName;
         this.scanType = scanType;
         this.flag = flag;
         this.additionalMetadatas = metadades;
@@ -53,10 +56,11 @@ public class ScanWebRequest {
         this.urlFinal = urlFinal;
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI,
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI,
             String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo) {
         super();
         this.scanWebID = scanWebID;
+        this.transactionName = transactionName;
         this.scanType = scanType;
         this.flag = flag;
         this.additionalMetadatas = metadades;
@@ -67,11 +71,12 @@ public class ScanWebRequest {
         this.signatureInfo = signatureInfo;
     }
 
-    public ScanWebRequest(String scanWebID, String scanType, String flag, ScanWebMode mode, String languageUI,
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI,
             String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo,
             ScanWebRequestCustodyInfo custodyInfo) {
         super();
         this.scanWebID = scanWebID;
+        this.transactionName = transactionName;
         this.scanType = scanType;
         this.flag = flag;
         this.additionalMetadatas = metadades;
@@ -89,6 +94,14 @@ public class ScanWebRequest {
 
     public void setScanWebID(String scanWebID) {
         this.scanWebID = scanWebID;
+    }
+    
+    public String getTransactionName() {
+        return transactionName;
+    }
+
+    public void setTransactionName(String transactionName) {
+        this.transactionName = transactionName;
     }
 
     public String getScanType() {

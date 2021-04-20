@@ -528,7 +528,7 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public ScanWebPlainFile getSeparatorForMassiveScan() {
+    public ScanWebPlainFile getSeparatorForMassiveScan(String languageUI) throws Exception {
         return null;
     };
 

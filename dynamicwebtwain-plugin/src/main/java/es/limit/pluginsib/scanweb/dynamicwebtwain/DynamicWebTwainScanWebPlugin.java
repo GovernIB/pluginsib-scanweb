@@ -1298,13 +1298,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     @Override
     public boolean isMassiveScanAllowed() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public ScanWebPlainFile getSeparatorForMassiveScan() {
-        // TODO Auto-generated method stub
+    public ScanWebPlainFile getSeparatorForMassiveScan(String languageUI) throws Exception {
         return null;
     }
 

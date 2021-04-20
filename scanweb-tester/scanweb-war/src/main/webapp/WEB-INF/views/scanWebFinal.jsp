@@ -15,6 +15,7 @@
 &nbsp;&nbsp;&nbsp;Tipus: <b>${LAST_CONFIG.scanType}</b>
 &nbsp;&nbsp;&nbsp;| Caracter&iacute;stica: <b>${LAST_CONFIG.flag}</b>
 &nbsp;&nbsp;&nbsp;| Mode: <b>${LAST_CONFIG.mode}</b><br/>
+&nbsp;&nbsp;&nbsp;| TransactionName: <b>${LAST_CONFIG.transactionName}</b><br/>
 <table  class="table table-bordered">
 <thead>
  <tr>

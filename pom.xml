@@ -16,13 +16,11 @@
   </properties>
   <modules>
     <module>api</module>
-    <module>dynamicwebtwain</module>
+    <module>dynamicwebtwain-plugin</module>
     <module>iecisa-scanweb-plugin</module>
-    <!--  OBSOLET !!!!
-    <module>caib-scanweb-plugin</module>
-    -->
     <module>filescan-plugin</module>
     <module>digitalib-plugin</module>
+	<module>digitalibmassive-plugin</module>
     <module>scanweb-tester</module>
   </modules>
   <dependencies>

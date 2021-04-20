@@ -74,10 +74,15 @@ public class ScanWebProcessController {
 
         // Acceptam qualsevol combinació        
         form.setFlag(IScanWebPlugin.FLAG_PLAIN);
-        form.setId(String.valueOf(ScanWebModuleController.generateUniqueScanWebID()));
+        String id = String.valueOf(ScanWebModuleController.generateUniqueScanWebID());
+        form.setId(id);
+        form.setTransactionName("ScanWeb Tester " + id);
+        
+        // FIRMA 
         form.setUsername("pgonella");
         form.setNif("87654321Z");
         form.setNom("Pep Gonella");
+        form.setFunctionaryUnitDIR3("A04026951"); // Dirección General de Pesca y Medio Marino
 
         List<String> supportedTypes = new ArrayList<String>();
         supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_PDF);
@@ -137,14 +142,17 @@ public class ScanWebProcessController {
             String documentLanguage = form.getLangDoc();
             String functionaryFullName = form.getNom();
             String functionaryAdministrationID = form.getNif();
+            String functionaryUnitDIR3 = form.getFunctionaryUnitDIR3();
             signatureInfo = new ScanWebRequestSignatureInfo(documentLanguage, functionaryFullName,
-                    functionaryAdministrationID);
+                    functionaryAdministrationID,functionaryUnitDIR3);
         }
 
         ScanWebRequestCustodyInfo custodyInfo = null;
 
-        ScanWebInfoTester swc = new ScanWebInfoTester(new ScanWebRequest(scanWebID, form.getType(), flag, mode,
+        ScanWebInfoTester swc = new ScanWebInfoTester(new ScanWebRequest(scanWebID, form.getTransactionName(), form.getType(), flag, mode,
                 form.getLangUI(), form.getUsername(), urlFinal, metadades, signatureInfo, custodyInfo));
+        
+     
 
         // /WEB-INF/views/plugindescan_contenidor.jsp
         final String view = "/plugindescan_contenidor";

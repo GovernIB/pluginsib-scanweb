@@ -10,6 +10,8 @@ public class ScanWebConfigForm {
 
     String id;
     
+    protected String transactionName;
+    
     protected String type;
 
     protected String flag;
@@ -27,6 +29,8 @@ public class ScanWebConfigForm {
     
     protected String langDoc;
     
+    protected String functionaryUnitDIR3;
+    
 
     
 
@@ -39,6 +43,16 @@ public class ScanWebConfigForm {
 
     public void setId(String id) {
         this.id = id;
+    }
+    
+    
+
+    public String getTransactionName() {
+        return transactionName;
+    }
+
+    public void setTransactionName(String transactionName) {
+        this.transactionName = transactionName;
     }
 
     public String getType() {
@@ -103,6 +117,14 @@ public class ScanWebConfigForm {
 
     public void setLangDoc(String langDoc) {
         this.langDoc = langDoc;
+    }
+
+    public String getFunctionaryUnitDIR3() {
+        return functionaryUnitDIR3;
+    }
+
+    public void setFunctionaryUnitDIR3(String functionaryUnitDIR3) {
+        this.functionaryUnitDIR3 = functionaryUnitDIR3;
     }
 
 }

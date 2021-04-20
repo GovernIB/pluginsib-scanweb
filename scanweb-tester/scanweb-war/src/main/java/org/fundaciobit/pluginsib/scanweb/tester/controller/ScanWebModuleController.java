@@ -1,6 +1,7 @@
 package org.fundaciobit.pluginsib.scanweb.tester.controller;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -12,12 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 import org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils;
 import org.fundaciobit.pluginsib.scanweb.tester.ejb.ScanWebModuleLocal;
 import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.Plugin;
 import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebInfoTester;
+import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebPluginManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +76,47 @@ public class ScanWebModuleController extends HttpServlet {
         return mav;
 
     }
+    
+    
+    
+    @RequestMapping(value = "/downloadseparator/{pluginID}/{scanWebID}")
+    public void downloadSeparator(HttpServletRequest request, HttpServletResponse response,
+            @PathVariable("pluginID") Long pluginID, @PathVariable("scanWebID") String scanWebID) throws Exception {
+        
+        
+        ScanWebInfoTester info = scanWebModuleEjb.getScanWebInfoTester(request, scanWebID);
+        
+        OutputStream output = response.getOutputStream();
+
+        try {
+            
+            ScanWebPlainFile sep = ScanWebPluginManager.getDocumentsSeparator(pluginID, info.getScanWebRequest().getLanguageUI());
+            if (sep == null) {
+                throw new Exception("El plugin " + pluginID + " ha retornat un Separador null !!!");
+            }
+                
+            
+            response.setContentType(sep.getMime());
+            response.setHeader("Content-Disposition", "inline; filename=\"" + sep.getName() + "\"");
+            response.setContentLength((int) sep.getData().length);
+
+            
+
+            output.write(sep.getData());
+
+            output.flush();
+
+            output.close();
+            
+            
+        } catch (Exception e) {
+            String html = "<html><body><h1>Error intentant obtenir Separdor del plugin " + pluginID + "</h1><br/> Error: " + e.getMessage() + "</body></html>"; 
+            output.write(html.getBytes());
+        }
+    
+    }
+    
+    
 
     @RequestMapping(value = "/error")
     public ModelAndView errorProcesDeScan(HttpServletRequest request, HttpServletResponse response,

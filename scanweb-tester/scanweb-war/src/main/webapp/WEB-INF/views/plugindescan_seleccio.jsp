@@ -29,14 +29,30 @@
   
   <br/>
   <div class="well" style="max-width: 400px; margin: 0 auto 10px;">
+  <table>
   <c:forEach items="${plugins}" var="plugin">
+     <tr>
+     <td>
      <button type="button" class="btn btn-large btn-block btn-primary" onclick="location.href='<c:url value="/common/scanwebmodule/showscanwebmodule/${plugin.pluginID}/${scanWebID}"/>'">
      <b>${plugin.nom}</b><br>
      <small>
      <i>${plugin.descripcioCurta}</i>
      </small>
      </button>
+     </td>
+     <td>
+        <c:if test="${plugin.massiveScan}" >
+           <button type="button" class="btn btn-block btn-info" onclick="window.open('<c:url value="/common/scanwebmodule/downloadseparator/${plugin.pluginID}/${scanWebID}"/>')">
+                 <b>Descarregar Separador</b><br>
+                 <small>
+                 <i>Document separador per Escaneig Massiu</i>
+                 </small>
+           </button>
+        </c:if>
+     </td>
+     </tr>
   </c:forEach>
+  </table>
   </div>
   
   <br/>
