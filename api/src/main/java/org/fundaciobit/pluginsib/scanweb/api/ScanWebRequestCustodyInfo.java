@@ -39,27 +39,7 @@ public class ScanWebRequestCustodyInfo {
      */
     public final static String DOCUMENTELABORATIONSTATE_ALTRES = "EE99";
 
-    public static final String DOCUMENTTYPE_RESOLUCIO = "TD01";
-    public static final String DOCUMENTTYPE_ACORD = "TD02";
-    public static final String DOCUMENTTYPE_CONTRACTE = "TD03";
-    public static final String DOCUMENTTYPE_CONVENI = "TD04";
-    public static final String DOCUMENTTYPE_DECLARACIO = "TD05";
-    public static final String DOCUMENTTYPE_COMUNICACIO = "TD06";
-    public static final String DOCUMENTTYPE_NOTIFICACIO = "TD07";
-    public static final String DOCUMENTTYPE_PUBLICACIO = "TD08";
-    public static final String DOCUMENTTYPE_JUSTIFICANT_RECEPCIO = "TD09";
-    public static final String DOCUMENTTYPE_ACTA = "TD10";
-    public static final String DOCUMENTTYPE_CERTIFICAT = "TD11";
-    public static final String DOCUMENTTYPE_DILIGENCIA = "TD12";
-    public static final String DOCUMENTTYPE_INFORME = "TD13";
-    public static final String DOCUMENTTYPE_SOLICITUD = "TD14";
-    public static final String DOCUMENTTYPE_DENUNCIA = "TD15";
-    public static final String DOCUMENTTYPE_ALEGACIO = "TD16";
-    public static final String DOCUMENTTYPE_RECURS = "TD17";
-    public static final String DOCUMENTTYPE_COMUNICACIO_CIUTADA = "TD18";
-    public static final String DOCUMENTTYPE_FACTURA = "TD19";
-    public static final String DOCUMENTTYPE_ALTRES_INCAUTATS = "TD20";
-    public static final String DOCUMENTTYPE_ALTRES = "TD99";
+
 
     /**
      * NIF del ciutadà

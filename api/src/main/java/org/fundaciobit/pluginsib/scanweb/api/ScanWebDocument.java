@@ -13,6 +13,26 @@ import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
  */
 public class ScanWebDocument {
 
+    public static final String SCANTYPE_MIME_TIFF = "image/tiff";
+
+    public static final String SCANTYPE_MIME_JPG = "image/jpeg";
+
+    public static final String SCANTYPE_MIME_PNG = "image/png";
+
+    public static final String SCANTYPE_MIME_GIF = "image/gif";
+
+    public static final String SCANTYPE_MIME_PDF = "application/pdf";
+
+    public static final String FLAG_PLAIN = "PlainDoc";
+
+    public static final String FLAG_SIGNED = "Signed";
+
+    /** Firma amb Segell de Temps */
+    public static final String FLAG_SIGNED_WITH_TIMESTAMP = "Signed_With_Timestamp";
+
+    /** API NO CONTE CAMPS PER RETORNAR AQUESTA INFORMACIO */
+    // public static final String FLAG_SIGNED_AND_CUSTODY = "Signed_And_Custody";
+
     public static final int PIXEL_TYPE_BLACK_WHITE = 0;
 
     public static final int PIXEL_TYPE_GRAY = 1;
@@ -40,11 +60,11 @@ public class ScanWebDocument {
      * Null significa que no ho sab. Els valors són els mateixos que SCANTYPE_MIME_*
      * de IScanWebPlugin.
      * 
-     * @see IScanWebPlugin.SCANTYPE_MIME_TIFF = "image/tiff";
-     * @see IScanWebPlugin.SCANTYPE_MIME_JPG = "image/jpeg";
-     * @see IScanWebPlugin.SCANTYPE_MIME_PNG = "image/png";
-     * @see IScanWebPlugin.SCANTYPE_MIME_GIF = "image/gif";
-     * @see IScanWebPlugin.SCANTYPE_MIME_PDF = "application/pdf";
+     * @see SCANTYPE_MIME_TIFF = "image/tiff";
+     * @see SCANTYPE_MIME_JPG = "image/jpeg";
+     * @see SCANTYPE_MIME_PNG = "image/png";
+     * @see SCANTYPE_MIME_GIF = "image/gif";
+     * @see SCANTYPE_MIME_PDF = "application/pdf";
      * 
      **/
     protected String scannedFileFormat;
@@ -52,6 +72,7 @@ public class ScanWebDocument {
     /** Null significa que no ho sab. **/
     protected Boolean ocr;
 
+    /** Null significa que no ho sab. **/
     protected Boolean duplex;
 
     /**
@@ -62,6 +83,21 @@ public class ScanWebDocument {
 
     protected String documentLanguage;
 
+    /**
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants#_ENI_TIPO_DOCUMENTAL
+     *
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants#TIPO_DOCUMENTAL_TD01_RESOLUCIO
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants#TIPO_DOCUMENTAL_TD02_ACORD
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants#TIPO_DOCUMENTAL_TD03_CONTRACTE
+     * ...
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants#TIPO_DOCUMENTAL_TD99_ALTRES
+     * 
+     */
+    protected String documentType;
+
+    /**
+     * @see org.fundaciobit.pluginsib.core.utils.MetadataConstants
+     */
     protected List<Metadata> additionalMetadatas;
 
     /**
@@ -70,10 +106,13 @@ public class ScanWebDocument {
     public ScanWebDocument() {
         super();
     }
+    
+    
 
     public ScanWebDocument(String transactionName, ScanWebPlainFile scannedPlainFile,
             ScanWebSignedFile scannedSignedFile, Date scanDate, Integer pixelType, Integer pppResolution,
-            String scannedFileFormat, Boolean ocr, String documentLanguage, List<Metadata> additionalMetadatas) {
+            String scannedFileFormat, Boolean ocr, Boolean duplex, String paperSize, String documentLanguage,
+            String documentType, List<Metadata> additionalMetadatas) {
         super();
         this.transactionName = transactionName;
         this.scannedPlainFile = scannedPlainFile;
@@ -83,9 +122,37 @@ public class ScanWebDocument {
         this.pppResolution = pppResolution;
         this.scannedFileFormat = scannedFileFormat;
         this.ocr = ocr;
+        this.duplex = duplex;
+        this.paperSize = paperSize;
         this.documentLanguage = documentLanguage;
+        this.documentType = documentType;
         this.additionalMetadatas = additionalMetadatas;
     }
+
+
+
+    /*
+    public ScanWebDocument(String transactionName, ScanWebPlainFile scannedPlainFile,
+            ScanWebSignedFile scannedSignedFile, Date scanDate, Integer pixelType, Integer pppResolution,
+            String scannedFileFormat, Boolean ocr, Boolean duplex, String paperSize, 
+            String documentLanguage, String documentType,
+            List<Metadata> additionalMetadatas) {
+        super();
+        this.transactionName = transactionName;
+        this.scannedPlainFile = scannedPlainFile;
+        this.scannedSignedFile = scannedSignedFile;
+        this.scanDate = scanDate;
+        this.pixelType = pixelType;
+        this.pppResolution = pppResolution;
+        this.scannedFileFormat = scannedFileFormat;
+        this.ocr = ocr;
+        this.duplex = duplex;
+        this.paperSize = paperSize;
+        this.documentLanguage = documentLanguage;
+        this.documentType = documentType;
+        this.additionalMetadatas = additionalMetadatas;
+    }
+    */
 
     public String getTransactionName() {
         return transactionName;
@@ -177,6 +244,16 @@ public class ScanWebDocument {
 
     public void setDocumentLanguage(String documentLanguage) {
         this.documentLanguage = documentLanguage;
+    }
+    
+    
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
     public List<Metadata> getAdditionalMetadatas() {

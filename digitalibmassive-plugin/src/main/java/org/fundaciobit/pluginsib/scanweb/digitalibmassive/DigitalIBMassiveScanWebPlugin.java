@@ -169,13 +169,14 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
         // Agafam l'api de DigitalIB Massive
         ApiMassiveScanWebSimple api = null;
         api = getApiMassiveScanWebSimple();
-        
+
         MassiveScanWebSimpleFile separadorAPI = api.getSeparatorPage(languageUI);
 
-        ScanWebPlainFile plain = new ScanWebPlainFile(separadorAPI.getNom(), separadorAPI.getMime(), separadorAPI.getData());
+        ScanWebPlainFile plain = new ScanWebPlainFile(separadorAPI.getNom(), separadorAPI.getMime(),
+                separadorAPI.getData());
 
         return plain;
-        
+
     }
 
     @Override
@@ -204,14 +205,14 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
     @Override
     public Set<String> getSupportedScanTypes() {
         final Set<String> SUPPORTED_SCAN_TYPES = Collections
-                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
     @Override
     public Set<String> getSupportedFlagsByScanType(String scanType) {
 
-        if (SCANTYPE_MIME_PDF.equals(scanType)) {
+        if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanType)) {
             // XYZ ZZZ S'ha de cridar al Servidor i verure quins PLugins HIHA
 
             Set<String> flags = new HashSet<String>();
@@ -227,14 +228,16 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                     switch (profile.getProfileType()) {
 
                         case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-                            flags.add(FLAG_PLAIN);
-                        break;
-                        case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
-                            flags.add(FLAG_SIGNED);
+                            flags.add(ScanWebDocument.FLAG_PLAIN);
                         break;
 
                         case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
-                            flags.add(FLAG_SIGNED_AND_CUSTODY);
+                            log.error(
+                                    "Tipus de Perfil amb CUSTODY no es suportat per ScanWebAPI. Només s'obtindrà informació de la firma.",
+                                    new Exception());
+
+                        case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
+                            flags.add(ScanWebDocument.FLAG_SIGNED);
                         break;
 
                         default:
@@ -375,28 +378,25 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                 switch (scanWebProfileSelected.getProfileType()) {
 
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-                       
+
                         transacctionIdRequest = new MassiveScanWebSimpleGetTransactionIdRequest(
-                                scanWebRequest.getTransactionName(), profileCode,
-                                 view, languageUI, funcionariUsername);
+                                scanWebRequest.getTransactionName(), profileCode, view, languageUI, funcionariUsername);
 
                     break;
 
+                    
+                    case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY: 
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE: {
                         MassiveScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters(
                                 scanWebRequest, locale);
 
                         transacctionIdRequest = new MassiveScanWebSimpleGetTransactionIdRequest(
-                                scanWebRequest.getTransactionName(), profileCode,
-                                 view, languageUI, funcionariUsername,
+                                scanWebRequest.getTransactionName(), profileCode, view, languageUI, funcionariUsername,
                                 signatureParameters);
                     }
                     break;
 
-                    case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY: {
-
-                        // XYZ ZZZ ZZZ
-                        throw new Exception("Pefils de tipus Firma i Arxivat no es suporten.");
+                  
                         /*
                          * MassiveScanWebSimpleSignatureParameters signatureParameters =
                          * getSignatureParameters();
@@ -408,11 +408,11 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                          * MassiveScanWebSimpleArxiuOptionalParameters arxiuOptionalParameters = null;
                          * 
                          * transacctionIdRequest = new
-                         * MassiveScanWebSimpleGetTransactionIdRequest(scanWebRequest.getTransactionName(),profileCode, view, languageUI,
-                         * funcionariUsername, signatureParameters, arxiuRequiredParameters,
-                         * arxiuOptionalParameters);
+                         * MassiveScanWebSimpleGetTransactionIdRequest(scanWebRequest.getTransactionName
+                         * (),profileCode, view, languageUI, funcionariUsername, signatureParameters,
+                         * arxiuRequiredParameters, arxiuOptionalParameters);
                          */
-                    }
+                    
 
                     default:
                         // TODO XYZ ZZZ ZZZ TRADUCCIO
@@ -521,18 +521,19 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                 switch (profile.getProfileType()) {
 
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-                        if (!flag.equals(FLAG_PLAIN)) {
+                        if (!flag.equals(ScanWebDocument.FLAG_PLAIN)) {
                             continue;
                         }
                     break;
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
-                        if (!flag.equals(FLAG_SIGNED)) {
+                        if (!flag.equals(ScanWebDocument.FLAG_SIGNED)) {
                             continue;
                         }
                     break;
 
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
-                        if (!flag.equals(FLAG_SIGNED_AND_CUSTODY)) {
+                        // L'API No suporta la part de CUSTODIA , però si la de firma
+                        if (!flag.equals(ScanWebDocument.FLAG_SIGNED)) {
                             continue;
                         }
                     break;
@@ -615,11 +616,8 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
     protected void finalPage(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
             String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResult, Locale languageUI) {
-        
-        
-        log.info(" =========    ENTRA A FINAL PAGE " +  scanWebID + "!!!! ===============");
-        
-        
+
+        log.info(" =========    ENTRA A FINAL PAGE " + scanWebID + "!!!! ===============");
 
         ApiMassiveScanWebSimple api = null;
         // Obtenim la transacció de Digital IB.
@@ -656,24 +654,25 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                 // MassiveScanWebSimpleResultRequest(digitalIbRequest.getTransactionID());
 
                 // Obtenim el resultat de l'escanneig
-                MassiveScanWebSimpleStatus transResult = api.getMassiveTransactionStatus(digitalIbRequest.getTransactionID());
+                MassiveScanWebSimpleStatus transResult = api
+                        .getMassiveTransactionStatus(digitalIbRequest.getTransactionID());
 
-                
                 if (transResult.getStatus() == MassiveScanWebSimpleStatus.STATUS_FINAL_OK) {
 
                     // REVISAM CADA UNA DE LES SUBTRANSACCIONS
-                    MassiveScanWebSimpleSubTransactionsOfTransaction a = api.getSubTransactionsOfTransaction(digitalIbRequest.getTransactionID());
+                    MassiveScanWebSimpleSubTransactionsOfTransaction a = api
+                            .getSubTransactionsOfTransaction(digitalIbRequest.getTransactionID());
                     List<String> subtransaccions = a.getSubtransacions();
-                    
+
                     log.info(" # de SUBTRANSACCIONS = " + subtransaccions.size());
-                    
-                    
+
                     for (String sub : subtransaccions) {
                         MassiveScanWebSimpleStatus subtransactionStatus = api.getSubTransactionStatus(sub);
-                        
+
                         int statusID = subtransactionStatus.getStatus();
 
-                        log.info("Status de Subtransaction amb WebID=" + sub + " val(REQ=0|PROG=1|OK=2|ERR=-1|CAN=-2|EXP=-3): " + statusID);
+                        log.info("Status de Subtransaction amb WebID=" + sub
+                                + " val(REQ=0|PROG=1|OK=2|ERR=-1|CAN=-2|EXP=-3): " + statusID);
 
                         switch (statusID) {
 
@@ -727,7 +726,7 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
 
                     if (status.getStatus() != ScanWebStatus.STATUS_FINAL_ERROR
                             && status.getStatus() != ScanWebStatus.STATUS_CANCELLED) {
-                        
+
                         // Significa que totes les subtransaccions són OK
 
                         for (String subID : subtransaccions) {
@@ -786,24 +785,33 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
 
     protected ScanWebDocument processarSubtransactionScan(MassiveScanWebSimpleSubtransactionResult result) {
 
-        ScanWebPlainFile plainFile;
-        ScanWebSignedFile signedFile;
+        ScanWebPlainFile scannedPlainFile = null;
+        ScanWebSignedFile scannedSignedFile = null;
 
-        MassiveScanWebSimpleFile signed = result.getSignedFile();
-        if (signed != null) {
+        if (result.getScannedFile() != null) {
+
+            // Obtenim el fitxer escannejat
+            scannedPlainFile = new ScanWebPlainFile(result.getScannedFile().getNom(), result.getScannedFile().getMime(),
+                    result.getScannedFile().getData());
+
+        }
+
+        if (result.getSignedFile() != null) {
+
+            MassiveScanWebSimpleFile signed = result.getSignedFile();
 
             Boolean attachedDocument;
 
             MassiveScanWebSimpleFile detached = result.getDetachedSignatureFile();
             if (detached != null) {
 
-                plainFile = new ScanWebPlainFile(detached.getNom(), detached.getMime(), detached.getData());
+                scannedPlainFile = new ScanWebPlainFile(detached.getNom(), detached.getMime(), detached.getData());
 
                 attachedDocument = true;
             } else {
                 attachedDocument = false;
 
-                plainFile = null;
+                scannedPlainFile = null;
             }
 
             MassiveScanWebSimpleSignedFileInfo sssfi = result.getSignedFileInfo();
@@ -818,12 +826,12 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                             vi.getCheckDocumentModifications(), vi.getCheckValidationSignature());
                 }
 
-                List<Metadata> additionInformation = null;
+                List<Metadata> signAdditionalMetadatas = null;
 
                 if (sssfi.getAdditionInformation() != null) {
-                    additionInformation = new ArrayList<Metadata>();
+                    signAdditionalMetadatas = new ArrayList<Metadata>();
                     for (MassiveScanWebSimpleKeyValue kv : sssfi.getAdditionInformation()) {
-                        additionInformation.add(new Metadata(kv.getKey(), kv.getValue()));
+                        signAdditionalMetadatas.add(new Metadata(kv.getKey(), kv.getValue()));
                     }
                 }
 
@@ -832,35 +840,20 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                         sssfi.getTimeStampIncluded(), sssfi.getPolicyIncluded(), sssfi.getEniTipoFirma(),
                         sssfi.getEniPerfilFirma(), sssfi.getEniRolFirma(), sssfi.getEniSignerName(),
                         sssfi.getEniSignerAdministrationId(), sssfi.getEniSignLevel(), validationInfo,
-                        additionInformation);
+                        signAdditionalMetadatas);
 
             }
 
-            signedFile = new ScanWebSignedFile(signed.getNom(), signed.getMime(), signed.getData(),
+            scannedSignedFile = new ScanWebSignedFile(signed.getNom(), signed.getMime(), signed.getData(),
                     result.getSignedFileInfo().getSignType(), attachedDocument, signInfo);
-
-        } else {
-
-            // Obtenim el fitxer escannejat
-            plainFile = new ScanWebPlainFile(result.getScannedFile().getNom(), result.getScannedFile().getMime(),
-                    result.getScannedFile().getData());
-
-            signedFile = null;
 
         }
 
-        ScanWebDocument doc = new ScanWebDocument();
+        List<Metadata> additionalMetadatas = new ArrayList<Metadata>();
 
-        doc.setScanDate(new Date());
-        doc.setScannedPlainFile(plainFile);
-        doc.setScannedSignedFile(signedFile);
-
-        List<Metadata> metadatas = new ArrayList<Metadata>();
-
-        MassiveScanWebSimpleFormMetadatas form = result.getFormMetadatas();
         /*
-         * MassiveScanWebSimpleScannedFileInfo scannedFileInfo =
-         * result.getScannedFileInfo(); MassiveScanWebSimpleSignatureParameters
+         *
+         * result.getScannedFileInfo(); 
          * signParams = form.getSignatureParameters();
          * MassiveScanWebSimpleArxiuRequiredParameters arxiuRequired =
          * form.getArxiuRequiredParameters();
@@ -939,9 +932,34 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
          */
 
         // RESTA DE METADADES
-        copyMetadatas(form.getAdditionalMetadatas(), metadatas);
+        copyMetadatas(result.getAdditionalMetadatas(), additionalMetadatas);
 
-        doc.setAdditionalMetadatas(metadatas);
+        MassiveScanWebSimpleScannedFileInfo scannedInfo = result.getScannedFileInfo();
+
+        final String transactionName = scannedInfo.getTransactionName();
+
+        final Date scanDate = scannedInfo.getScanDate();
+
+        final Integer pixelType = scannedInfo.getPixelType();
+
+        final Integer pppResolution = scannedInfo.getPppResolution();
+
+        final String scannedFileFormat = scannedInfo.getFormatFile();
+
+        final Boolean ocr = scannedInfo.getOcr();
+
+        final Boolean duplex = scannedInfo.getDuplex();
+
+        final String paperSize = scannedInfo.getPaperSize();
+
+        final String documentLanguage = scannedInfo.getDocumentLanguage();
+
+        final String documentType = scannedInfo.getDocumentType();
+
+        ScanWebDocument doc = new ScanWebDocument(transactionName, scannedPlainFile, scannedSignedFile, scanDate,
+                pixelType, pppResolution, scannedFileFormat, ocr, duplex, paperSize, documentLanguage, documentType,
+                additionalMetadatas);
+
         return doc;
     }
 
@@ -1206,34 +1224,12 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                     + ScanWebRequestSignatureInfo.class.getName());
         }
 
-        String languageDoc = swsi.getDocumentLanguage();
-        /*
-         * try { languageDoc = getInputMetadata("Idioma del Document",
-         * MetadataConstants.EEMGDE_IDIOMA, "EEMGDE_IDIOMA",
-         * scanWebRequest.getAdditionalMetadatas(), locale); } catch (Exception e) {
-         * languageDoc = null; }
-         */
+         
         MassiveScanWebSimpleSignatureParameters signatureParameters;
-        signatureParameters = new MassiveScanWebSimpleSignatureParameters(languageDoc, swsi.getFunctionaryFullName(),
-                swsi.getFunctionaryAdministrationID());
+        signatureParameters = new MassiveScanWebSimpleSignatureParameters(swsi.getFunctionaryFullName(),
+                swsi.getFunctionaryAdministrationID(), swsi.getFunctionaryUnitDIR3());
 
-        /*
-         * XYZ ZZZ
-         * 
-         * final String funcionariNom = getInputMetadata("Nom complet del Funcionari",
-         * MetadataConstants.FUNCTIONARY_FULLNAME, "FUNCTIONARY_FULLNAME", metadatas,
-         * locale); final String funcionariNif = getInputMetadata("Nif del Funcionari",
-         * MetadataConstants.FUNCTIONARY_ADMINISTRATIONID,
-         * "FUNCTIONARY_ADMINISTRATIONID", metadatas, locale); String languageDoc; try {
-         * languageDoc = getInputMetadata("Idioma del Document",
-         * MetadataConstants.EEMGDE_IDIOMA, "EEMGDE_IDIOMA", metadatas, locale); }
-         * catch(Exception e) { languageDoc = null; }
-         * 
-         * MassiveScanWebSimpleSignatureParameters signatureParameters;
-         * signatureParameters = new
-         * MassiveScanWebSimpleSignatureParameters(languageDoc, funcionariNom,
-         * funcionariNif);
-         */
+
         return signatureParameters;
     }
 

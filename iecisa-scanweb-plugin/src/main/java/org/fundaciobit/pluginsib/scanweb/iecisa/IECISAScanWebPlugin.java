@@ -5,7 +5,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.fundaciobit.pluginsib.core.utils.Metadata;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
-import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
@@ -101,7 +100,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     final Set<String> SUPPORTED_SCAN_TYPES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF, SCANTYPE_MIME_TIFF, SCANTYPE_MIME_JPG, SCANTYPE_MIME_PNG, SCANTYPE_MIME_GIF)));
+            new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF,
+                    ScanWebDocument.SCANTYPE_MIME_TIFF, ScanWebDocument.SCANTYPE_MIME_JPG,
+                    ScanWebDocument.SCANTYPE_MIME_PNG, ScanWebDocument.SCANTYPE_MIME_GIF)));
 
     @Override
     public Set<String> getSupportedScanTypes() {
@@ -110,7 +111,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     protected static final Set<String> SUPPORTED_FLAG_1 = Collections
-            .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
 
     protected static final List<Set<String>> SUPPORTED_FLAGS = Collections
             .unmodifiableList(new ArrayList<Set<String>>(Arrays.asList(SUPPORTED_FLAG_1)));
@@ -120,7 +121,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         if (SUPPORTED_SCAN_TYPES.contains(scanType)) {
 
             final Set<String> SUPPORTED_FLAGS = Collections
-                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
 
             return SUPPORTED_FLAGS;
 
@@ -649,8 +650,9 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         final String scanTypeExpected = scanWebRequest.getScanType();
 
         String mime = null;
+        String scannedFileFormat = null;;
 
-        if (IScanWebPlugin.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
+        if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
 
             if (!is_pdf(data)) {
                 scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
@@ -661,10 +663,11 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             }
 
             mime = "application/pdf";
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PDF;
 
-        } else if (IScanWebPlugin.SCANTYPE_MIME_JPG.equals(scanTypeExpected)
-                || IScanWebPlugin.SCANTYPE_MIME_PNG.equals(scanTypeExpected)
-                || IScanWebPlugin.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
+        } else if (ScanWebDocument.SCANTYPE_MIME_JPG.equals(scanTypeExpected)
+                || ScanWebDocument.SCANTYPE_MIME_PNG.equals(scanTypeExpected)
+                || ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
 
             String format = getImageFormat(data);
             if (format == null) {
@@ -672,29 +675,37 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 log.error(errorMsg);
                 scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
                 scanWebResult.getStatus().setErrorMsg(errorMsg);
+                
             } else {
 
                 boolean errorFormat = false;
-                if (IScanWebPlugin.SCANTYPE_MIME_JPG.equals(scanTypeExpected)) {
+                if (ScanWebDocument.SCANTYPE_MIME_JPG.equals(scanTypeExpected)) {
                     if (!"JPEG".equalsIgnoreCase(format)) {
                         errorFormat = true;
+                        
                     } else {
                         mime = "image/jpeg";
+                        scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_JPG;
                     }
-                } else if (IScanWebPlugin.SCANTYPE_MIME_PNG.equals(scanTypeExpected)) {
+                } else if (ScanWebDocument.SCANTYPE_MIME_PNG.equals(scanTypeExpected)) {
                     if (!"png".equalsIgnoreCase(format)) {
                         errorFormat = true;
+                        
                     } else {
                         mime = "image/png";
+                        scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PNG;
                     }
-                } else if (IScanWebPlugin.SCANTYPE_MIME_GIF.equals(scanTypeExpected)) {
+                } else if (ScanWebDocument.SCANTYPE_MIME_GIF.equals(scanTypeExpected)) {
                     if (!"gif".equalsIgnoreCase(format)) {
                         errorFormat = true;
+                        
                     } else {
                         mime = "image/gif";
+                        scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_GIF;
                     }
                 } else {
                     mime = "application/octet-stream";
+                    
                 }
 
                 if (errorFormat) {
@@ -703,12 +714,14 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                     log.error(errorMsg);
                     scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
                     scanWebResult.getStatus().setErrorMsg(errorMsg);
+                    
                 }
             }
 
-        } else if (IScanWebPlugin.SCANTYPE_MIME_TIFF.equals(scanTypeExpected)) {
+        } else if (ScanWebDocument.SCANTYPE_MIME_TIFF.equals(scanTypeExpected)) {
             // Suposam que és TIFF
             mime = "image/tiff";
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_TIFF;
         } else {
             // Altre tipus ????
             String m = fileItem.getContentType();
@@ -716,29 +729,37 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 m = "application/octet-stream";
             }
             mime = m;
+            
         }
 
-        ScanWebPlainFile singleScanFile = new ScanWebPlainFile(name, mime, data);
+        ScanWebPlainFile scannedPlainFile = new ScanWebPlainFile(name, mime, data);
 
         ScanWebSignedFile scannedSignedFile = null;
 
-        final Date date = new Date(System.currentTimeMillis());
+        
+        List<Metadata> additionalMetadatas = new ArrayList<Metadata>();
+        //metadatas.add(new Metadata("FechaCaptura", date));
+        additionalMetadatas.add(new Metadata("VersionNTI", "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
 
-        List<Metadata> metadatas = new ArrayList<Metadata>();
-        // metadatas.add(new Metadata("TipoDocumental", "TD99"));
-        // metadatas.add(new Metadata("EstadoElaboracion", "EE99"));
-        // metadatas.add(new Metadata("Identificador",
-        // Calendar.getInstance().get(Calendar.YEAR)
-        // + "_" + fullInfo.getScannedFiles().size() + scanWebID));
-        metadatas.add(new Metadata("FechaCaptura", date));
-        metadatas.add(new Metadata("VersionNTI", "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
-
-        ScanWebDocument scannedDoc = new ScanWebDocument();
-        scannedDoc.setAdditionalMetadatas(metadatas);
-        scannedDoc.setScannedSignedFile(scannedSignedFile);
-        scannedDoc.setScanDate(date);
-        scannedDoc.setScannedPlainFile(singleScanFile);
-
+        
+        String transactionName = scanWebRequest.getTransactionName();
+        
+        Date scanDate = new Date(System.currentTimeMillis());
+        Integer pixelType = null;
+        Integer pppResolution = null;        
+        
+        Boolean ocr = null;
+        Boolean duplex = null;
+        String paperSize = null;
+        String documentLanguage = null;
+        String documentType = null;
+       
+        ScanWebDocument scannedDoc = new ScanWebDocument(transactionName, scannedPlainFile,
+                scannedSignedFile, scanDate, pixelType, pppResolution,
+                scannedFileFormat, ocr, duplex,  paperSize,  documentLanguage,
+                 documentType,  additionalMetadatas);
+        
+        
         scanWebResult.getScannedDocuments().add(scannedDoc);
     }
 

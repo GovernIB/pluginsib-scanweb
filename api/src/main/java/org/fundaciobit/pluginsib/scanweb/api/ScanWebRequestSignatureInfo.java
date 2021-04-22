@@ -7,12 +7,16 @@ package org.fundaciobit.pluginsib.scanweb.api;
  */
 public class ScanWebRequestSignatureInfo {
 
-    protected String documentLanguage;
-
+    /**
+     * Nom complet
+     */
     protected String functionaryFullName;
 
+    /**
+     * NIF
+     */
     protected String functionaryAdministrationID;
-    
+
     /**
      * DIR3 de la Unitat que està per damunt de l'Oficina on es troba el funcionari
      */
@@ -22,21 +26,12 @@ public class ScanWebRequestSignatureInfo {
         super();
     }
 
-    public ScanWebRequestSignatureInfo(String documentLanguage, String functionaryFullName,
-            String functionaryAdministrationID, String functionaryUnitDIR3) {
+    public ScanWebRequestSignatureInfo(String functionaryFullName, String functionaryAdministrationID,
+            String functionaryUnitDIR3) {
         super();
-        this.documentLanguage = documentLanguage;
         this.functionaryFullName = functionaryFullName;
         this.functionaryAdministrationID = functionaryAdministrationID;
         this.functionaryUnitDIR3 = functionaryUnitDIR3;
-    }
-
-    public String getDocumentLanguage() {
-        return documentLanguage;
-    }
-
-    public void setDocumentLanguage(String documentLanguage) {
-        this.documentLanguage = documentLanguage;
     }
 
     public String getFunctionaryFullName() {

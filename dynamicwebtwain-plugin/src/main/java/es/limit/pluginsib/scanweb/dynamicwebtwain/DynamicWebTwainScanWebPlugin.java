@@ -49,6 +49,7 @@ import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
  * @author LIMIT
  * @author anadal-fundaciobit (Adaptar a API 2.0.0, afegir firma, afegir suport
  *         multiples versions)
+ * @author anadal-fundaciobit (Adaptar a API 4.0.0)
  * 
  */
 public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implements IScanWebPlugin {
@@ -120,9 +121,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         /**
          * 
          */
-        mapProfunditatColor.put("0", MetadataConstants.ProfundidadColorConstants.BW);
-        mapProfunditatColor.put("1", MetadataConstants.ProfundidadColorConstants.GRAY);
-        mapProfunditatColor.put("2", MetadataConstants.ProfundidadColorConstants.COLOR);
+        mapProfunditatColor.put("0", ScanWebDocument.PIXEL_TYPE_BLACK_WHITE);
+        mapProfunditatColor.put("1", ScanWebDocument.PIXEL_TYPE_GRAY);
+        mapProfunditatColor.put("2", ScanWebDocument.PIXEL_TYPE_COLOR);
 
     }
 
@@ -230,15 +231,15 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     @Override
     public Set<String> getSupportedScanTypes() {
         final Set<String> SUPPORTED_SCAN_TYPES = Collections
-                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
     @Override
     public Set<String> getSupportedFlagsByScanType(String scanType) {
-        if (SCANTYPE_MIME_PDF.equals(scanType)) {
+        if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanType)) {
             final Set<String> SUPPORTED_FLAGS = Collections
-                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
             return SUPPORTED_FLAGS;
         }
         return null;
@@ -1044,15 +1045,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                         }
 
                     } else if ("PixelType".equals(name)) {
-
                         doc.setPixelType(mapProfunditatColor.get(value));
-
-                        // metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR,
-                        // mapProfunditatColor.get(value)));
                     } else if ("Resolution".equals(name)) {
-                        // metadatas.add(new Metadata(MetadataConstants.EEMGDE_RESOLUCION,
-                        // Long.valueOf(value)));
-
                         doc.setPppResolution(Integer.valueOf(value));
                     } else if ("IfDuplexEnabled".equals(name)) {
                         doc.setDuplex(Boolean.valueOf(value));
@@ -1124,11 +1118,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
          * String mime = fileItem.getContentType(); if (mime == null) { mime =
          * "application/pdf"; }
          */
-        String mime = "application/pdf";
+        final String mime = "application/pdf";
 
-        final Date date = new Date(System.currentTimeMillis());
+        final Date scanDate = new Date(System.currentTimeMillis());
 
-        List<Metadata> metadatas = new ArrayList<Metadata>();
+        final List<Metadata> additionalMetadatas = new ArrayList<Metadata>();
 
         /*
          * // TODO Per mantenir per retrocompatibilitat metadatas.add(new
@@ -1142,32 +1136,29 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
          * metadatas.add(new Metadata(MetadataConstants.OCR, false));
          */
 
-        ScanWebPlainFile singleScanFile = new ScanWebPlainFile(name, mime, data);
+        ScanWebPlainFile scannedPlainFile = new ScanWebPlainFile(name, mime, data);
 
         ScanWebSignedFile scannedSignedFile = null;
 
-        if (FLAG_SIGNED.equals(scanWebRequest.getFlag())) {
+               
+        String transactionName = scanWebRequest.getTransactionName();
+        String scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PDF;
+        
+        
+        // S'ompliran DESPRES dins uploadScanProperties !!!!!
+        Integer pixelType= null;
+        Integer pppResolution=null;
+        Boolean ocr = null;
+        Boolean duplex = null;
+        String paperSize = null;
+        String documentLanguage = null;
+        String documentType = null;
 
-            try {
-                // scannedSignedFile = signFile(fullInfo, languageUI, singleScanFile);
-
-                singleScanFile = null;
-
-            } catch (Exception e) {
-
-                log.error(" Error firmant document: " + e.getMessage(), e);
-                return;
-            }
-
-        }
-
-        ScanWebDocument scannedDoc = new ScanWebDocument();
-        scannedDoc.setAdditionalMetadatas(metadatas);
-        scannedDoc.setScannedSignedFile(scannedSignedFile);
-        scannedDoc.setScanDate(date);
-        scannedDoc.setScannedPlainFile(singleScanFile);
-        scannedDoc.setScannedFileFormat(IScanWebPlugin.SCANTYPE_MIME_PDF);
-
+        ScanWebDocument scannedDoc = new ScanWebDocument(transactionName, scannedPlainFile,
+            scannedSignedFile, scanDate, pixelType, pppResolution,
+            scannedFileFormat, ocr,  duplex, paperSize, documentLanguage,
+            documentType, additionalMetadatas);
+        
         scanWebResults.getScannedDocuments().add(scannedDoc);
 
         if (scanWebRequest.getMode() == ScanWebMode.ASYNCHRONOUS) {

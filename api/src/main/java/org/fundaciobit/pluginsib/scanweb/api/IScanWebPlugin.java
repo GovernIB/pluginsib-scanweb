@@ -1,6 +1,5 @@
 package org.fundaciobit.pluginsib.scanweb.api;
 
-
 import java.util.Locale;
 import java.util.Set;
 
@@ -15,28 +14,6 @@ import org.fundaciobit.pluginsib.core.IPlugin;
  * 
  */
 public interface IScanWebPlugin extends IPlugin {
-
-    public static final String SCANTYPE_MIME_TIFF = "image/tiff";
-
-    public static final String SCANTYPE_MIME_JPG = "image/jpeg";
-
-    public static final String SCANTYPE_MIME_PNG = "image/png";
-
-    public static final String SCANTYPE_MIME_GIF = "image/gif";
-    
-    public static final String SCANTYPE_MIME_PDF = "application/pdf";
-
-    public static final String FLAG_PLAIN = "PlainDoc";
-
-    public static final String FLAG_SIGNED = "Signed";
-    
-    /** Firma amb Segell de Temps */
-    public static final String FLAG_SIGNED_WITH_TIMESTAMP = "Signed_With_Timestamp";
-
-    /** Codi segur de verificació */
-    public static final String FLAG_SIGNED_AND_CUSTODY = "Signed_And_Custody";
-
-
 
     /** Pàgina o imatge addicional amb la informació de l'escaneig */
     // TODO , InfoPage

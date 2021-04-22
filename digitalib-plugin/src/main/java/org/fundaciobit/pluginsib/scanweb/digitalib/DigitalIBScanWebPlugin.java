@@ -195,14 +195,14 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
     @Override
     public Set<String> getSupportedScanTypes() {
         final Set<String> SUPPORTED_SCAN_TYPES = Collections
-                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
     @Override
     public Set<String> getSupportedFlagsByScanType(String scanType) {
 
-        if (SCANTYPE_MIME_PDF.equals(scanType)) {
+        if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanType)) {
             // XYZ ZZZ S'ha de cridar al Servidor i verure quins PLugins HIHA
 
             Set<String> flags = new HashSet<String>();
@@ -218,15 +218,14 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                     switch (profile.getProfileType()) {
 
                         case ScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-                            flags.add(FLAG_PLAIN);
+                            flags.add(ScanWebDocument.FLAG_PLAIN);
                         break;
+                        
+                        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
                         case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
-                            flags.add(FLAG_SIGNED);
+                            flags.add(ScanWebDocument.FLAG_SIGNED);
                         break;
 
-                        case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
-                            flags.add(FLAG_SIGNED_AND_CUSTODY);
-                        break;
 
                         default:
                             log.error("Tipus de Perfil desconegut: " + profile.getProfileType(), new Exception());
@@ -508,18 +507,18 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                 switch (profile.getProfileType()) {
 
                     case ScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
-                        if (!flag.equals(FLAG_PLAIN)) {
+                        if (!flag.equals(ScanWebDocument.FLAG_PLAIN)) {
                             continue;
                         }
                     break;
                     case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
-                        if (!flag.equals(FLAG_SIGNED)) {
+                        if (!flag.equals(ScanWebDocument.FLAG_SIGNED)) {
                             continue;
                         }
                     break;
 
                     case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
-                        if (!flag.equals(FLAG_SIGNED_AND_CUSTODY)) {
+                        if (!flag.equals(ScanWebDocument.FLAG_SIGNED)) {
                             continue;
                         }
                     break;

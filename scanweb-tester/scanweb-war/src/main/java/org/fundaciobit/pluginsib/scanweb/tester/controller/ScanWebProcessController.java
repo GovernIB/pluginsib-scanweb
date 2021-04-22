@@ -2,7 +2,6 @@ package org.fundaciobit.pluginsib.scanweb.tester.controller;
 
 import org.apache.log4j.Logger;
 import org.fundaciobit.plugins.documentcustody.api.AnnexCustody;
-import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
@@ -73,7 +72,7 @@ public class ScanWebProcessController {
         form.setMode("S"); // S = Sincron | A=Asincron
 
         // Acceptam qualsevol combinació        
-        form.setFlag(IScanWebPlugin.FLAG_PLAIN);
+        form.setFlag(ScanWebDocument.FLAG_PLAIN);
         String id = String.valueOf(ScanWebModuleController.generateUniqueScanWebID());
         form.setId(id);
         form.setTransactionName("ScanWeb Tester " + id);
@@ -85,17 +84,17 @@ public class ScanWebProcessController {
         form.setFunctionaryUnitDIR3("A04026951"); // Dirección General de Pesca y Medio Marino
 
         List<String> supportedTypes = new ArrayList<String>();
-        supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_PDF);
-        supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_JPG);
-        supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_PNG);
-        supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_GIF);
-        supportedTypes.add(IScanWebPlugin.SCANTYPE_MIME_TIFF);
+        supportedTypes.add(ScanWebDocument.SCANTYPE_MIME_PDF);
+        supportedTypes.add(ScanWebDocument.SCANTYPE_MIME_JPG);
+        supportedTypes.add(ScanWebDocument.SCANTYPE_MIME_PNG);
+        supportedTypes.add(ScanWebDocument.SCANTYPE_MIME_GIF);
+        supportedTypes.add(ScanWebDocument.SCANTYPE_MIME_TIFF);
 
         List<String> supportedFlags = new ArrayList<String>();
-        supportedFlags.add(IScanWebPlugin.FLAG_PLAIN);
-        supportedFlags.add(IScanWebPlugin.FLAG_SIGNED);
-        supportedFlags.add(IScanWebPlugin.FLAG_SIGNED_WITH_TIMESTAMP);
-        supportedFlags.add(IScanWebPlugin.FLAG_SIGNED_AND_CUSTODY);
+        supportedFlags.add(ScanWebDocument.FLAG_PLAIN);
+        supportedFlags.add(ScanWebDocument.FLAG_SIGNED);
+        supportedFlags.add(ScanWebDocument.FLAG_SIGNED_WITH_TIMESTAMP);
+        //supportedFlags.add(ScanWebDocument.FLAG_SIGNED_AND_CUSTODY);
 
         ModelAndView mav = new ModelAndView("scanWebForm");
         mav.addObject(form);
@@ -136,14 +135,16 @@ public class ScanWebProcessController {
          */
         String flag = form.getFlag();
         ScanWebRequestSignatureInfo signatureInfo = null;
-        if (flag.equals(IScanWebPlugin.FLAG_SIGNED) || flag.equals(IScanWebPlugin.FLAG_SIGNED_WITH_TIMESTAMP)
-                || flag.equals(IScanWebPlugin.FLAG_SIGNED_AND_CUSTODY)) {
+        if (flag.equals(ScanWebDocument.FLAG_SIGNED) 
+                || flag.equals(ScanWebDocument.FLAG_SIGNED_WITH_TIMESTAMP)
+                //|| flag.equals(ScanWebDocument.FLAG_SIGNED_AND_CUSTODY)
+                ) {
 
-            String documentLanguage = form.getLangDoc();
+            
             String functionaryFullName = form.getNom();
             String functionaryAdministrationID = form.getNif();
             String functionaryUnitDIR3 = form.getFunctionaryUnitDIR3();
-            signatureInfo = new ScanWebRequestSignatureInfo(documentLanguage, functionaryFullName,
+            signatureInfo = new ScanWebRequestSignatureInfo(functionaryFullName,
                     functionaryAdministrationID,functionaryUnitDIR3);
         }
 

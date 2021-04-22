@@ -52,3 +52,5 @@
 /compile.bat
 /digitalibmassive-plugin/.settings
 /digitalibmassive-plugin/target
+/target
+/scanweb-tester/target

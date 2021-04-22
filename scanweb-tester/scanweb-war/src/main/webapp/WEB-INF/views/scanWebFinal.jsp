@@ -64,7 +64,26 @@
     
     <li>scanDate: <b><fmt:formatDate value='${scannedDocument.scanDate}' type='date' pattern='dd-MM-yyyy hh:mm'/></b> </li>
 
-    <li>pixelType: <b>${scannedDocument.pixelType}</b> </li>
+    <li>pixelType: 
+       <c:if test="${not empty scannedDocument.pixelType }">
+            <b>
+            <c:choose>
+                <c:when test="${scannedDocument.pixelType == 0}">
+                   BLACK_WHITE
+                </c:when>
+                <c:when test="${scannedDocument.pixelType == 1}">
+                    GRAY
+                </c:when>
+                <c:when test="${scannedDocument.pixelType == 2}">
+                    COLOR
+                </c:when>
+                <c:otherwise>
+                    Unknown Pixel Type ${scannedDocument.pixelType}                
+                </c:otherwise> 
+            </c:choose>
+            </b> (${scannedDocument.pixelType})
+       </c:if>
+    </li>
 
     <li>pppResolution: <b>${scannedDocument.pppResolution}</b> </li>
     

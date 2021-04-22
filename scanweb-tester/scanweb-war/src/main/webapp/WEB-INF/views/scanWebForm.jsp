@@ -1,6 +1,7 @@
-<%@page import="org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin"%>
-<%@ include file="/WEB-INF/views/html_header.jsp"%>
-
+<%@page import="org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument"
+%><%@page import="org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin"
+%><%@ include file="/WEB-INF/views/html_header.jsp"
+%>
 <h3 class="tabs_involved">
   &nbsp;&nbsp;&nbsp;<fmt:message key="scan.proces" />
 </h3>
@@ -105,23 +106,6 @@
            </td>
          </tr>
          
-         <tr id="langDoctr" style="visibility: none">
-          <td><label>Idioma del Document &nbsp;</label></td>
-            <td>
-          <form:errors path="langDoc" cssClass="errorField alert alert-error" />
-          <form:select path="langDoc">
-          <form:option value="" selected="true" ></form:option>
-            <form:option value="ca" >Catal&agrave;</form:option>
-            <form:option value="es" >Castell&agrave;</form:option>
-          </form:select>
-           </td>
-         </tr>
-         
-         
-         
-         
-         
-         
      </tbody>
     </table>
     
@@ -143,7 +127,7 @@
     function canviatFlag() {
     	var d = document.getElementById("flag").value;
     	
-    	if (d == '<%=IScanWebPlugin.FLAG_PLAIN %>') {
+    	if (d == '<%=ScanWebDocument.FLAG_PLAIN %>') {
     	   document.getElementById("nomtr").style.display = 'none';
     	   document.getElementById("niftr").style.display = 'none';
     	   document.getElementById("langDoctr").style.display = 'none';

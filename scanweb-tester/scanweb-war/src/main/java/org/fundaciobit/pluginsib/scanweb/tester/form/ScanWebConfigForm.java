@@ -27,8 +27,6 @@ public class ScanWebConfigForm {
     
     protected String nif;
     
-    protected String langDoc;
-    
     protected String functionaryUnitDIR3;
     
 
@@ -111,13 +109,6 @@ public class ScanWebConfigForm {
         this.nif = nif;
     }
 
-    public String getLangDoc() {
-        return langDoc;
-    }
-
-    public void setLangDoc(String langDoc) {
-        this.langDoc = langDoc;
-    }
 
     public String getFunctionaryUnitDIR3() {
         return functionaryUnitDIR3;

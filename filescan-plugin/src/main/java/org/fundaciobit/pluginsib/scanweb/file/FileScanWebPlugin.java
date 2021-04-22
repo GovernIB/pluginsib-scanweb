@@ -21,13 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.fundaciobit.pluginsib.core.utils.Metadata;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
-import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebResult;
+import org.fundaciobit.pluginsib.scanweb.api.ScanWebSignedFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 
 /**
@@ -79,30 +80,27 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
     public String startScanWebTransaction(String absolutePluginRequestPath, String relativePluginRequestPath,
             HttpServletRequest request, ScanWebRequest scanWebRequest) throws Exception {
 
-        ScanWebStatus status = putScanWebRequest(scanWebRequest, System.currentTimeMillis() + DEFAULT_TIME_BY_TRANSACTION);
+        ScanWebStatus status = putScanWebRequest(scanWebRequest,
+                System.currentTimeMillis() + DEFAULT_TIME_BY_TRANSACTION);
         status.setStatus(ScanWebStatus.STATUS_IN_PROGRESS);
 
         return relativePluginRequestPath + "/" + UPLOAD_FILE_PAGE;
     }
 
-
-
     @Override
     public Set<String> getSupportedScanTypes() {
         final Set<String> SUPPORTED_SCAN_TYPES = Collections
-                .unmodifiableSet(new HashSet<String>(Arrays.asList(SCANTYPE_MIME_PDF)));
+                .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
-
-
     @Override
     public Set<String> getSupportedFlagsByScanType(String scanType) {
-        if (SCANTYPE_MIME_PDF.equals(scanType)) {
-            
+        if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanType)) {
+
             final Set<String> SUPPORTED_FLAGS = Collections
-                    .unmodifiableSet(new HashSet<String>(Arrays.asList(FLAG_PLAIN)));
-            
+                    .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
+
             return SUPPORTED_FLAGS;
         }
         return null;
@@ -169,7 +167,8 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
                     PrintWriter out = generateHeader(request, response, absolutePluginRequestPath,
                             relativePluginRequestPath, languageUI);
-                    uploadFileGET(relativePluginRequestPath, query, scanWebID, scanWebRequest, scanWebResult, out, languageUI);
+                    uploadFileGET(relativePluginRequestPath, query, scanWebID, scanWebRequest, scanWebResult, out,
+                            languageUI);
 
                     generateFooter(out);
                 } else {
@@ -254,14 +253,13 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         out.println("<table border=0 width=\"100%\">");
 
         StringBuffer str = getMessagesInHtml(scanWebID);
-        
+
         if (str.length() != 0) {
             out.println("<tr><td align=center>\n");
             out.println(str.toString());
             out.println("</td></tr>\n");
         }
 
-        
         out.println("<tr><td align=center>");
 
         out.println("<h3>" + getTraduccio("selectfile", locale) + "</h3><br/>");
@@ -289,40 +287,40 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         out.println("</td>");
         out.println("</tr>");
         out.println("</table>");
-        
+
         clearMessages(scanWebID);
     }
 
     protected StringBuffer getMessagesInHtml(String scanWebID) {
         StringBuffer str = new StringBuffer("");
-        Map<String, List<String> > messages = getMessages(scanWebID);
+        Map<String, List<String>> messages = getMessages(scanWebID);
         if (messages != null && messages.size() != 0) {
-            
-          for(String level : messages.keySet()) {
-              
-              List<String> avisos = messages.get(level);
-              
-              String tipus;
-              
-              if (level.equals(ERROR)) {
-                  tipus = "alert-error";
-              } else if(level.equals(WARN)) {
-                  tipus = "alert-warning";
-              } else if(level.equals(SUCCESS)) {
-                  tipus = "alert-success";
-              } else if(level.equals(INFO)) {
-                  tipus = "alert-info";
-              } else {
-                  tipus = "";
-              }
-              
-              for (String av : avisos) {
-                  str.append("<div class=\"alert ").append(tipus).append("alert-error\">\n");
-                  str.append(av).append("\n");
-                  str.append("</div>\n");
-              }
-              
-          }
+
+            for (String level : messages.keySet()) {
+
+                List<String> avisos = messages.get(level);
+
+                String tipus;
+
+                if (level.equals(ERROR)) {
+                    tipus = "alert-error";
+                } else if (level.equals(WARN)) {
+                    tipus = "alert-warning";
+                } else if (level.equals(SUCCESS)) {
+                    tipus = "alert-success";
+                } else if (level.equals(INFO)) {
+                    tipus = "alert-info";
+                } else {
+                    tipus = "";
+                }
+
+                for (String av : avisos) {
+                    str.append("<div class=\"alert ").append(tipus).append("alert-error\">\n");
+                    str.append(av).append("\n");
+                    str.append("</div>\n");
+                }
+
+            }
         }
         return str;
     }
@@ -342,34 +340,36 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         if (uf == null || uf.getSize() == 0) {
 
             log.info("XYZ ZZZ uploadCertificatePOST:: Error no hi ha fitxers pujats");
-            
-          //error.noseleccionatfitxer=No ha seleccionado ningún fitxer. Vuelva a intentarlo
+
+            // error.noseleccionatfitxer=No ha seleccionado ningún fitxer. Vuelva a
+            // intentarlo
 
             saveMessageError(scanWebID, getTraduccio("error.noseleccionatfitxer", locale));
             sendRedirect(response, pluginRequestPath + UPLOAD_FILE_PAGE);
             return;
         }
-        
-        //  XYZ ZZZ TODO VALIDAR SI EL FITXER PUJAT ES del tipus requerit
-        //  scanWebRequest.getScanType() == uf.getContentType()
-        
-        
+
+        // XYZ ZZZ TODO VALIDAR SI EL FITXER PUJAT ES del tipus requerit
+        // scanWebRequest.getScanType() == uf.getContentType()
+
         String scannedFileFormat = null;
         if ("application/pdf".equals(uf.getContentType())) {
-            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_PDF;
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PDF;
         } else if ("image/gif".equals(uf.getContentType())) {
-            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_GIF;
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_GIF;
         } else if ("image/jpeg".equals(uf.getContentType())) {
-            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_JPG;
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_JPG;
         } else if ("image/png".equals(uf.getContentType())) {
-            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_PNG;
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PNG;
         } else if ("image/tiff".equals(uf.getContentType())) {
-            scannedFileFormat = IScanWebPlugin.SCANTYPE_MIME_TIFF;
+            scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_TIFF;
         }
-        
-        if (scannedFileFormat == null || !scannedFileFormat.equals(scanWebRequest.getScanType())) { 
-            //error.tipusincorrecte=Ha seleccionado un fichero de tipo {0} y se requiere que sea de tipo {1}.
-            saveMessageError(scanWebID, getTraduccio("error.tipusincorrecte", locale, uf.getContentType() , scanWebRequest.getScanType() + "(SCANFORMAT:" + scannedFileFormat +")" ));
+
+        if (scannedFileFormat == null || !scannedFileFormat.equals(scanWebRequest.getScanType())) {
+            // error.tipusincorrecte=Ha seleccionado un fichero de tipo {0} y se requiere
+            // que sea de tipo {1}.
+            saveMessageError(scanWebID, getTraduccio("error.tipusincorrecte", locale, uf.getContentType(),
+                    scanWebRequest.getScanType() + "(SCANFORMAT:" + scannedFileFormat + ")"));
             sendRedirect(response, pluginRequestPath + UPLOAD_FILE_PAGE);
             return;
         }
@@ -379,20 +379,31 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
             org.fundaciobit.pluginsib.core.utils.FileUtils.copy(uf.getInputStream(), baos);
 
-            ScanWebPlainFile plainFile = new ScanWebPlainFile(uf.getName(), uf.getContentType(), baos.toByteArray());
+            ScanWebPlainFile scannedPlainFile = new ScanWebPlainFile(uf.getName(), uf.getContentType(),
+                    baos.toByteArray());
 
-            ScanWebDocument doc = new ScanWebDocument();
+            String transactionName = scanWebRequest.getTransactionName();
 
-            doc.setScanDate(new Date());
-            doc.setScannedPlainFile(plainFile);
-            
-            doc.setScannedFileFormat(scannedFileFormat);
-            
+            ScanWebSignedFile scannedSignedFile = null;
+            Date scanDate = new Date();
+            Integer pixelType = null;
+            Integer pppResolution = null;
+            Boolean ocr = null;
+            Boolean duplex = null;
+            String paperSize = null;
+            String documentLanguage = null;
+            String documentType = null;
+            List<Metadata> additionalMetadatas = null;
+
+            // TODO XYZ ZZZ Fer que FileInfoScan obtengui més info
+            ScanWebDocument doc = new ScanWebDocument(transactionName, scannedPlainFile, scannedSignedFile, scanDate,
+                    pixelType, pppResolution, scannedFileFormat, ocr, duplex, paperSize, documentLanguage, documentType,
+                    additionalMetadatas);
 
             scanWebResult.getScannedDocuments().add(doc);
             scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
 
-            log.info("XYZ ZZZ uploadCertificatePOST:: FINAL OK");
+            
 
             // final String url;
             // url = swc.getUrlFinal();
@@ -520,7 +531,6 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         }
 
     }
-
 
     @Override
     public boolean isMassiveScanAllowed() {

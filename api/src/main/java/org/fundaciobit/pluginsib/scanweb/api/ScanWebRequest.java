@@ -2,7 +2,6 @@ package org.fundaciobit.pluginsib.scanweb.api;
 
 import java.util.List;
 
-
 import org.fundaciobit.pluginsib.core.utils.Metadata;
 
 /**
@@ -11,9 +10,9 @@ import org.fundaciobit.pluginsib.core.utils.Metadata;
  *
  */
 public class ScanWebRequest {
-    
+
     protected String scanWebID;
-    
+
     protected String transactionName;
 
     protected String scanType;
@@ -42,8 +41,8 @@ public class ScanWebRequest {
         super();
     }
 
-    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI, String username,
-            String urlFinal, List<Metadata> metadades) {
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode,
+            String languageUI, String username, String urlFinal, List<Metadata> metadades) {
         super();
         this.scanWebID = scanWebID;
         this.transactionName = transactionName;
@@ -56,8 +55,9 @@ public class ScanWebRequest {
         this.urlFinal = urlFinal;
     }
 
-    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI,
-            String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo) {
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode,
+            String languageUI, String username, String urlFinal, List<Metadata> metadades,
+            ScanWebRequestSignatureInfo signatureInfo) {
         super();
         this.scanWebID = scanWebID;
         this.transactionName = transactionName;
@@ -71,9 +71,9 @@ public class ScanWebRequest {
         this.signatureInfo = signatureInfo;
     }
 
-    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode, String languageUI,
-            String username, String urlFinal, List<Metadata> metadades, ScanWebRequestSignatureInfo signatureInfo,
-            ScanWebRequestCustodyInfo custodyInfo) {
+    public ScanWebRequest(String scanWebID, String transactionName, String scanType, String flag, ScanWebMode mode,
+            String languageUI, String username, String urlFinal, List<Metadata> metadades,
+            ScanWebRequestSignatureInfo signatureInfo, ScanWebRequestCustodyInfo custodyInfo) {
         super();
         this.scanWebID = scanWebID;
         this.transactionName = transactionName;
@@ -95,7 +95,7 @@ public class ScanWebRequest {
     public void setScanWebID(String scanWebID) {
         this.scanWebID = scanWebID;
     }
-    
+
     public String getTransactionName() {
         return transactionName;
     }
