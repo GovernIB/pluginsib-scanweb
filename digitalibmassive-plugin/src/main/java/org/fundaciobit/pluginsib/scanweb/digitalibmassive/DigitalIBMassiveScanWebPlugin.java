@@ -807,9 +807,9 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
 
                 scannedPlainFile = new ScanWebPlainFile(detached.getNom(), detached.getMime(), detached.getData());
 
-                attachedDocument = true;
-            } else {
                 attachedDocument = false;
+            } else {
+                attachedDocument = true;
 
                 scannedPlainFile = null;
             }

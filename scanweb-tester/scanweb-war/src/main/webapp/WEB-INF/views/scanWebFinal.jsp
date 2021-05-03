@@ -96,6 +96,8 @@
     
     <li>paperSize: <b>${scannedDocument.paperSize}</b> </li>
     
+    <li>Tipus de Document: <b>${scannedDocument.documentType}</b> </li>
+    
     
     
     </ul>
