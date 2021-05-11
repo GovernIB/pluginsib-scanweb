@@ -130,12 +130,10 @@
     	if (d == '<%=ScanWebDocument.FLAG_PLAIN %>') {
     	   document.getElementById("nomtr").style.display = 'none';
     	   document.getElementById("niftr").style.display = 'none';
-    	   document.getElementById("langDoctr").style.display = 'none';
     	   document.getElementById("functionaryUnitDIR3tr").style.display = 'none';
     	} else {
            document.getElementById("nomtr").style.display = '';
            document.getElementById("niftr").style.display = '';
-           document.getElementById("langDoctr").style.display = '';
            document.getElementById("functionaryUnitDIR3tr").style.display = '';
     	}
     }
