@@ -495,6 +495,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("\n");
         out.print(" function AcquireImage() {\n");
         // out.print( " debugger;\n");
+        out.print("   document.getElementById(\"scanSource\").disabled = true;\n");
+        out.print("   document.getElementById(\"scanOrigen\").disabled = true;\n");
+        out.print("   document.getElementById(\"scanColor\").disabled = true;\n");
+        out.print("   document.getElementById(\"scanResolution\").disabled = true;\n");
+        out.print("   document.getElementById(\"scanDuplex\").disabled = true;\n");
         out.print("   if (DWObject) {\n");
         out.print("     DWObject.SelectSourceByIndex(document.getElementById('scanSource').selectedIndex);\n");
         out.print("     DWObject.OpenSource();\n");
@@ -552,6 +557,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print(" function btnRemoveAllImages_onclick() {\n");
         out.print("   if (DWObject) {\n");
         out.print("     DWObject.RemoveAllImages();\n");
+        out.print("     document.getElementById(\"scanSource\").disabled = false;\n");
+        out.print("     document.getElementById(\"scanOrigen\").disabled = false;\n");
+        out.print("     document.getElementById(\"scanColor\").disabled = false;\n");
+        out.print("     document.getElementById(\"scanResolution\").disabled = false;\n");
+        out.print("     document.getElementById(\"scanDuplex\").disabled = false;\n");
         out.print("   }\n");
         out.print(" }\n");
         out.print("\n");
