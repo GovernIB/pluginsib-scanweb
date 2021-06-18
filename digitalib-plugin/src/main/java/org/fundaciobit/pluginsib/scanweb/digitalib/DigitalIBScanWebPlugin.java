@@ -220,12 +220,11 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                         case ScanWebSimpleAvailableProfile.PROFILE_TYPE_ONLY_SCAN:
                             flags.add(ScanWebDocument.FLAG_PLAIN);
                         break;
-                        
+
                         case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
                         case ScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE:
                             flags.add(ScanWebDocument.FLAG_SIGNED);
                         break;
-
 
                         default:
                             log.error("Tipus de Perfil desconegut: " + profile.getProfileType(), new Exception());
@@ -769,83 +768,65 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                         List<Metadata> metadatas = new ArrayList<Metadata>();
 
                         ScanWebSimpleFormMetadatas form = result.getFormMetadatas();
-                        /*
-                         * ScanWebSimpleScannedFileInfo scannedFileInfo = result.getScannedFileInfo();
-                         * ScanWebSimpleSignatureParameters signParams = form.getSignatureParameters();
-                         * ScanWebSimpleArxiuRequiredParameters arxiuRequired =
-                         * form.getArxiuRequiredParameters(); ScanWebSimpleArxiuOptionalParameters
-                         * arxiuOptional = form.getArxiuOptionalParameters();
-                         * 
-                         * 
-                         * ScanWebSimpleSignedFileInfo signedInfo = result.getSignedFileInfo();
-                         * 
-                         * if (signedInfo != null) { // PERFIL DE FIRMA addMetadata(metadatas,
-                         * MetadataConstants.ENI_PERFIL_FIRMA, signedInfo.getEniPerfilFirma());
-                         * 
-                         * // ROL DE FIRMA addMetadata(metadatas, MetadataConstants.EEMGDE_ROL_FIRMA,
-                         * signedInfo.getEniPerfilFirma());
-                         * 
-                         * // NIF del Firmant addMetadata(metadatas,
-                         * MetadataConstants.EEMGDE_FIRMANTE_IDENTIFICADOR,
-                         * signedInfo.getEniSignerAdministrationId());
-                         * 
-                         * // Nom del Firmant addMetadata(metadatas,
-                         * MetadataConstants.EEMGDE_FIRMANTE_NOMBRECOMPLETO,
-                         * signedInfo.getEniSignerName());
-                         * 
-                         * // Tipus Firma ENI addMetadata(metadatas, MetadataConstants.ENI_TIPO_FIRMA,
-                         * signedInfo.getEniTipoFirma());
-                         * 
-                         * // Nivell de Firma addMetadata(metadatas,
-                         * MetadataConstants.EEMGDE_NIVEL_DE_FIRMA, signedInfo.getEniSignLevel()); }
-                         * 
-                         * // Nombre del Documento addMetadata(metadatas,
-                         * MetadataConstants.TITULO_DOCUMENTO, form.getTransactionName());
-                         * 
-                         * // PROFUNDITAT DE COLOR processarMetadadaProfundadadColor(metadatas,
-                         * scannedFileInfo);
-                         * 
-                         * // RESOLUCIO addMetadata(metadatas, MetadataConstants.EEMGDE_RESOLUCION,
-                         * scannedFileInfo.getPppResolution());
-                         * 
-                         * // OCR addMetadata(metadatas, MetadataConstants.OCR,
-                         * scannedFileInfo.getOcr());
-                         * 
-                         * // FUNCIONARI addMetadata(metadatas, MetadataConstants.FUNCTIONARY_USERNAME,
-                         * form.getFunctionaryUsername()); if (signParams != null) {
-                         * addMetadata(metadatas, MetadataConstants.FUNCTIONARY_ADMINISTRATIONID,
-                         * signParams.getFunctionaryAdministrationID()); addMetadata(metadatas,
-                         * MetadataConstants.FUNCTIONARY_FULLNAME, signParams.getFunctionaryFullName());
-                         * }
-                         * 
-                         * // IDIOMA addMetadata(metadatas, MetadataConstants.ENI_IDIOMA,
-                         * signParams.getDocumentLanguage());
-                         */
 
-                        // XYZ ZZZ FALTA DADES D'ARXIU !!!!
-                        /*
-                         * if (arxiuRequired != null) { // TIPUS DOCUMENTAL addMetadata(metadatas,
-                         * MetadataConstants.ENI_TIPO_DOCUMENTAL, arxiuRequired.getDocumentType());
-                         * 
-                         * // ORIGEN processarMetadadaOrigen(metadatas, arxiuRequired);
-                         * 
-                         * // ESTAT ELABORACIO processarMetadadaEstatElaboracio(metadatas,
-                         * arxiuRequired);
-                         * 
-                         * // INTERESSATS processarMetadadaInteressats(metadatas, arxiuRequired);
-                         * 
-                         * // // arxiuRequired.getAffectedOrganisms()
-                         * 
-                         * // CIUTADA addMetadata(metadatas, MetadataConstants.CITIZEN_ADMINISTRATIONID,
-                         * arxiuRequired.getCitizenAdministrationID()); addMetadata(metadatas,
-                         * MetadataConstants.CITIZEN_FULLNAME, arxiuRequired.getCitizenFullName()); }
-                         * 
-                         * if (arxiuOptional != null) { // CODI PROCEDIMENT addMetadata(metadatas,
-                         * MetadataConstants.ENI_ID_TRAMITE, arxiuOptional.getProcedureCode());
-                         * 
-                         * // NOM PROCEDIMENT addMetadata(metadatas, MetadataConstants.ENI_ID_TRAMITE +
-                         * ".description", arxiuOptional.getProcedureName()); }
-                         */
+                        ScanWebSimpleSignatureParameters signParams = form.getSignatureParameters();
+                        ScanWebSimpleScannedFileInfo scannedFileInfo = result.getScannedFileInfo();
+                        ScanWebSimpleArxiuRequiredParameters arxiuRequired = form.getArxiuRequiredParameters();
+                        ScanWebSimpleArxiuOptionalParameters arxiuOptional = form.getArxiuOptionalParameters();
+
+                        // FUNCIONARI
+                        addMetadata(metadatas, MetadataConstants.FUNCTIONARY_USERNAME, form.getFunctionaryUsername());
+
+                        if (arxiuOptional != null) {
+                            // CODI PROCEDIMENT
+                            addMetadata(metadatas, MetadataConstants.ENI_ID_TRAMITE, arxiuOptional.getProcedureCode());
+
+                            // NOM PROCEDIMENT
+                            addMetadata(metadatas, MetadataConstants.ENI_ID_TRAMITE + ".description",
+                                    arxiuOptional.getProcedureName());
+
+                        }
+
+                        doc.setTransactionName(form.getTransactionName());
+
+                        if (signParams != null) {
+                            doc.setDocumentLanguage(signParams.getDocumentLanguage());
+
+                            addMetadata(metadatas, MetadataConstants.FUNCTIONARY_ADMINISTRATIONID,
+                                    signParams.getFunctionaryAdministrationID());
+
+                            addMetadata(metadatas, MetadataConstants.FUNCTIONARY_FULLNAME,
+                                    signParams.getFunctionaryFullName());
+
+                        }
+
+                        doc.setOcr(scannedFileInfo.getOcr());
+
+                        // PROFUNDITAT DE COLOR I RESOLUCIO
+                        processarMetadadaProfundadadColor(doc, metadatas, scannedFileInfo);
+                        doc.setPppResolution(scannedFileInfo.getPppResolution());
+
+                        // TIPUS DOCUMENTAL
+                        if (arxiuRequired != null) {
+
+                            doc.setDocumentType(arxiuRequired.getDocumentType());
+
+                            // ESTAT ELABORACIO
+                            processarMetadadaEstatElaboracio(metadatas, arxiuRequired);
+
+                            // INTERESSATS
+                            processarMetadadaInteressats(metadatas, arxiuRequired);
+
+                            // CIUTADA
+                            addMetadata(metadatas, MetadataConstants.CITIZEN_ADMINISTRATIONID,
+                                    arxiuRequired.getCitizenAdministrationID());
+                            addMetadata(metadatas, MetadataConstants.CITIZEN_FULLNAME,
+                                    arxiuRequired.getCitizenFullName());
+
+                        }
+
+                        // ORIGEN
+                        processarMetadadaOrigen(metadatas, arxiuRequired);
 
                         // RESTA DE METADADES
                         copyMetadatas(form.getAdditionalMetadatas(), metadatas);
@@ -853,14 +834,14 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
                         doc.setAdditionalMetadatas(metadatas);
 
                         scanWebResult.getScannedDocuments().add(doc);
+
                         scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
                     } // Final Case Firma OK
                     break;
 
                 } // Final Switch Firma
 
-            }
-            ; // Final de IF de estat local OK
+            } // Final de IF de estat local OK
 
             if (ScanWebMode.ASYNCHRONOUS.equals(scanWebRequest.getMode())) {
 
@@ -921,7 +902,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
 
     }
 
-    protected void processarMetadadaInteressats(List<Metadata> metadatas,
+    private void processarMetadadaInteressats(List<Metadata> metadatas,
             ScanWebSimpleArxiuRequiredParameters arxiuRequired) {
         List<String> interessats = arxiuRequired.getInterestedPersons();
         if (interessats != null && interessats.size() != 0) {
@@ -939,7 +920,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         }
     }
 
-    protected void processarMetadadaEstatElaboracio(List<Metadata> metadatas,
+    private void processarMetadadaEstatElaboracio(List<Metadata> metadatas,
             ScanWebSimpleArxiuRequiredParameters arxiuRequired) {
         if (arxiuRequired.getDocumentElaborationState() != null) {
 
@@ -966,8 +947,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         }
     }
 
-    protected void processarMetadadaOrigen(List<Metadata> metadatas,
-            ScanWebSimpleArxiuRequiredParameters arxiuRequired) {
+    private void processarMetadadaOrigen(List<Metadata> metadatas, ScanWebSimpleArxiuRequiredParameters arxiuRequired) {
         if (arxiuRequired.getDocumentOrigen() != null) {
             switch (arxiuRequired.getDocumentOrigen()) {
                 case ScanWebSimpleArxiuRequiredParameters.DOCUMENTORIGEN_ADMINISTRACIO:
@@ -981,25 +961,25 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         }
     }
 
-    protected void addMetadata(List<Metadata> metadatas, String key, Boolean value) {
+    private void addMetadata(List<Metadata> metadatas, String key, Boolean value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }
     }
 
-    protected void addMetadata(List<Metadata> metadatas, String key, String value) {
+    private void addMetadata(List<Metadata> metadatas, String key, String value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }
     }
 
-    protected void addMetadata(List<Metadata> metadatas, String key, Integer value) {
+    private void addMetadata(List<Metadata> metadatas, String key, Integer value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }
     }
 
-    protected void processarMetadadaProfundadadColor(List<Metadata> metadatas,
+    private void processarMetadadaProfundadadColor(ScanWebDocument doc, List<Metadata> metadatas,
             ScanWebSimpleScannedFileInfo scannedFileInfo) {
         Integer profundidadDeColor;
         String pixelType;
@@ -1011,18 +991,18 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
             switch (scannedFileInfo.getPixelType()) {
 
                 case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_BLACK_WHITE:
-                    profundidadDeColor = MetadataConstants.ProfundidadColorConstants.BW;
+                    profundidadDeColor = ScanWebDocument.PIXEL_TYPE_BLACK_WHITE;
                     // XYZ ZZZ TRA
                     pixelType = "Blanc i negre";
                 break;
                 case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_GRAY:
-                    profundidadDeColor = MetadataConstants.ProfundidadColorConstants.GRAY;
+                    profundidadDeColor = ScanWebDocument.PIXEL_TYPE_GRAY;
                     // XYZ ZZZ TRA
                     pixelType = "Escala de grisos";
                 break;
 
                 case ScanWebSimpleScannedFileInfo.PIXEL_TYPE_COLOR:
-                    profundidadDeColor = MetadataConstants.ProfundidadColorConstants.COLOR;
+                    profundidadDeColor = ScanWebDocument.PIXEL_TYPE_COLOR;
                     // XYZ ZZZ TRA
                     pixelType = "Color";
                 break;
@@ -1034,7 +1014,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         }
 
         if (pixelType != null) {
-            metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR, profundidadDeColor));
+            doc.setPixelType(profundidadDeColor);
             metadatas.add(new Metadata(MetadataConstants.EEMGDE_PROFUNDIDAD_COLOR + ".description", pixelType));
         }
     }
