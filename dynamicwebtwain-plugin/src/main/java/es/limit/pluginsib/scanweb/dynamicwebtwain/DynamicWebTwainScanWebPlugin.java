@@ -372,25 +372,16 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
         // Carregam els texts en català per si hi ha algun problema al
         // carregar els fitxers de missatges multiidioma
-        String disp = "Dispositiu";
-        String safata = "Safata entrada document";
-        String color = "Color";
-        String res = "Resolució";
-        String duplex = "Duplex";
-        String clean = "Esborra actual";
-        String cleanAll = "Esborra tot";
-        String msgErrorValidacio = "Hi ha errors en el camp del formulari.";
-        String upError = "S\\'ha produït un error, i no s\\'ha pogut pujar el document escanejat.";
 
-        disp = getTraduccio("dwt.dispositiu", languageUI);
-        safata = getTraduccio("dwt.safata", languageUI);
-        color = getTraduccio("dwt.color", languageUI);
-        res = getTraduccio("dwt.resolucio", languageUI);
-        duplex = getTraduccio("dwt.duplex", languageUI);
-        clean = getTraduccio("dwt.borra.actual", languageUI);
-        cleanAll = getTraduccio("dwt.borra.tot", languageUI);
-        upError = getTraduccio("dwt.error.upload", languageUI);
-        msgErrorValidacio = getTraduccio("dwt.error.validacio", languageUI);
+        String disp = getTraduccio("dwt.dispositiu", languageUI);
+        String safata = getTraduccio("dwt.safata", languageUI);
+        String color = getTraduccio("dwt.color", languageUI);
+        String res = getTraduccio("dwt.resolucio", languageUI);
+        String duplex = getTraduccio("dwt.duplex", languageUI);
+        String clean = getTraduccio("dwt.borra.actual", languageUI);
+        String cleanAll = getTraduccio("dwt.borra.tot", languageUI);
+        String upError = getTraduccio("dwt.error.upload", languageUI);
+        String msgErrorValidacio = getTraduccio("dwt.error.validacio", languageUI);
         String pujarServidor = getTraduccio("pujarServidor", languageUI);
 
         out.println("<script type=\"text/javascript\">");
@@ -725,8 +716,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("    <table style=\"border: 0px solid black;\">");
         out.println("     <tr><td align=\"left\">");
         out.println("      <div id=\"escanejats\" style=\"width:350px;font-size:15px\">");
-        out.println("      <ol><li>Introdueix els documents dins l'escàner.</li>"
-                + "<li>Configura els següent paràmetres de l'escaneig:</li></ol>");
+        // Introdueix els documents dins l'escàner.
+        out.println("      <ol><li>" + getTraduccio("dwt.instruccions.1", languageUI, null)+"</li>");
+        // Configura els següent paràmetres de l'escaneig:  
+        out.println("      <li>" + getTraduccio("dwt.instruccions.2", languageUI, null)+ "</li></ol>");
         // out.println(" <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\"
         // src=\"" +
         // absolutePluginRequestPath + WEBRESOURCE +"/img/ajax-loader2.gif" +
@@ -864,12 +857,12 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                 " <div id=\"scanButtonsGroup\" class=\"form-group col-xs-12 text-left\" style=\"padding-top: 3%\">\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\"></div>\n");
         out.print("     <div class=\"col-xs-8\">\n");
-        //
-        out.print("       <ol start=\"3\"><li>Escaneja</li></ol>");
+        String escaneja = getTraduccio("dwt.instruccions.3", languageUI);
+        out.print("       <ol start=\"3\"><li>" + escaneja + "</li></ol>"); 
         out.print("       <table><tr>\n");
         out.print("         <td align=\"center\">\n");
         out.print(
-                "         <button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >Escaneja</button>\n");
+                "         <button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >" + escaneja + "</button>\n");
         out.print("         </td>" + "\n");
         out.print("         <td align=\"center\">\n");
         out.print(
@@ -895,7 +888,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("\n");
 
         out.print(" </td><td>\n");
-        out.print("<p style=\"\">Visualització prèvia</p>");
+        // Visualització prèvia
+        out.print("<p style=\"\">" + getTraduccio("dwt.visualitzacio", languageUI)+ "</p>");
         out.print("<div id=\"scanContainerGroup\" class=\"col-xs-6\" style=\"margin-bottom: 5px;\">\n");
         out.print(" <div id='dwtcontrolContainer'></div>");
         out.print("</div>");

@@ -245,8 +245,6 @@ public class ScanWebDocument {
     public void setDocumentLanguage(String documentLanguage) {
         this.documentLanguage = documentLanguage;
     }
-    
-    
 
     public String getDocumentType() {
         return documentType;
