@@ -159,6 +159,25 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         }
 
     }
+    
+    public double getDWTVersionDouble() {
+        String version = getDWTVersion();
+        try {
+            return Double.parseDouble(version);
+        } catch (Exception e) {
+            log.warn("PAS 1: Error parsejant DWT version to double(" + version + "): " + e.getMessage());
+            int pos = version.indexOf('.');
+            if (pos != -1) {
+                version = version.substring(0, pos);
+            }
+            try {
+                return Double.parseDouble(version);
+            } catch (Exception e2) {
+                log.error("PAS 2: Error parsejant DWT version to double(" + version + "): " + e.getMessage(), e);
+                return 12.2;
+            }
+        }
+    }
 
     public String getProductKey() throws Exception {
         return getPropertyRequired(PROPERTY_BASE + "productkey");
@@ -462,11 +481,23 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("</script>");
 
         out.print("<script>");
-        out.print(" Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
+        
+        double versio = getDWTVersionDouble();
+        
+        
+        if (versio < 17.0) {
+            out.print(" Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
+        } else {
+            out.print(" Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
+        }
         out.print(" var DWObject;\n");
         out.print(" function Dynamsoft_OnReady() {\n");
-        out.print(
-                "   DWObject = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'\n");
+        out.print("   // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'\n");
+        if (versio < 17.0) {
+            out.print("   DWObject = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainer');\n");
+        } else {
+            out.print("   DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');\n");
+        }
         out.print("   if (DWObject) {\n");
         out.print("     var count = DWObject.SourceCount\n;");
         out.print("     for (var i = 0; i < count; i++)\n");
@@ -497,13 +528,25 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("     DWObject.IfDisableSourceAfterAcquire = true;\n");
         out.print("     var config = '';\n");
         out.print("     if (document.getElementById('scanColor').value == 'N'){\n");
-        out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_BW;\n");
+        if (versio < 17.0) {
+            out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_BW;\n");
+        } else {
+            out.print("       DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_BW;\n");
+        }
         out.print("       config += 'N|';\n");
         out.print("     } else if (document.getElementById('scanColor').value == 'G'){\n");
-        out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_GRAY;\n");
+        if (versio < 17.0) {
+            out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_GRAY;\n");
+        } else {
+            out.print("       DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_GRAY;\n");
+        }
         out.print("       config += 'G|';\n");
         out.print("     } else { //if (document.getElementById('scanColor').value == 'C'){\n");
-        out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_RGB;\n");
+        if (versio < 17.0) {
+            out.print("       DWObject.PixelType = EnumDWT_PixelType.TWPT_RGB;\n");
+        } else {
+            out.print("       DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_RGB;\n");
+        }
         out.print("       config += 'C|';\n");
         out.print("     }\n");
         out.print("     if (DWObject.Duplex > 0 && document.getElementById('scanDuplex').value == '2'){\n");
