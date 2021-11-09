@@ -37,7 +37,7 @@ import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
  */
 public abstract class AbstractScanWebPlugin extends AbstractPluginProperties implements IScanWebPlugin {
 
-    public static final long DEFAULT_TIME_BY_TRANSACTION = 10 * 60 * 1000; // 20 minuts per transacció per defecte
+    public static final long DEFAULT_TIME_BY_TRANSACTION = 30 * 60 * 1000; // 30 minuts per transacció per defecte
 
     /**
      * 
