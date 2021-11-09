@@ -54,9 +54,22 @@ import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
  */
 public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implements IScanWebPlugin {
 
+    /** * Si val 0: Funcionament identic a l'actual */
+    private static final int PAGE_SIZE_POLICY_DO_NOTHING = 0;
+
+    /** Enviar internament quan s'espitja "Escanejar" tamany de pàgina A4 */
+    private static final int PAGE_SIZE_POLICY_FORCE_A4 = 1;
+
+    /**
+     * Si val 2: Mostrar un despegable amb opcions A4, Letter i Legal i enviar
+     * aquesta informacio a l'escaner
+     */
+    private static final int PAGE_SIZE_POLICY_SHOW_SELECT = 2;
+
     protected final Logger log = Logger.getLogger(getClass());
 
-    private static final String PROPERTY_BASE = SCANWEB_PLUGINSIB_BASE_PROPERTY + "dynamicwebtwain.";
+    private static final String PROPERTY_BASE = SCANWEB_PLUGINSIB_BASE_PROPERTY
+            + "dynamicwebtwain.";
     // private static Map<String, Properties> missatges = new HashMap<String,
     // Properties>();
 
@@ -66,6 +79,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     static {
 
+        // https://www.dynamsoft.com/web-twain/docs/info/api/Dynamsoft_Enum.html
         // mapPaperSizeDWT2API.put(0, None);
         mapPaperSizeDWT2API.put(1, MetadataConstants.PaperSizeConstants.A4);
         mapPaperSizeDWT2API.put(2, MetadataConstants.PaperSizeConstants.JISB5);
@@ -159,13 +173,14 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         }
 
     }
-    
+
     public double getDWTVersionDouble() {
         String version = getDWTVersion();
         try {
             return Double.parseDouble(version);
         } catch (Exception e) {
-            log.warn("PAS 1: Error parsejant DWT version to double(" + version + "): " + e.getMessage());
+            log.warn("PAS 1: Error parsejant DWT version to double(" + version + "): "
+                    + e.getMessage());
             int pos = version.indexOf('.');
             if (pos != -1) {
                 version = version.substring(0, pos);
@@ -173,7 +188,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             try {
                 return Double.parseDouble(version);
             } catch (Exception e2) {
-                log.error("PAS 2: Error parsejant DWT version to double(" + version + "): " + e.getMessage(), e);
+                log.error("PAS 2: Error parsejant DWT version to double(" + version + "): "
+                        + e.getMessage(), e);
                 return 12.2;
             }
         }
@@ -181,6 +197,25 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     public String getProductKey() throws Exception {
         return getPropertyRequired(PROPERTY_BASE + "productkey");
+    }
+
+    private int getPageSizePolicy() {
+        String str = getProperty(PROPERTY_BASE + "pagesizepolicy");
+        try {
+            if (str != null && str.trim().length() != 0) {
+
+                int num = Integer.parseInt(str);
+
+                if (num == PAGE_SIZE_POLICY_FORCE_A4 || num == PAGE_SIZE_POLICY_SHOW_SELECT) {
+                    return num;
+                }
+            }
+
+        } catch (Throwable e) {
+            log.error("Error parsejant valor de la propietat 'pagesizepolicy' (" + str + "): "
+                    + e.getMessage(), e);
+        }
+        return PAGE_SIZE_POLICY_DO_NOTHING;
     }
 
     private String getDynamicWebTwainProperty(String name) {
@@ -201,7 +236,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             }
 
             if (!tmp.isDirectory()) {
-                throw new Exception("La ruta " + tmp.getAbsolutePath() + " no apunta a una carpeta.");
+                throw new Exception(
+                        "La ruta " + tmp.getAbsolutePath() + " no apunta a una carpeta.");
             }
 
             resourcesPath = tmp;
@@ -237,8 +273,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     }
 
     @Override
-    public String startScanWebTransaction(String absolutePluginRequestPath, String relativePluginRequestPath,
-            HttpServletRequest request, ScanWebRequest scanWebRequest) throws Exception {
+    public String startScanWebTransaction(String absolutePluginRequestPath,
+            String relativePluginRequestPath, HttpServletRequest request,
+            ScanWebRequest scanWebRequest) throws Exception {
 
         ScanWebStatus status = putScanWebRequest(scanWebRequest,
                 System.currentTimeMillis() + DEFAULT_TIME_BY_TRANSACTION);
@@ -249,26 +286,25 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     @Override
     public Set<String> getSupportedScanTypes() {
-        final Set<String> SUPPORTED_SCAN_TYPES = Collections
-                .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
+        final Set<String> SUPPORTED_SCAN_TYPES = Collections.unmodifiableSet(
+                new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF)));
         return SUPPORTED_SCAN_TYPES;
     }
 
     @Override
     public Set<String> getSupportedFlagsByScanType(String scanType) {
         if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanType)) {
-            final Set<String> SUPPORTED_FLAGS = Collections
-                    .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
+            final Set<String> SUPPORTED_FLAGS = Collections.unmodifiableSet(
+                    new HashSet<String>(Arrays.asList(ScanWebDocument.FLAG_PLAIN)));
             return SUPPORTED_FLAGS;
         }
         return null;
     }
 
-
     @Override
     public Set<ScanWebMode> getSupportedScanWebModes() {
-        final Set<ScanWebMode> SUPPORTED_MODES = Collections.unmodifiableSet(
-                new HashSet<ScanWebMode>(
+        final Set<ScanWebMode> SUPPORTED_MODES = Collections
+                .unmodifiableSet(new HashSet<ScanWebMode>(
                         Arrays.asList(ScanWebMode.SYNCHRONOUS, ScanWebMode.ASYNCHRONOUS)));
         return SUPPORTED_MODES;
     }
@@ -284,12 +320,15 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     protected void getJavascriptCSS(HttpServletRequest request, String absolutePluginRequestPath,
             String relativePluginRequestPath, PrintWriter out, Locale languageUI) {
 
-        super.getJavascriptCSS(request, absolutePluginRequestPath, relativePluginRequestPath, out, languageUI);
+        super.getJavascriptCSS(request, absolutePluginRequestPath, relativePluginRequestPath, out,
+                languageUI);
 
-        out.println("<script type=\"text/javascript\" src=\"" + relativePluginRequestPath + SCANNER_RESOURCES + "/"
-                + getDWTVersion() + "/dynamsoft.webtwain.initiate.js\"></script>");
-        out.println("<script type=\"text/javascript\" src=\"" + relativePluginRequestPath + SCANNER_RESOURCES + "/"
-                + getDWTVersion() + "/dynamsoft.webtwain.config.js\"></script>");
+        out.println("<script type=\"text/javascript\" src=\"" + relativePluginRequestPath
+                + SCANNER_RESOURCES + "/" + getDWTVersion()
+                + "/dynamsoft.webtwain.initiate.js\"></script>");
+        out.println("<script type=\"text/javascript\" src=\"" + relativePluginRequestPath
+                + SCANNER_RESOURCES + "/" + getDWTVersion()
+                + "/dynamsoft.webtwain.config.js\"></script>");
     }
 
     // ----------------------------------------------------------------------------
@@ -302,8 +341,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
      * 
      */
     @Override
-    protected void requestGETPOST(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
-            String query, HttpServletRequest request, HttpServletResponse response, boolean isGet) {
+    protected void requestGETPOST(String absolutePluginRequestPath,
+            String relativePluginRequestPath, String scanWebID, String query,
+            HttpServletRequest request, HttpServletResponse response, boolean isGet) {
 
         if (!absolutePluginRequestPath.endsWith("/")) {
             absolutePluginRequestPath = absolutePluginRequestPath + "/";
@@ -317,10 +357,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         ScanWebResult scanWebResult = getScanWebResult(scanWebID);
 
         if (scanWebRequest == null || scanWebResult == null) {
-            String titol = (isGet ? "GET" : "POST") + " " + getName(new Locale("ca")) + " PETICIO HA CADUCAT";
+            String titol = (isGet ? "GET" : "POST") + " " + getName(new Locale("ca"))
+                    + " PETICIO HA CADUCAT";
 
-            requestTimeOutError(absolutePluginRequestPath, relativePluginRequestPath, query, String.valueOf(scanWebID),
-                    request, response, titol);
+            requestTimeOutError(absolutePluginRequestPath, relativePluginRequestPath, query,
+                    String.valueOf(scanWebID), request, response, titol);
 
         } else {
 
@@ -328,45 +369,49 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
             if (query.startsWith(ISFINISHED_PAGE)) {
 
-                isFinishedRequest(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request,
-                        response, scanWebRequest, scanWebResult, languageUI);
+                isFinishedRequest(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
+                        query, request, response, scanWebRequest, scanWebResult, languageUI);
 
             } else if (query.startsWith(INDEX)) {
 
-                indexPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request, response,
-                        scanWebRequest, scanWebResult, languageUI);
+                indexPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
+                        request, response, scanWebRequest, scanWebResult, languageUI);
 
             } else if (query.startsWith(SCANNER_RESOURCES)) {
 
                 if (query.endsWith("dynamsoft.webtwain.config.js")) {
-                    retornarDynamsoftWebtwainConfig(absolutePluginRequestPath, relativePluginRequestPath, scanWebID,
-                            query, request, response, languageUI);
+                    retornarDynamsoftWebtwainConfig(absolutePluginRequestPath,
+                            relativePluginRequestPath, scanWebID, query, request, response,
+                            languageUI);
                 } else {
 
                     // RECURSOS SCANNER
-                    retornarRecursDesdeDirectori(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
-                            request, response, languageUI);
+                    retornarRecursDesdeDirectori(absolutePluginRequestPath,
+                            relativePluginRequestPath, scanWebID, query, request, response,
+                            languageUI);
                 }
 
             } else if (query.startsWith(UPLOAD_SCAN_PROPERTIES)) {
 
-                uploadScanProperties(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request,
-                        response, scanWebRequest, scanWebResult, languageUI);
+                uploadScanProperties(absolutePluginRequestPath, relativePluginRequestPath,
+                        scanWebID, query, request, response, scanWebRequest, scanWebResult,
+                        languageUI);
 
             } else if (query.startsWith(UPLOAD_PAGE)) {
 
-                uploadPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request, response,
-                        scanWebRequest, scanWebResult, languageUI);
+                uploadPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
+                        request, response, scanWebRequest, scanWebResult, languageUI);
 
             } else if (query.startsWith(FINALPAGE)) {
 
-                finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request, response,
-                        scanWebRequest, scanWebResult, languageUI);
+                finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query,
+                        request, response, scanWebRequest, scanWebResult, languageUI);
 
             } else {
 
-                super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request,
-                        response, languageUI, scanWebRequest, scanWebResult, isGet);
+                super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath,
+                        scanWebID, query, request, response, languageUI, scanWebRequest,
+                        scanWebResult, isGet);
             }
 
         }
@@ -382,18 +427,20 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     public static final String INDEX = "index.html";
 
     @SuppressWarnings("deprecation")
-    protected void indexPage(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
-            String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest fullInfo,
-            ScanWebResult scanWebResult, Locale languageUI) {
+    protected void indexPage(String absolutePluginRequestPath, String relativePluginRequestPath,
+            String scanWebID, String query, HttpServletRequest request,
+            HttpServletResponse response, ScanWebRequest fullInfo, ScanWebResult scanWebResult,
+            Locale languageUI) {
 
         PrintWriter out;
-        out = generateHeader(request, response, absolutePluginRequestPath, relativePluginRequestPath, languageUI);
+        out = generateHeader(request, response, absolutePluginRequestPath,
+                relativePluginRequestPath, languageUI);
 
         // Carregam els texts en català per si hi ha algun problema al
         // carregar els fitxers de missatges multiidioma
 
         String disp = getTraduccio("dwt.dispositiu", languageUI);
-        String safata = getTraduccio("dwt.safata", languageUI);
+        //String safata = ;
         String color = getTraduccio("dwt.color", languageUI);
         String res = getTraduccio("dwt.resolucio", languageUI);
         String duplex = getTraduccio("dwt.duplex", languageUI);
@@ -408,7 +455,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
         if ((fullInfo.getMode() == ScanWebMode.SYNCHRONOUS)) {
             out.println("  function finalScanProcess() {");
-            out.println("    if (document.getElementById(\"escanejats\").innerHTML.indexOf(\"ajax\") !=-1) {");
+            out.println(
+                    "    if (document.getElementById(\"escanejats\").innerHTML.indexOf(\"ajax\") !=-1) {");
             out.println("      if (!confirm('" + getTraduccio("noenviats", languageUI) + "')) {");
             out.println("        return;");
             out.println("      };");
@@ -428,7 +476,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("    } else {");
         out.println("        request = new ActiveXObject(\"Microsoft.XMLHTTP\");");
         out.println("    }");
-        out.println("    request.open('GET', '" + absolutePluginRequestPath + ISFINISHED_PAGE + "', false);");
+        out.println("    request.open('GET', '" + absolutePluginRequestPath + ISFINISHED_PAGE
+                + "', false);");
         out.println("    request.send();");
         out.println();
         out.println("    if ((request.status + '') == '" + HttpServletResponse.SC_OK + "') {");
@@ -436,7 +485,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("      myTimer = setInterval(function () {closeWhenSign()}, 4000);");
         out.println("      document.getElementById(\"escanejats\").innerHTML = '"
                 + getTraduccio("docspujats", languageUI) + ":' + request.responseText;");
-        out.println("    } else if ((request.status + '') == '" + HttpServletResponse.SC_REQUEST_TIMEOUT + "') {"); //
+        out.println("    } else if ((request.status + '') == '"
+                + HttpServletResponse.SC_REQUEST_TIMEOUT + "') {"); //
         out.println("      if (myTimer != undefined) { clearTimeout(myTimer); }");
         out.println("      window.location.href = '" + fullInfo.getUrlFinal() + "';");
         out.println("    } else {");
@@ -450,7 +500,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("    var d = new Date();");
         out.println("    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));");
         out.println("    var expires = \"expires=\"+d.toUTCString();");
-        out.println("    document.cookie = cname + \"=\" + cvalue + \";\" + expires + \";path=/\";");
+        out.println(
+                "    document.cookie = cname + \"=\" + cvalue + \";\" + expires + \";path=/\";");
         out.println(" }");
         out.println();
         out.println(" function getCookie(cname) {");
@@ -481,18 +532,19 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("</script>");
 
         out.print("<script>");
-        
+
         double versio = getDWTVersionDouble();
-        
-        
+
         if (versio < 17.0) {
-            out.print(" Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
+            out.print(
+                    " Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
         } else {
             out.print(" Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady);\n");
         }
         out.print(" var DWObject;\n");
         out.print(" function Dynamsoft_OnReady() {\n");
-        out.print("   // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'\n");
+        out.print(
+                "   // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'\n");
         if (versio < 17.0) {
             out.print("   DWObject = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainer');\n");
         } else {
@@ -518,12 +570,16 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print(" function AcquireImage() {\n");
         // out.print( " debugger;\n");
         out.print("   document.getElementById(\"scanSource\").disabled = true;\n");
-        out.print("   document.getElementById(\"scanOrigen\").disabled = true;\n");
+        if(getPageSizePolicy()== PAGE_SIZE_POLICY_SHOW_SELECT) {   
+          out.print("     document.getElementById(\"scanPageSize\").disabled = true;\n");
+        }        
+        out.print("   document.getElementById(\"scanOrigen\").disabled = true;\n");        
         out.print("   document.getElementById(\"scanColor\").disabled = true;\n");
         out.print("   document.getElementById(\"scanResolution\").disabled = true;\n");
         out.print("   document.getElementById(\"scanDuplex\").disabled = true;\n");
         out.print("   if (DWObject) {\n");
-        out.print("     DWObject.SelectSourceByIndex(document.getElementById('scanSource').selectedIndex);\n");
+        out.print(
+                "     DWObject.SelectSourceByIndex(document.getElementById('scanSource').selectedIndex);\n");
         out.print("     DWObject.OpenSource();\n");
         out.print("     DWObject.IfDisableSourceAfterAcquire = true;\n");
         out.print("     var config = '';\n");
@@ -549,7 +605,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         }
         out.print("       config += 'C|';\n");
         out.print("     }\n");
-        out.print("     if (DWObject.Duplex > 0 && document.getElementById('scanDuplex').value == '2'){\n");
+        out.print(
+                "     if (DWObject.Duplex > 0 && document.getElementById('scanDuplex').value == '2'){\n");
         out.print("       DWObject.IfDuplexEnabled = true;\n");
         out.print("       config += '2|';\n");
         out.print("     } else {\n");
@@ -566,6 +623,26 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("       DWObject.IfFeederEnabled = false;\n");
         out.print("       config += 'S|';\n");
         out.print("     }\n");
+        
+        
+        switch(getPageSizePolicy()) {
+            case PAGE_SIZE_POLICY_SHOW_SELECT:   
+                out.print("     {\n");  
+                out.print("        var select = document.getElementById('scanPageSize');\n");
+                out.print("        var value = select.options[select.selectedIndex].value;\n");
+                out.print("        DWObject.PageSize= value;\n");
+                out.print("     }\n");
+            break;
+            
+            case PAGE_SIZE_POLICY_FORCE_A4:
+                out.print("     DWObject.PageSize=1;\n");
+            break;
+
+            default:
+        }
+        
+        
+        
         out.print("     DWObject.IfAutoDiscardBlankpages = true;\n");
         out.print("     DWObject.Resolution = parseInt(document.getElementById('scanResolution').value);\n");
         out.print("     config += document.getElementById('scanResolution').value;\n");
@@ -592,6 +669,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("   if (DWObject) {\n");
         out.print("     DWObject.RemoveAllImages();\n");
         out.print("     document.getElementById(\"scanSource\").disabled = false;\n");
+
+        if(getPageSizePolicy()== PAGE_SIZE_POLICY_SHOW_SELECT) {   
+          out.print("     document.getElementById(\"scanPageSize\").disabled = false;\n");
+        }
+        
         out.print("     document.getElementById(\"scanOrigen\").disabled = false;\n");
         out.print("     document.getElementById(\"scanColor\").disabled = false;\n");
         out.print("     document.getElementById(\"scanResolution\").disabled = false;\n");
@@ -644,14 +726,15 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             out.print("     DWObject.HTTPPort = " + port + ";\n");
 
         } catch (MalformedURLException e) {
-            log.error(" No s'ha pogut extreure el HostName de la URL absoluta: " + absolutePluginRequestPath,
-                    new Exception());
+            log.error(" No s'ha pogut extreure el HostName de la URL absoluta: "
+                    + absolutePluginRequestPath, new Exception());
             out.print("     var strHTTPServer = location.hostname;\n");
             // out.print( " DWObject.IfSSL = false; // Set whether SSL is used\n" );
 
             out.print("     var isSSL = (window.location.protocol == 'https:');\n");
             out.print("     DWObject.IfSSL = isSSL; // Set whether SSL is used\n");
-            out.print("     DWObject.HTTPPort = location.port != '' ? location.port : (isSSL ? 443 : 80);\n");
+            out.print(
+                    "     DWObject.HTTPPort = location.port != '' ? location.port : (isSSL ? 443 : 80);\n");
 
             // out.print( " DWObject.HTTPPort = location.port == '' ? 80 : location.port;\n"
             // );
@@ -721,19 +804,22 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("    e = document.getElementById('scanSource');\n");
         out.print("    params = params + '&scanSource=' + e.options[e.selectedIndex].text;\n");
         if (!isHideTipusDocumental()) {
-            out.print("    e = document.getElementById('" + MetadataConstants.ENI_TIPO_DOCUMENTAL + "');\n");
-            out.print("    params = params + '&' + encodeURIComponent('" + MetadataConstants.ENI_TIPO_DOCUMENTAL
+            out.print("    e = document.getElementById('" + MetadataConstants.ENI_TIPO_DOCUMENTAL
+                    + "');\n");
+            out.print("    params = params + '&' + encodeURIComponent('"
+                    + MetadataConstants.ENI_TIPO_DOCUMENTAL
                     + "') + '=' + e.options[e.selectedIndex].value;\n");
         }
         if (!isHideIdioma()) {
             out.print("    e = document.getElementById('" + MetadataConstants.ENI_IDIOMA + "');\n");
-            out.print("    params = params + '&' + encodeURIComponent('" + MetadataConstants.ENI_IDIOMA
+            out.print("    params = params + '&' + encodeURIComponent('"
+                    + MetadataConstants.ENI_IDIOMA
                     + "') + '=' + e.options[e.selectedIndex].value;\n");
         }
         // out.print(" alert('[[[[' + params + ']]]]');");
 
-        out.print(
-                "    var uploadConfigURL = '" + relativePluginRequestPath + UPLOAD_SCAN_PROPERTIES + "?' + params;\n");
+        out.print("    var uploadConfigURL = '" + relativePluginRequestPath + UPLOAD_SCAN_PROPERTIES
+                + "?' + params;\n");
         out.print("    $.getJSON(uploadConfigURL, function(info) { });\n");
 
         out.print("    closeWhenSign();\n");
@@ -760,9 +846,11 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.println("     <tr><td align=\"left\">");
         out.println("      <div id=\"escanejats\" style=\"width:350px;font-size:15px\">");
         // Introdueix els documents dins l'escàner.
-        out.println("      <ol><li>" + getTraduccio("dwt.instruccions.1", languageUI, null)+"</li>");
-        // Configura els següent paràmetres de l'escaneig:  
-        out.println("      <li>" + getTraduccio("dwt.instruccions.2", languageUI, null)+ "</li></ol>");
+        out.println(
+                "      <ol><li>" + getTraduccio("dwt.instruccions.1", languageUI, null) + "</li>");
+        // Configura els següent paràmetres de l'escaneig:
+        out.println(
+                "      <li>" + getTraduccio("dwt.instruccions.2", languageUI, null) + "</li></ol>");
         // out.println(" <img alt=\"Esperi\" style=\"vertical-align:middle;z-index:200\"
         // src=\"" +
         // absolutePluginRequestPath + WEBRESOURCE +"/img/ajax-loader2.gif" +
@@ -778,40 +866,80 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         // out.println(" <form id=\"scanForm\" action=\"#\">\n");
 
         out.print("<div id=\"scanParams\" class=\"col-xs-6\">\n");
-        out.print(" <div id=\"scanSourceGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\" >\n");
+        out.print(
+                " <div id=\"scanSourceGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\" >\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
-        out.print("     <label style=\"font-size:12px\" for=\"scanSource\"><span class=\"text-danger\">&bull;</span> "
-                + disp + "</label>\n");
+        out.print(
+                "     <label style=\"font-size:12px\" for=\"scanSource\"><span class=\"text-danger\">&bull;</span> "
+                        + disp + "</label>\n");
         out.print("     </div>\n");
         out.print("     <div class=\"col-xs-8 text-right\">\n");
-        out.print("       <select size=\"1\" id=\"scanSource\" class=\"chosen-select input-medium\">\n");
+        out.print(
+                "       <select size=\"1\" id=\"scanSource\" class=\"chosen-select input-medium\">\n");
         out.print("       </select>\n");
         out.print("   </div>\n");
         out.print(" </div>\n");
         out.print("\n");
 
-        out.print(" <div id=\"scanOrigenGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+        out.print(
+                " <div id=\"scanOrigenGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
         out.print(
                 "     <label style=\"font-size:12px\" for=\"scanOrigen\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
-                        + safata + "</label>\n");
+                        + getTraduccio("dwt.safata", languageUI) + "</label>\n");
         out.print("     </div>\n");
         out.print("     <div class=\"col-xs-8 text-right\">\n");
-        out.print("       <select size=\"1\" id=\"scanOrigen\" class=\"chosen-select input-medium\">\n");
+        out.print(
+                "       <select size=\"1\" id=\"scanOrigen\" class=\"chosen-select input-medium\">\n");
         out.print("         <option value='S' selected='selected'>Principal</option>");
         out.print("         <option value='A'>Alimentador</option>");
         out.print("       </select>\n");
         out.print("   </div>\n");
         out.print(" </div>\n");
+        
 
-        out.print(" <div id=\"scanColorGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+        out.print("\n");
+
+        switch(getPageSizePolicy()) {
+            
+            case PAGE_SIZE_POLICY_SHOW_SELECT:
+                
+                out.print(
+                        " <div id=\"scanPageSizeGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+                out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
+                out.print(
+                        "     <label style=\"font-size:12px\" for=\"scanPageSize\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
+                                + getTraduccio("dwt.pageSize", languageUI) + "</label>\n");
+                out.print("     </div>\n");
+                out.print("     <div class=\"col-xs-8 text-right\">\n");
+                out.print(
+                        "       <select size=\"1\" id=\"scanPageSize\" name=\"scanPageSize\" class=\"chosen-select input-medium\">\n");
+                // 1 == A4, 3 == LETTER, 4 == LEGAL  
+                out.print("         <option value='1' selected='selected'>A4(210 x 297 mm)</option>");
+                out.print("         <option value='3'>Letter (215.9 x 279.4 mm)</option>");
+                out.print("         <option value='4'>Legal(216 x 356 mm)</option>");
+                out.print("       </select>\n");
+                out.print("   </div>\n");
+                out.print(" </div>\n");
+
+            default:
+                
+            case PAGE_SIZE_POLICY_FORCE_A4:
+            case PAGE_SIZE_POLICY_DO_NOTHING:
+                break;
+
+        }
+
+        out.print(
+                " <div id=\"scanColorGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
         out.print(
-                "     <label style=\"font-size:12px\" for=\"scanColor\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
+                "     <label for=\"scanColor\" style='font-size:12px;margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
                         + color + "</label>\n");
         out.print("     </div>\n");
         out.print("     <div class=\"col-xs-8 text-right\">\n");
-        out.print("       <select size=\"1\" id=\"scanColor\" class=\"chosen-select input-medium\">\n");
+        out.print(
+                "       <select size=\"1\" id=\"scanColor\" class=\"chosen-select input-medium\">\n");
         out.print("         <option value='N' selected='selected'>B/N</option>");
         out.print("         <option value='G'>Gris</option>");
         out.print("         <option value='C'>Color</option>");
@@ -819,14 +947,16 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("   </div>\n");
         out.print(" </div>\n");
         out.print("\n");
-        out.print(" <div id=\"scanResolutionGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+        out.print(
+                " <div id=\"scanResolutionGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
         out.print(
-                "     <label style=\"font-size:12px\" for=\"scanResolution\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
+                "     <label  for=\"scanResolution\" style='font-size:12px;margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
                         + res + "</label>\n");
         out.print("     </div>\n");
         out.print("     <div class=\"col-xs-8 text-right\">\n");
-        out.print("       <select size=\"1\" id=\"scanResolution\" class=\"chosen-select input-medium\">\n");
+        out.print(
+                "       <select size=\"1\" id=\"scanResolution\" class=\"chosen-select input-medium\">\n");
         out.print("         <option value='200' selected='selected'>200</option>");
         out.print("         <option value='300'>300</option>");
         out.print("         <option value='400'>400</option>");
@@ -835,14 +965,16 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("   </div>\n");
         out.print(" </div>\n");
         out.print("\n");
-        out.print(" <div id=\"scanDuplexGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+        out.print(
+                " <div id=\"scanDuplexGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
         out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
         out.print(
-                "     <label style=\"font-size:12px\"for=\"scanDuplex\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
+                "     <label for=\"scanDuplex\" style='font-size:12px;margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
                         + duplex + "</label>\n");
         out.print("     </div>\n");
         out.print("     <div class=\"col-xs-8 text-right\">\n");
-        out.print("       <select size=\"1\" id=\"scanDuplex\" class=\"chosen-select input-medium\">\n");
+        out.print(
+                "       <select size=\"1\" id=\"scanDuplex\" class=\"chosen-select input-medium\">\n");
         out.print("         <option value='1' selected='selected'>Una cara</option>");
         out.print("         <option value='2'>Doble cara</option>");
         out.print("       </select>\n");
@@ -853,8 +985,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             out.print(
                     " <div id=\"scanTipusDocumentalGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
             out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
-            out.print("     <label style=\"font-size:12px\" for=\"" + MetadataConstants.ENI_TIPO_DOCUMENTAL
-                    + "\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
+            out.print("     <label for=\""
+                    + MetadataConstants.ENI_TIPO_DOCUMENTAL
+                    + "\" style='font-size:12px;margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
                     + getTraduccio("tipusdocumental", languageUI) + "</label>\n");
             out.print("   </div>\n");
             out.print("   <div class=\"col-xs-8 text-right\">\n");
@@ -863,7 +996,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             Set<String> tdList = MetadataConstants._ENI_TIPO_DOCUMENTAL.getAllowedValues().keySet();
             out.print("         <option value='' selected='selected'></option>");
             for (String td : tdList) {
-                out.print("         <option value='" + td + "'>" + getTraduccio(td, languageUI) + "</option>");
+                out.print("         <option value='" + td + "'>" + getTraduccio(td, languageUI)
+                        + "</option>");
             }
             out.print("       </select>\n");
             out.print("   </div>\n");
@@ -872,7 +1006,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         }
 
         if (!isHideIdioma()) {
-            out.print(" <div id=\"scanIdiomaGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
+            out.print(
+                    " <div id=\"scanIdiomaGroup\" class=\"form-group col-xs-12\" style=\"padding: 0% 7%\">\n");
             out.print("   <div class=\"col-xs-4 pull-left  control-label\">\n");
             out.print("     <label style=\"font-size:12px\" for=\"" + MetadataConstants.ENI_IDIOMA
                     + "\" style='margin-right:10px;'><span class=\"text-danger\">&bull;</span> "
@@ -901,16 +1036,18 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("   <div class=\"col-xs-4 pull-left  control-label\"></div>\n");
         out.print("     <div class=\"col-xs-8\">\n");
         String escaneja = getTraduccio("dwt.instruccions.3", languageUI);
-        out.print("       <ol start=\"3\"><li>" + escaneja + "</li></ol>"); 
+        out.print("       <ol start=\"3\"><li>" + escaneja + "</li></ol>");
         out.print("       <table><tr>\n");
         out.print("         <td align=\"center\">\n");
         out.print(
-                "         <button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >" + escaneja + "</button>\n");
+                "         <button id=\"scanb\" class=\"btn btn-primary\" type=\"button\" value=\"Scan\" onclick='AcquireImage();' >"
+                        + escaneja + "</button>\n");
         out.print("         </td>" + "\n");
         out.print("         <td align=\"center\">\n");
         out.print(
                 "         <button id=\"cleanAll\" style=\"display:none\" class=\"btn btn-danger\" type=\"button\" value='"
-                        + cleanAll + "' onclick='btnRemoveAllImages_onclick();' >" + cleanAll + "</button>\n");
+                        + cleanAll + "' onclick='btnRemoveAllImages_onclick();' >" + cleanAll
+                        + "</button>\n");
         out.print("         </td>" + "\n");
         out.println("         <td align=\"center\">");
         if (fullInfo.getMode() == ScanWebMode.SYNCHRONOUS) {
@@ -920,7 +1057,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         } else {
             out.print(
                     "       <button id=\"puja\" style=\"display:none\" class=\"btn btn-success\" type=\"button\" value='"
-                            + clean + "' onclick='pujarServidor();' >" + pujarServidor + "</button>");
+                            + clean + "' onclick='pujarServidor();' >" + pujarServidor
+                            + "</button>");
         }
         out.println("         </td>");
         out.print("      </tr></table>\n");
@@ -932,8 +1070,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
         out.print(" </td><td>\n");
         // Visualització prèvia
-        out.print("<p style=\"\">" + getTraduccio("dwt.visualitzacio", languageUI)+ "</p>");
-        out.print("<div id=\"scanContainerGroup\" class=\"col-xs-6\" style=\"margin-bottom: 5px;\">\n");
+        out.print("<p style=\"\">" + getTraduccio("dwt.visualitzacio", languageUI) + "</p>");
+        out.print(
+                "<div id=\"scanContainerGroup\" class=\"col-xs-6\" style=\"margin-bottom: 5px;\">\n");
         out.print(" <div id='dwtcontrolContainer'></div>");
         out.print("</div>");
 
@@ -955,9 +1094,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
     // -------------------------------------------------------------------------
 
     // TODO fer cache
-    protected void retornarDynamsoftWebtwainConfig(String absolutePluginRequestPath, String relativePluginRequestPath,
-            String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-            Locale languageUI) {
+    protected void retornarDynamsoftWebtwainConfig(String absolutePluginRequestPath,
+            String relativePluginRequestPath, String scanWebID, String query,
+            HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
 
         String mime = getMimeType(query);
         query = query.replace('\\', '/');
@@ -1007,8 +1146,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     public static final String FINALPAGE = "finalPage";
 
-    protected void finalPage(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
-            String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
+    protected void finalPage(String absolutePluginRequestPath, String relativePluginRequestPath,
+            String scanWebID, String query, HttpServletRequest request,
+            HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResult, Locale languageUI) {
 
         log.debug("Entra dins FINAL_PAGE(...");
@@ -1049,9 +1189,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     public static final String UPLOAD_SCAN_PROPERTIES = "uploadscanproperties";
 
-    protected void uploadScanProperties(String absolutePluginRequestPath, String relativePluginRequestPath,
-            String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-            ScanWebRequest scanWebRequest, ScanWebResult scanWebResult, Locale languageUI) {
+    protected void uploadScanProperties(String absolutePluginRequestPath,
+            String relativePluginRequestPath, String scanWebID, String query,
+            HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
+            ScanWebResult scanWebResult, Locale languageUI) {
 
         if (scanWebResult.getScannedDocuments().size() != 0) {
 
@@ -1075,17 +1216,20 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                         if (api_paper_size == null) {
                             metadatas.add(new Metadata(name, value));
                         } else {
-                            // metadatas.add(new Metadata(MetadataConstants.PAPER_SIZE, api_paper_size));
+                            // metadatas.add(new Metadata(MetadataConstants.PAPER_SIZE,
+                            // api_paper_size));
                             doc.setPaperSize(api_paper_size);
 
-                            Map<String, String> values = MetadataConstants._PAPER_SIZE.getAllowedValues();
+                            Map<String, String> values = MetadataConstants._PAPER_SIZE
+                                    .getAllowedValues();
 
                             String dimensions = values.get(api_paper_size);
 
                             if (dimensions != null && dimensions.trim().length() != 0) {
                                 dimensions = dimensions.replace('x', ',');
-                                metadatas.add(
-                                        new Metadata(MetadataConstants.EEMGDE_TAMANO_DIMENSIONES_FISICAS, dimensions));
+                                metadatas.add(new Metadata(
+                                        MetadataConstants.EEMGDE_TAMANO_DIMENSIONES_FISICAS,
+                                        dimensions));
                                 metadatas.add(new Metadata(MetadataConstants.EEMGDE_TAMANO_UNIDADES,
                                         MetadataConstants.TamanoUnidades.MILIMETRO));
                             }
@@ -1104,7 +1248,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                     }
 
                 } catch (Exception e) {
-                    log.error("Error parsejant metadata (" + name + " | " + value + "): " + e.getMessage(), e);
+                    log.error("Error parsejant metadata (" + name + " | " + value + "): "
+                            + e.getMessage(), e);
                     metadatas.add(new Metadata(name, value));
                 }
 
@@ -1129,8 +1274,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     public static final String UPLOAD_PAGE = "upload";
 
-    protected void uploadPage(String absolutePluginRequestPath, String relativePluginRequestPath, String scanWebID,
-            String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
+    protected void uploadPage(String absolutePluginRequestPath, String relativePluginRequestPath,
+            String scanWebID, String query, HttpServletRequest request,
+            HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResults, Locale languageUI) {
 
         log.debug("Entra dins uploadPage(...");
@@ -1187,14 +1333,12 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
         ScanWebSignedFile scannedSignedFile = null;
 
-               
         String transactionName = scanWebRequest.getTransactionName();
         String scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PDF;
-        
-        
+
         // S'ompliran DESPRES dins uploadScanProperties !!!!!
-        Integer pixelType= null;
-        Integer pppResolution=null;
+        Integer pixelType = null;
+        Integer pppResolution = null;
         Boolean ocr = null;
         Boolean duplex = null;
         String paperSize = null;
@@ -1202,10 +1346,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         String documentType = null;
 
         ScanWebDocument scannedDoc = new ScanWebDocument(transactionName, scannedPlainFile,
-            scannedSignedFile, scanDate, pixelType, pppResolution,
-            scannedFileFormat, ocr,  duplex, paperSize, documentLanguage,
-            documentType, additionalMetadatas);
-        
+                scannedSignedFile, scanDate, pixelType, pppResolution, scannedFileFormat, ocr,
+                duplex, paperSize, documentLanguage, documentType, additionalMetadatas);
+
         scanWebResults.getScannedDocuments().add(scannedDoc);
 
         if (scanWebRequest.getMode() == ScanWebMode.ASYNCHRONOUS) {
@@ -1224,9 +1367,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     protected static final String ISFINISHED_PAGE = "isfinished";
 
-    protected void isFinishedRequest(String absolutePluginRequestPath, String relativePluginRequestPath,
-            String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-            ScanWebRequest scanWebRequest, ScanWebResult scanWebResult, Locale languageUI) {
+    protected void isFinishedRequest(String absolutePluginRequestPath,
+            String relativePluginRequestPath, String scanWebID, String query,
+            HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
+            ScanWebResult scanWebResult, Locale languageUI) {
 
         List<ScanWebDocument> list = scanWebResult.getScannedDocuments();
         if (isDebug()) {
@@ -1241,12 +1385,12 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
                 if (list.size() == 1) {
                     // "S'ha rebut <b>" + list.size() + "</b> fitxer"
-                    response.getWriter()
-                            .println(getTraduccio("rebut.1.fitxer", languageUI, String.valueOf(list.size())));
+                    response.getWriter().println(getTraduccio("rebut.1.fitxer", languageUI,
+                            String.valueOf(list.size())));
                 } else {
                     // "S'han rebut <b>" + list.size() + "</b> fitxers"
-                    response.getWriter()
-                            .println(getTraduccio("rebut.n.fitxers", languageUI, String.valueOf(list.size())));
+                    response.getWriter().println(getTraduccio("rebut.n.fitxers", languageUI,
+                            String.valueOf(list.size())));
                 }
                 response.setStatus(HttpServletResponse.SC_OK);
             }
@@ -1265,9 +1409,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
     public static final String username = "scanweb"; // configuracio
 
-    protected void retornarRecursDesdeDirectori(String absolutePluginRequestPath, String relativePluginRequestPath,
-            String scanWebID, String query, HttpServletRequest request, HttpServletResponse response,
-            Locale languageUI) {
+    protected void retornarRecursDesdeDirectori(String absolutePluginRequestPath,
+            String relativePluginRequestPath, String scanWebID, String query,
+            HttpServletRequest request, HttpServletResponse response, Locale languageUI) {
 
         String mime = getMimeType(query);
         query = query.replace('\\', '/');
@@ -1303,7 +1447,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                 String.valueOf(scanWebID), request, response, languageUI);
     }
 
-    protected byte[] getRecursDesdeFitxer(String query) throws Exception, FileNotFoundException, IOException {
+    protected byte[] getRecursDesdeFitxer(String query)
+            throws Exception, FileNotFoundException, IOException {
         byte[] contingut;
         InputStream input = null;
 
@@ -1315,8 +1460,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             File f = new File(base, query);
 
             if (!f.exists()) {
-                throw new Exception(
-                        "S'ha requerit el recurs " + query + " però no es troba en la ruta " + f.getAbsolutePath());
+                throw new Exception("S'ha requerit el recurs " + query
+                        + " però no es troba en la ruta " + f.getAbsolutePath());
             }
 
             input = new FileInputStream(f);
