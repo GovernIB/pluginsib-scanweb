@@ -40,7 +40,7 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
     public static final long DEFAULT_TIME_BY_TRANSACTION = 30 * 60 * 1000; // 30 minuts per transacció per defecte
 
     /**
-     * 
+     *
      * @author anadal
      *
      */

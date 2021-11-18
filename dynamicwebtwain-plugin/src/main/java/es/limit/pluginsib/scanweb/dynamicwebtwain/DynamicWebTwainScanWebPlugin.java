@@ -613,7 +613,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("       DWObject.IfDuplexEnabled = false;\n");
         out.print("       config += '1|';\n");
         out.print("     }\n");
-        out.print("     DWObject.MaxImagesInBuffer = 100;\n");
+        // Només envia 100 pàgines al servidor.
+        //out.print("     DWObject.MaxImagesInBuffer = 100;\n");
         out.print("     DWObject.IfShowUI = false;\n");
         out.print("     if (document.getElementById('scanOrigen').value == 'A'){\n");
         out.print("       DWObject.IfFeederEnabled = true;\n");
