@@ -958,8 +958,8 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         out.print("     <div class=\"col-xs-8 text-right\">\n");
         out.print(
                 "       <select size=\"1\" id=\"scanResolution\" class=\"chosen-select input-medium\">\n");
-        out.print("         <option value='200' selected='selected'>200</option>");
-        out.print("         <option value='300'>300</option>");
+        out.print("         <option value='200'>200</option>");
+        out.print("         <option value='300' selected='selected'>300</option>");
         out.print("         <option value='400'>400</option>");
         out.print("         <option value='600'>600</option>");
         out.print("       </select>\n");
