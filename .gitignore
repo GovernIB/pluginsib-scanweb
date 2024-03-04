@@ -54,3 +54,9 @@
 /digitalibmassive-plugin/target
 /target
 /scanweb-tester/target
+/scanweb-springboot-tester/.project
+/scanweb-springboot-tester/.settings
+/scanweb-springboot-tester/target
+/scanweb-springboot-tester/.classpath
+/.project
+/.settings

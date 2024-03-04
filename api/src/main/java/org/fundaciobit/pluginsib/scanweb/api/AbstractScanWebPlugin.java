@@ -359,7 +359,6 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
             ServletFileUpload upload = new ServletFileUpload(factory);
 
             // Parse the request to get file items.
-            @SuppressWarnings("unchecked")
             List<FileItem> fileItems = upload.parseRequest(request);
 
             Map<String, FileItem> mapFile = new HashMap<String, FileItem>();
@@ -663,7 +662,7 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
             } else if ("msi".equalsIgnoreCase(type)) {
                 mime = "application/octet-stream";
             } else if ("js".equalsIgnoreCase(type)) {
-                mime = "text/javascript";
+                mime = "application/javascript";
             } else if ("zip".equalsIgnoreCase(type)) {
                 mime = "application/zip";
             } else if ("css".equalsIgnoreCase(type)) {

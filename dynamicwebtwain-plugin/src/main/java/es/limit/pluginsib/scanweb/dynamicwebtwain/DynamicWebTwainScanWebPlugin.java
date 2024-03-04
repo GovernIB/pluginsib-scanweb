@@ -352,7 +352,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
         if (!relativePluginRequestPath.endsWith("/")) {
             relativePluginRequestPath = relativePluginRequestPath + "/";
         }
-
+        
         ScanWebRequest scanWebRequest = getScanWebRequest(scanWebID);
         ScanWebResult scanWebResult = getScanWebResult(scanWebID);
 
@@ -378,7 +378,7 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                         request, response, scanWebRequest, scanWebResult, languageUI);
 
             } else if (query.startsWith(SCANNER_RESOURCES)) {
-
+                
                 if (query.endsWith("dynamsoft.webtwain.config.js")) {
                     retornarDynamsoftWebtwainConfig(absolutePluginRequestPath,
                             relativePluginRequestPath, scanWebID, query, request, response,
@@ -1118,10 +1118,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             String resourcename = pos == -1 ? query : query.substring(pos + 1);
 
             Writer out = response.getWriter();
-
+            
             response.setContentType(mime);
             response.setHeader("Content-Disposition", "inline; filename=\"" + resourcename + "\"");
-            response.setContentLength(contingut.length);
+            response.setContentLength(contingutStr.length());
 
             out.write(contingutStr);
             out.flush();
