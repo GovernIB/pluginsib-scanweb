@@ -21,7 +21,9 @@
         <module>filescan-plugin</module>
         <module>digitalib-plugin</module>
         <module>digitalibmassive-plugin</module>
+        <module>digitalibmassive2-plugin</module>
         <module>scanweb-tester</module>
+        <module>scanweb-springboot-tester</module>
     </modules>
     <dependencies>
         <dependency>

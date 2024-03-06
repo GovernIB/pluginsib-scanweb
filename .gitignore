@@ -60,3 +60,8 @@
 /scanweb-springboot-tester/.classpath
 /.project
 /.settings
+/digitalibmassive2-plugin/.project
+/digitalibmassive2-plugin/.settings
+/digitalibmassive2-plugin/target
+/digitalibmassive2-plugin/.classpath
+/scanweb-springboot-tester/plugins.properties
