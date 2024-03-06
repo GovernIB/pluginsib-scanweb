@@ -88,18 +88,32 @@ org.fundaciobit.scanweb.tester.scanwebplugins.5.class=org.fundaciobit.pluginsib.
 org.fundaciobit.scanweb.tester.scanwebplugins.5.nom=DigitalIB Massive
 org.fundaciobit.scanweb.tester.scanwebplugins.5.desc=DigitalIB Massive
 # PROPERTIES
-#org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.url=http://digitalib.fundaciobit.org/digitalib/common/rest/apimassivescanwebsimple/v1/
-#org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.url=http://10.215.216.175:8080/digitalib/common/rest/apimassivescanwebsimple/v1/
 org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.url=http://anadal:8080/digitalibapi/interna/secure/apimassivescanwebsimple/v1/
 org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.username=testapp
 org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.password=testapp
+
 
 # Si no es defineix el profile, llavors se li mostrarà una pantalla a l'usuari amb tots els
 # Perfils disponibles per aquell usuari aplicació
 #org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassive.profile=PERFIL_SCAN_JNLP_OR_FILE
 
 
+#---------------------------------------------------
+#---------- 6 - DIGITALIB MASSIVE 2 PLUGIN -----------
+#---------------------------------------------------
 
+org.fundaciobit.scanweb.tester.scanwebplugins.6.class=org.fundaciobit.pluginsib.scanweb.digitalibmassive.DigitalIBMassive2ScanWebPlugin
+org.fundaciobit.scanweb.tester.scanwebplugins.6.nom=DigitalIB 2.0 Massive
+org.fundaciobit.scanweb.tester.scanwebplugins.6.desc=DigitalIB 2.0 Massive
+# PROPERTIES
+org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.url=http://anadal:8080/digitalibapi/interna/secure/apimassivescanwebsimple/v1/
+org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.username=testapp
+org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.password=testapp
+
+
+# Si no es defineix el profile, llavors se li mostrarà una pantalla a l'usuari amb tots els
+# Perfils disponibles per aquell usuari aplicació
+#org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.profile=PERFIL_SCAN_JNLP_OR_FILE
 
 
 

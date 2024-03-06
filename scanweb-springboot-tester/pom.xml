@@ -140,13 +140,13 @@
             <version>4.0.6</version>
         </dependency>
 
-        <!-- 
+        
         <dependency>
             <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
             <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
             <version>4.0.0</version>
         </dependency>
-        -->
+        
         <!--
 
 
@@ -162,6 +162,13 @@
         <dependency>
             <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
             <artifactId>pluginsib-scanweb-digitalibmassive</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-digitalibmassive2</artifactId>
+            
             <version>4.0.0</version>
         </dependency>
 
