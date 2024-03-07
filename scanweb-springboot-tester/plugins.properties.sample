@@ -6,7 +6,7 @@
 # ------------------------------------- 
 
 # Llistat de identificadors de plugins disponibles
-org.fundaciobit.scanweb.tester.scanwebplugins=2,3,5
+org.fundaciobit.scanweb.tester.scanwebplugins=1,2,3,6
 
 #---------------------------------------------------------
 #--------------------- 1 - IECISA PLUGIN -----------------
@@ -99,14 +99,14 @@ org.fundaciobit.scanweb.tester.scanwebplugins.5.pluginsib.scanweb.digitalibmassi
 
 
 #---------------------------------------------------
-#---------- 6 - DIGITALIB MASSIVE 2 PLUGIN -----------
+#---------- 6 - DIGITALIB MASSIVE 2 PLUGIN ---------
 #---------------------------------------------------
 
 org.fundaciobit.scanweb.tester.scanwebplugins.6.class=org.fundaciobit.pluginsib.scanweb.digitalibmassive.DigitalIBMassive2ScanWebPlugin
 org.fundaciobit.scanweb.tester.scanwebplugins.6.nom=DigitalIB 2.0 Massive
 org.fundaciobit.scanweb.tester.scanwebplugins.6.desc=DigitalIB 2.0 Massive
 # PROPERTIES
-org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.url=http://anadal:8080/digitalibapi/interna/secure/apimassivescanwebsimple/v1/
+org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.url=http://anadal:8080/digitalibapi/interna
 org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.username=testapp
 org.fundaciobit.scanweb.tester.scanwebplugins.6.pluginsib.scanweb.digitalibmassive.password=testapp
 

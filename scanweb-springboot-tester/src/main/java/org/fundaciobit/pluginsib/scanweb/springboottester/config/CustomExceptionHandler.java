@@ -28,7 +28,7 @@ public class CustomExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
 
-        String stackTraceOfException = sw.toString();
+        String stackTraceOfException = sw.toString().replace("\n", "\n<br/>");
         String html = "<html><head><title>Error</title></head><body><h1>Error</h1><p><b>" + ex.getMessage() + "</b></p>"
                 + stackTraceOfException + "</body></html>";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML).body(html);
@@ -42,7 +42,7 @@ public class CustomExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
 
-        String stackTraceOfException = sw.toString();
+        String stackTraceOfException = sw.toString().replace("\n", "\n<br/>");;
         String html = "<html><head><title>Error</title></head><body><h1>Error</h1><p><b>" + ex.getMessage() + "</b></p>"
                 + stackTraceOfException + "</body></html>";
         return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(html);
@@ -59,7 +59,7 @@ public class CustomExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
 
-        String stackTraceOfException = sw.toString();
+        String stackTraceOfException = sw.toString().replace("\n", "\n<br/>");;
         String html = "<html><head><title>Error</title></head><body><h1>Error</h1><p>" + ex.getMessage() + "</p>"
                 + stackTraceOfException + "</body></html>";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML).body(html);
