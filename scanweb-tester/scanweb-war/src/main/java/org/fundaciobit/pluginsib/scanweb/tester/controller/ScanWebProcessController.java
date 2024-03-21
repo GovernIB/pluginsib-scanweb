@@ -9,10 +9,10 @@ import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequestCustodyInfo;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequestSignatureInfo;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.ScanWebModuleLocal;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebInfoTester;
 import org.fundaciobit.pluginsib.scanweb.tester.form.ScanWebConfigForm;
 import org.fundaciobit.pluginsib.scanweb.tester.form.ScanWebConfigValidator;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebInfoTester;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebModuleEjb;
 import org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,8 +53,8 @@ public class ScanWebProcessController {
     @Autowired
     protected ScanWebConfigValidator scanWebValidator;
 
-    @EJB(mappedName = ScanWebModuleLocal.JNDI_NAME)
-    protected ScanWebModuleLocal scanWebModuleEjb;
+
+    protected ScanWebModuleEjb scanWebModuleEjb = ScanWebModuleEjb.getInstance();
 
     /**
      * 
@@ -287,7 +286,7 @@ public class ScanWebProcessController {
     private void download(int index, boolean isSignature, HttpServletResponse response, HttpServletRequest request)
             throws Exception {
 
-        @SuppressWarnings("unchecked")
+        //@SuppressWarnings("unchecked")
         List<ScanWebDocument> listDocs = (List<ScanWebDocument>) request.getSession().getAttribute(LAST_SCANNED_FILES);
 
         ScanWebDocument sd = listDocs.get(index);

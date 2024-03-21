@@ -69,6 +69,7 @@ public class DigitalIBMassive2ScanWebPlugin extends AbstractScanWebPlugin {
 
     private Map<String, DigitalIBTransactionInfo> digitalibTransactions = new HashMap<String, DigitalIBTransactionInfo>();
 
+
     /**
      * 
      * @author anadal (u80067)
@@ -1221,6 +1222,7 @@ public class DigitalIBMassive2ScanWebPlugin extends AbstractScanWebPlugin {
     protected ApiMassiveScanWebSimpleApi getApiMassiveScanWebSimple() throws Exception {
 
         ApiClient client = new ApiClient();
+
         client.setBasePath(getUrl());
         client.setUsername(getUsername());
         client.setPassword(getPassword());
@@ -1315,12 +1317,12 @@ public class DigitalIBMassive2ScanWebPlugin extends AbstractScanWebPlugin {
      * MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_DP
      * // * @see
      * MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTESTATELABORACIO_COPIA_PR
-     * 
+     *
      * final String documentEstatElaboracio =
      * MassiveScanWebSimpleArxiuRequiredParameters.
      * DOCUMENTELABORATIONSTATE_ORIGINAL;
-     * 
-     * 
+     *
+     *
      * // * @see MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_RESOLUCIO
      * // * @see MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ACORD //
      * * @see MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_CONTRACTE //
@@ -1347,16 +1349,16 @@ public class DigitalIBMassive2ScanWebPlugin extends AbstractScanWebPlugin {
      * // * @see
      * MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES_INCAUTATS //
      * * @see MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTIPUS_ALTRES
-     * 
+     *
      * final String documentTipus =
      * MassiveScanWebSimpleArxiuRequiredParameters.DOCUMENTTYPE_RESOLUCIO;
-     * 
+     *
      * String ciutadaNif = "11223344C";
-     * 
+     *
      * String ciutadaNom = "Pep Gonella";
-     * 
+     *
      * List<String> organs = new ArrayList<String>(Arrays.asList("A04013511"));
-     * 
+     *
      * MassiveScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
      * arxiuRequiredParameters = new
      * MassiveScanWebSimpleArxiuRequiredParameters(ciutadaNif, ciutadaNom,

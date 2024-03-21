@@ -47,7 +47,7 @@ public class HtmlUtils {
   private static void addMessage(HttpServletRequest request, String type, String missatge) {
     HttpSession session = request.getSession();
     
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     Map<String, List<String>> missatges = (Map<String, List<String>>)session.getAttribute(MISSATGES);
     
     if (missatges == null) {

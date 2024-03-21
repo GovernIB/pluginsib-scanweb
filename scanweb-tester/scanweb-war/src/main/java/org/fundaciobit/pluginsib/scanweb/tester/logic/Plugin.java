@@ -1,4 +1,4 @@
-package org.fundaciobit.pluginsib.scanweb.tester.ejb.utils;
+package org.fundaciobit.pluginsib.scanweb.tester.logic;
 
 import java.util.Properties;
 

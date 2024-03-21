@@ -1,4 +1,4 @@
-package org.fundaciobit.pluginsib.scanweb.tester.ejb;
+package org.fundaciobit.pluginsib.scanweb.tester.logic;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,36 +9,44 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.Plugin;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebInfoTester;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebPluginManager;
 
 /**
  *
  * @author anadal
  *
  */
-@Stateless(name = "ScanWebModuleEJB")
-public class ScanWebModuleEjb implements ScanWebModuleLocal {
+//@Stateless(name = "ScanWebModuleEJB")
+public class ScanWebModuleEjb /*implements ScanWebModuleLocal*/ {
 
   protected static Logger log = Logger.getLogger(ScanWebModuleEjb.class);
   
+  private ScanWebModuleEjb() {
+      
+  }
+  
+  private static ScanWebModuleEjb instance = new ScanWebModuleEjb();
+  
+  public static ScanWebModuleEjb getInstance() {
+      return instance;
+  }
   
   
-  
-  @Override
+  //@Override
   public List<Plugin> getAllPluginsFiltered(HttpServletRequest request, String scanWebID)
       throws Exception {
+   
+      
+      log.info("\ngetAllPluginsFiltered => Entrant ...");
 
     ScanWebInfoTester scanWebInfoTester = getScanWebInfoTester(request, scanWebID);
 
     // TODO CHECK scanWebConfig
+    log.info("\n ScanWebPluginManager.getAllPlugins() ...");
     List<Plugin> plugins = ScanWebPluginManager.getAllPlugins();
     if (plugins == null || plugins.size() == 0) {
       String msg = "S'ha produit un error llegint els plugins o no se n'han definit.";
@@ -74,7 +82,7 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
 
   }
 
-  @Override
+  //@Override
   public String scanDocument(HttpServletRequest request, String absolutePluginRequestPath,
       String relativePluginRequestPath, String scanWebID) throws Exception {
 
@@ -154,7 +162,7 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
 
-  @Override
+  //@Override
   public void closeScanWebProcess(HttpServletRequest request, String scanWebID) {
 
     ScanWebInfoTester pss = getScanWebInfoTester(request, scanWebID);
@@ -248,7 +256,7 @@ public class ScanWebModuleEjb implements ScanWebModuleLocal {
     return scanWebConfigMap.get(scanWebID);
   }
 
-  @Override
+  //@Override
   public void startScanWebProcess(ScanWebInfoTester scanWebConfig) {
     final String scanWebID = scanWebConfig.getScanWebRequest().getScanWebID();
     synchronized (scanWebConfigMap) {

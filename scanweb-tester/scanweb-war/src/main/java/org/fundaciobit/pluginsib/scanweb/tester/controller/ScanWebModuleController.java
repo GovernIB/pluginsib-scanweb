@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +16,10 @@ import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 import org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.ScanWebModuleLocal;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.Plugin;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebInfoTester;
-import org.fundaciobit.pluginsib.scanweb.tester.ejb.utils.ScanWebPluginManager;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.Plugin;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebInfoTester;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebModuleEjb;
+import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebPluginManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +42,8 @@ public class ScanWebModuleController extends HttpServlet {
 
     public static final boolean stepSelectionWhenOnlyOnePlugin = false;
 
-    @EJB(mappedName = ScanWebModuleLocal.JNDI_NAME)
-    protected ScanWebModuleLocal scanWebModuleEjb;
+    
+    protected ScanWebModuleEjb scanWebModuleEjb = ScanWebModuleEjb.getInstance();
 
     @RequestMapping(value = "/selectscanwebmodule/{scanWebID}")
     public ModelAndView selectScanWebModule(HttpServletRequest request, HttpServletResponse response,
@@ -358,7 +357,7 @@ public class ScanWebModuleController extends HttpServlet {
      * @throws Exception
      */
     public static ModelAndView startScanWebProcess(HttpServletRequest request, String view,
-            ScanWebModuleLocal scanWebModuleEjb, ScanWebInfoTester scanWebInfoTester) throws Exception {
+            ScanWebModuleEjb scanWebModuleEjb, ScanWebInfoTester scanWebInfoTester) throws Exception {
 
         final ScanWebRequest swr = scanWebInfoTester.getScanWebRequest();
         final String scanWebID = swr.getScanWebID();

@@ -1,4 +1,4 @@
-package org.fundaciobit.pluginsib.scanweb.tester.ejb.utils;
+package org.fundaciobit.pluginsib.scanweb.tester.logic;
 
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebResult;

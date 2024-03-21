@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
   <artifactId>pluginsib-scanweb-tester-ear</artifactId>
-  <version>4.0.0</version>
   <packaging>ear</packaging>
-  <name>PluginsIB - Scan Web - Tester - EAR</name>
+  <name>PluginsIB - Scan Web - JBoss 7.2 Tester - EAR</name>
   <parent>
     <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
     <artifactId>pluginsib-scanweb-tester</artifactId>
     <version>4.0.0</version>
   </parent>
   <dependencies>
-    <!-- Internes -->
-    <dependency>
-      <artifactId>pluginsib-scanweb-tester-ejb</artifactId>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <version>${project.version}</version>
-      <type>ejb</type>
-    </dependency>
+
     <dependency>
       <artifactId>pluginsib-scanweb-tester-war</artifactId>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
@@ -29,8 +21,14 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.4</version>
     </dependency>
+    
+    <dependency>
+       <groupId>org.fundaciobit.pluginsib.core</groupId>
+       <artifactId>pluginsib-core</artifactId>
+       <version>2.0.2</version>
+    </dependency>
+    
     <!-- ====================================== -->
     <!-- ===========  API DE SCANWEB  ========= -->
     <!-- ====================================== -->
@@ -53,7 +51,7 @@
     <dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
       <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
-      <version>4.0.4</version>
+      <version>4.0.6</version>
     </dependency>
 
     <dependency>
@@ -62,15 +60,10 @@
       <version>4.0.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-digitalib</artifactId>
-      <version>4.0.1</version>
-    </dependency>
 
 	<dependency>
       <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-digitalibmassive</artifactId>
+      <artifactId>pluginsib-scanweb-digitalibmassive2</artifactId>
       <version>4.0.0</version>
     </dependency>
 
@@ -82,11 +75,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-ear-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.3.0</version>
         <!-- configuring the ear plugin -->
         <configuration>
           <displayName>Exemple de ScanWeb Plugin</displayName>
           <description>Exemple de ScanWeb Plugin</description>
+          <skinnyModules>true</skinnyModules>
+          <packagingExcludes>**/com.fasterxml.jackson.*.jar,**/org.jboss.resteasy-resteasy-*.jar</packagingExcludes>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -102,10 +97,6 @@
             <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
           </jboss>
           <modules>
-            <ejbModule>
-              <artifactId>pluginsib-scanweb-tester-ejb</artifactId>
-              <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-            </ejbModule>
             <webModule>
               <artifactId>pluginsib-scanweb-tester-war</artifactId>
               <groupId>org.fundaciobit.pluginsib.scanweb</groupId>

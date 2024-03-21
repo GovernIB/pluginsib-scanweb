@@ -1,0 +1,9 @@
+
+    ...
+    </extensions>
+    <system-properties>
+        <property name="scanwebplugins.path" value="D:/dades/dades/CarpetesPersonals/ProgramacioPortaFIB3/pluginsib-scanweb-4.0/scanweb-springboot-tester/plugins.properties"/>
+    </system-properties>
+    <management>
+    ...
+

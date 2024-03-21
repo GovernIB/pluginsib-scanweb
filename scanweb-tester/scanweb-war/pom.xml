@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pluginsib-scanweb-tester-war</artifactId>
     <packaging>war</packaging>
-    <name>PluginsIB - Scan Web - Tester - WAR</name>
+    <name>PluginsIB - Scan Web - JBoss 7.2 Tester - WAR</name>
     <parent>
         <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
         <artifactId>pluginsib-scanweb-tester</artifactId>
@@ -16,19 +16,41 @@
     </properties>
     <url>http://maven.apache.org</url>
     <dependencies>
+
+
+        <!-- Especificacions i llibreries proporcionades per JBoss -->
         <dependency>
-            <artifactId>pluginsib-scanweb-tester-ejb</artifactId>
-            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-            <version>4.0.0</version>
+            <groupId>org.jboss.spec</groupId>
+            <artifactId>jboss-javaee-8.0</artifactId>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>ejb-api</artifactId>
-            <version>3.0</version>
+            <groupId>org.fundaciobit.pluginsib.core</groupId>
+            <artifactId>pluginsib-core</artifactId>
+            <version>2.0.2</version>
             <scope>provided</scope>
         </dependency>
-        <!-- ================ PLUGINS ======================== -->
+<!--
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-json-binding-provider</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+-->
+
+        <!-- ================ API ======================== -->
         <dependency>
             <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
             <artifactId>pluginsib-scanweb-api</artifactId>
@@ -75,7 +97,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -85,14 +106,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.4</version>
             <scope>provided</scope>
         </dependency>
         <!-- ================ TEST ======================== -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -104,7 +123,7 @@
                 <version>2.6</version>
                 <configuration>
                     <packagingExcludes> WEB-INF/lib/xml-apis-*.jar,
-                        WEB-INF/lib/slf4j*.jar                    </packagingExcludes>
+                        WEB-INF/lib/slf4j*.jar </packagingExcludes>
                 </configuration>
             </plugin>
         </plugins>
