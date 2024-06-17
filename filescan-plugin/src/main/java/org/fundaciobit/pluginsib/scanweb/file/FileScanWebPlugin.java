@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
@@ -72,7 +72,7 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest config) {
+    public String filter(HttpServletRequest request, ScanWebRequest config) {
         return super.filter(request, config);
     }
 
@@ -377,7 +377,7 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            org.fundaciobit.pluginsib.core.utils.FileUtils.copy(uf.getInputStream(), baos);
+            org.fundaciobit.pluginsib.core.v3.utils.FileUtils.copy(uf.getInputStream(), baos);
 
             ScanWebPlainFile scannedPlainFile = new ScanWebPlainFile(uf.getName(), uf.getContentType(),
                     baos.toByteArray());
@@ -402,8 +402,6 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
 
             scanWebResult.getScannedDocuments().add(doc);
             scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
-
-            
 
             // final String url;
             // url = swc.getUrlFinal();

@@ -1,6 +1,6 @@
 package org.fundaciobit.pluginsib.scanweb.tester.form;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -14,31 +14,30 @@ import org.springframework.validation.Validator;
 @Component
 public class ScanWebConfigValidator implements Validator {
 
-  protected final Logger log = Logger.getLogger(getClass());
+    protected final Logger log = Logger.getLogger(getClass());
 
-  public ScanWebConfigValidator() {
-    super();
-  }
+    public ScanWebConfigValidator() {
+        super();
+    }
 
-  @Override
-  public boolean supports(Class<?> clazz) {
-    return ScanWebConfigForm.class.equals(clazz);
-  }
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return ScanWebConfigForm.class.equals(clazz);
+    }
 
-  @Override
-  public void validate(Object target, Errors errors) {
+    @Override
+    public void validate(Object target, Errors errors) {
 
-    // Valors Not Null
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "genapp.validation.required",
-        new Object[] { "type" });
-    
-    
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "genapp.validation.required",
-            new Object[] { "username" });
-/*
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "flags", "genapp.validation.required",
+        // Valors Not Null
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "genapp.validation.required",
+                new Object[] { "type" });
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "genapp.validation.required",
+                new Object[] { "username" });
+        /*
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "flags", "genapp.validation.required",
         new Object[] { "flags" });
-*/
-  }
+        */
+    }
 
 }

@@ -39,8 +39,6 @@ public class ScanWebRequestCustodyInfo {
      */
     public final static String DOCUMENTELABORATIONSTATE_ALTRES = "EE99";
 
-
-
     /**
      * NIF del ciutadà
      */

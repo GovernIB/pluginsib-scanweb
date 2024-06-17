@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
-import org.fundaciobit.pluginsib.core.utils.PluginsManager;
+import org.jboss.logging.Logger;
+import org.fundaciobit.pluginsib.core.v3.utils.PluginsManager;
 
 /**
  * 

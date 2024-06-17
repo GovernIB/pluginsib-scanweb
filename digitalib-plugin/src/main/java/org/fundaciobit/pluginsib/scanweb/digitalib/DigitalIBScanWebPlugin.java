@@ -3,9 +3,9 @@ package org.fundaciobit.pluginsib.scanweb.digitalib;
 import org.fundaciobit.apisib.apiscanwebsimple.v1.ApiScanWebSimple;
 import org.fundaciobit.apisib.apiscanwebsimple.v1.beans.*;
 import org.fundaciobit.apisib.apiscanwebsimple.v1.jersey.ApiScanWebSimpleJersey;
-import org.fundaciobit.pluginsib.core.utils.ISO8601;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
+import org.fundaciobit.pluginsib.core.v3.utils.ISO8601;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.MetadataConstants;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
@@ -155,7 +155,7 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest config) {
+    public String filter(HttpServletRequest request, ScanWebRequest config) {
         return super.filter(request, config);
     }
 
@@ -961,19 +961,19 @@ public class DigitalIBScanWebPlugin extends AbstractScanWebPlugin {
         }
     }
 
-    private void addMetadata(List<Metadata> metadatas, String key, Boolean value) {
+    protected void addMetadata(List<Metadata> metadatas, String key, Boolean value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }
     }
 
-    private void addMetadata(List<Metadata> metadatas, String key, String value) {
+    protected void addMetadata(List<Metadata> metadatas, String key, String value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }
     }
 
-    private void addMetadata(List<Metadata> metadatas, String key, Integer value) {
+    protected void addMetadata(List<Metadata> metadatas, String key, Integer value) {
         if (value != null) {
             metadatas.add(new Metadata(key, value));
         }

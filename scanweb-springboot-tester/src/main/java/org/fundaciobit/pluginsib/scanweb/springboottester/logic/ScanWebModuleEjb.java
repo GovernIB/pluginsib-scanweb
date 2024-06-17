@@ -12,8 +12,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.IScanWebPlugin;
+import org.jboss.logging.Logger;
 
 /**
  *
@@ -25,7 +25,7 @@ public class ScanWebModuleEjb {
 
     protected static Logger log = Logger.getLogger(ScanWebModuleEjb.class);
 
-    public List<Plugin> getAllPluginsFiltered(HttpServletRequest request, String scanWebID) throws Exception {
+    public Filtered getAllPluginsFiltered(HttpServletRequest request, String scanWebID) throws Exception {
 
         ScanWebInfoTester scanWebInfoTester = getScanWebInfoTester(request, scanWebID);
 
@@ -38,7 +38,9 @@ public class ScanWebModuleEjb {
             throw e;
         }
 
-        List<Plugin> pluginsFiltered = new ArrayList<Plugin>();
+        List<Plugin> pluginsIncluded = new ArrayList<Plugin>();
+
+        Map<Plugin, String> pluginsExcluded = new HashMap<Plugin, String>();
 
         IScanWebPlugin scanWebPlugin;
 
@@ -51,17 +53,20 @@ public class ScanWebModuleEjb {
             }
 
             // 2.- Passa el filtre ...
+            String reasonNoFilter = scanWebPlugin.filter(request, scanWebInfoTester.getScanWebRequest());
 
-            if (scanWebPlugin.filter(request, scanWebInfoTester.getScanWebRequest())) {
-                pluginsFiltered.add(pluginDeScanWeb);
+            if (reasonNoFilter == null) {
+                pluginsIncluded.add(pluginDeScanWeb);
             } else {
                 // Exclude Plugin
-                log.info("Exclos plugin [" + pluginDeScanWeb.getNom() + "]: NO PASSA FILTRE");
+                log.info("Exclos plugin [" + pluginDeScanWeb.getNom() + "]: NO PASSA FILTRE => " + reasonNoFilter);
+
+                pluginsExcluded.put(pluginDeScanWeb, reasonNoFilter);
             }
 
         }
 
-        return pluginsFiltered;
+        return new Filtered(pluginsIncluded, pluginsExcluded);
 
     }
 

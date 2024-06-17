@@ -6,14 +6,14 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fundaciobit.pluginsib.core.IPlugin;
+import org.fundaciobit.pluginsib.core.v3.IPluginIB;
 
 /**
  * 
  * @author anadal
  * 
  */
-public interface IScanWebPlugin extends IPlugin {
+public interface IScanWebPlugin extends IPluginIB {
 
     /** Pàgina o imatge addicional amb la informació de l'escaneig */
     // TODO , InfoPage
@@ -22,7 +22,13 @@ public interface IScanWebPlugin extends IPlugin {
 
     public String getName(Locale locale);
 
-    public boolean filter(HttpServletRequest request, ScanWebRequest scanWebRequest);
+    /**
+     * 
+     * @param request
+     * @param scanWebRequest
+     * @return null si tot està bé, en cas contrari la raó per la qual no passa el filtre.
+     */
+    public String filter(HttpServletRequest request, ScanWebRequest scanWebRequest);
 
     /**
      * 

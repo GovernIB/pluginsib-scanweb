@@ -27,8 +27,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
+import org.fundaciobit.pluginsib.core.v3.utils.AbstractPluginProperties;
+import org.jboss.logging.Logger;
 
 /**
  * 
@@ -98,21 +98,22 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest config) {
+    public String filter(HttpServletRequest request, ScanWebRequest config) {
 
         // (1) Modes d'Escaneig
         ScanWebMode mode = config.getMode();
         Set<ScanWebMode> modes = getSupportedScanWebModes();
 
         if (!modes.contains(mode)) {
-            return false;
+            // TODO Traduir
+            return "Mode d'escaneig no suportat";
         }
 
         // (2) Comprovar Support de Tipus d'escaneig
         final String scanType = config.getScanType();
         Set<String> types = getSupportedScanTypes();
         if (!types.contains(scanType)) {
-            return false;
+            return "Tipus d'escaneig no suportat";
         }
 
         // (3) Comprovar Support dels flags
@@ -121,11 +122,11 @@ public abstract class AbstractScanWebPlugin extends AbstractPluginProperties imp
         final Set<String> suported = getSupportedFlagsByScanType(scanType);
         for (String flagSuport : suported) {
             if (flag.equals(flagSuport)) {
-                return true;
+                return null;
             }
         }
 
-        return false;
+        return "No suporta el flag requerit (" + flag + ")";
     }
 
     // -----------------------------------------------------------------------

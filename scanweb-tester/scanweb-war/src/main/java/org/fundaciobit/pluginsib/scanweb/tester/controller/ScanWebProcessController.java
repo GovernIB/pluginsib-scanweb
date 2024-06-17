@@ -1,19 +1,20 @@
 package org.fundaciobit.pluginsib.scanweb.tester.controller;
 
-import org.apache.log4j.Logger;
-import org.fundaciobit.plugins.documentcustody.api.AnnexCustody;
+
+import org.fundaciobit.pluginsib.documentcustody.api.AnnexCustody;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequestCustodyInfo;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequestSignatureInfo;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
 import org.fundaciobit.pluginsib.scanweb.tester.form.ScanWebConfigForm;
 import org.fundaciobit.pluginsib.scanweb.tester.form.ScanWebConfigValidator;
 import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebInfoTester;
 import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebModuleEjb;
 import org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  *

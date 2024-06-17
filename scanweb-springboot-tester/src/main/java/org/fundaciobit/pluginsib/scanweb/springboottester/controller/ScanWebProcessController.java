@@ -1,7 +1,7 @@
 package org.fundaciobit.pluginsib.scanweb.springboottester.controller;
 
-import org.apache.log4j.Logger;
-import org.fundaciobit.plugins.documentcustody.api.AnnexCustody;
+
+import org.fundaciobit.pluginsib.documentcustody.api.AnnexCustody;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
@@ -12,7 +12,8 @@ import org.fundaciobit.pluginsib.scanweb.springboottester.form.ScanWebConfigForm
 import org.fundaciobit.pluginsib.scanweb.springboottester.form.ScanWebConfigValidator;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.ScanWebInfoTester;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.ScanWebModuleEjb;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.jboss.logging.Logger;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;

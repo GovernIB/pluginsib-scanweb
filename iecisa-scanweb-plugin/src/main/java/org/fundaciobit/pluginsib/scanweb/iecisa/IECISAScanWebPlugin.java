@@ -3,7 +3,7 @@ package org.fundaciobit.pluginsib.scanweb.iecisa;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 
 /**
  * 
@@ -84,7 +83,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest scanWebRequest) {
+    public String filter(HttpServletRequest request, ScanWebRequest scanWebRequest) {
         return super.filter(request, scanWebRequest);
     }
 
@@ -99,8 +98,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         return relativePluginRequestPath + "/" + INDEX;
     }
 
-    final Set<String> SUPPORTED_SCAN_TYPES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF,
+    final Set<String> SUPPORTED_SCAN_TYPES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(ScanWebDocument.SCANTYPE_MIME_PDF,
                     ScanWebDocument.SCANTYPE_MIME_TIFF, ScanWebDocument.SCANTYPE_MIME_JPG,
                     ScanWebDocument.SCANTYPE_MIME_PNG, ScanWebDocument.SCANTYPE_MIME_GIF)));
 
@@ -580,13 +579,12 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResults, Locale languageUI) {
 
-        if(isDebug()) {
-          log.info("Entra dins FINAL_PAGE(...");
+        if (isDebug()) {
+            log.info("Entra dins FINAL_PAGE(...");
         }
-        
-        
+
         if (scanWebResults.getStatus().getStatus() == ScanWebStatus.STATUS_IN_PROGRESS) {
-        
+
             if (scanWebResults.getScannedDocuments().size() == 0) {
                 scanWebResults.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
                 scanWebResults.getStatus().setErrorMsg(getTraduccio("noenviatcapdoc", languageUI));
@@ -594,7 +592,6 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 scanWebResults.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_OK);
             }
         }
-
 
         try {
             response.sendRedirect(scanWebRequest.getUrlFinal());
@@ -619,7 +616,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
             ScanWebResult scanWebResult, Locale languageUI) {
 
         if (isDebug()) {
-          log.info("Entra dins uploadPage(...)");
+            log.info("Entra dins uploadPage(...)");
         }
 
         Map<String, FileItem> map = super.readFilesFromRequest(request, response);
@@ -650,7 +647,8 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
         final String scanTypeExpected = scanWebRequest.getScanType();
 
         String mime = null;
-        String scannedFileFormat = null;;
+        String scannedFileFormat = null;
+        ;
 
         if (ScanWebDocument.SCANTYPE_MIME_PDF.equals(scanTypeExpected)) {
 
@@ -675,14 +673,14 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 log.error(errorMsg);
                 scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
                 scanWebResult.getStatus().setErrorMsg(errorMsg);
-                
+
             } else {
 
                 boolean errorFormat = false;
                 if (ScanWebDocument.SCANTYPE_MIME_JPG.equals(scanTypeExpected)) {
                     if (!"JPEG".equalsIgnoreCase(format)) {
                         errorFormat = true;
-                        
+
                     } else {
                         mime = "image/jpeg";
                         scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_JPG;
@@ -690,7 +688,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 } else if (ScanWebDocument.SCANTYPE_MIME_PNG.equals(scanTypeExpected)) {
                     if (!"png".equalsIgnoreCase(format)) {
                         errorFormat = true;
-                        
+
                     } else {
                         mime = "image/png";
                         scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_PNG;
@@ -698,14 +696,14 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 } else if (ScanWebDocument.SCANTYPE_MIME_GIF.equals(scanTypeExpected)) {
                     if (!"gif".equalsIgnoreCase(format)) {
                         errorFormat = true;
-                        
+
                     } else {
                         mime = "image/gif";
                         scannedFileFormat = ScanWebDocument.SCANTYPE_MIME_GIF;
                     }
                 } else {
                     mime = "application/octet-stream";
-                    
+
                 }
 
                 if (errorFormat) {
@@ -714,7 +712,7 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                     log.error(errorMsg);
                     scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_FINAL_ERROR);
                     scanWebResult.getStatus().setErrorMsg(errorMsg);
-                    
+
                 }
             }
 
@@ -729,37 +727,34 @@ public class IECISAScanWebPlugin extends AbstractScanWebPlugin {
                 m = "application/octet-stream";
             }
             mime = m;
-            
+
         }
 
         ScanWebPlainFile scannedPlainFile = new ScanWebPlainFile(name, mime, data);
 
         ScanWebSignedFile scannedSignedFile = null;
 
-        
         List<Metadata> additionalMetadatas = new ArrayList<Metadata>();
         //metadatas.add(new Metadata("FechaCaptura", date));
-        additionalMetadatas.add(new Metadata("VersionNTI", "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
+        additionalMetadatas
+                .add(new Metadata("VersionNTI", "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"));
 
-        
         String transactionName = scanWebRequest.getTransactionName();
-        
+
         Date scanDate = new Date(System.currentTimeMillis());
         Integer pixelType = null;
-        Integer pppResolution = null;        
-        
+        Integer pppResolution = null;
+
         Boolean ocr = null;
         Boolean duplex = null;
         String paperSize = null;
         String documentLanguage = null;
         String documentType = null;
-       
-        ScanWebDocument scannedDoc = new ScanWebDocument(transactionName, scannedPlainFile,
-                scannedSignedFile, scanDate, pixelType, pppResolution,
-                scannedFileFormat, ocr, duplex,  paperSize,  documentLanguage,
-                 documentType,  additionalMetadatas);
-        
-        
+
+        ScanWebDocument scannedDoc = new ScanWebDocument(transactionName, scannedPlainFile, scannedSignedFile, scanDate,
+                pixelType, pppResolution, scannedFileFormat, ocr, duplex, paperSize, documentLanguage, documentType,
+                additionalMetadatas);
+
         scanWebResult.getScannedDocuments().add(scannedDoc);
     }
 

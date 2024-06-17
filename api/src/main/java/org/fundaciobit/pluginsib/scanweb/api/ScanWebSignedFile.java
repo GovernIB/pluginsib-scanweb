@@ -1,6 +1,6 @@
 package org.fundaciobit.pluginsib.scanweb.api;
 
-import org.fundaciobit.plugins.documentcustody.api.SignatureCustody;
+import org.fundaciobit.pluginsib.documentcustody.api.SignatureCustody;
 
 /**
  * 

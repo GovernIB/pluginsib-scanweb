@@ -3,7 +3,9 @@ package org.fundaciobit.pluginsib.scanweb.springboottester.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,15 +13,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
+import org.fundaciobit.pluginsib.scanweb.springboottester.logic.Filtered;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.Plugin;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.ScanWebInfoTester;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.ScanWebModuleEjb;
 import org.fundaciobit.pluginsib.scanweb.springboottester.logic.ScanWebPluginManager;
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,11 +53,20 @@ public class ScanWebModuleController extends HttpServlet {
     public ModelAndView selectScanWebModule(HttpServletRequest request, HttpServletResponse response,
             @PathVariable("scanWebID") String scanWebID) throws Exception {
 
-        List<Plugin> pluginsFiltered = scanWebModuleEjb.getAllPluginsFiltered(request, scanWebID);
+        Filtered filtered = scanWebModuleEjb.getAllPluginsFiltered(request, scanWebID);
+        
+        List<Plugin> pluginsFiltered = filtered.getPluginsIncluded();
+        Map<Plugin, String> pluginsExcluded = filtered.getPluginsExcluded();
+        
 
         // Si cap modul compleix llavors mostrar missatge
         if (pluginsFiltered.size() == 0) {
-            String msg = "No existeix cap mòdul de scan que passi els filtres";
+            String msg = "No existeix cap mòdul de scan que passi els filtres:\n";
+            
+            for (Plugin modul : pluginsExcluded.keySet()) {
+                msg += "  - " + modul.getNom() + " : " + pluginsExcluded.get(modul) + "\n";
+            }
+            
             return generateErrorMAV(request, scanWebID, msg, null);
         }
 
@@ -67,11 +79,18 @@ public class ScanWebModuleController extends HttpServlet {
                 return new ModelAndView(new RedirectView(url, true));
             }
         }
+        
+        Map<String,String> pluginsExcludedStrings = new HashMap<String, String>();
+        for (Plugin modul : pluginsExcluded.keySet()) {
+            pluginsExcludedStrings.put(modul.getNom(), pluginsExcluded.get(modul));
+        }
+        
 
         // /WEB-INF/views/plugindescan_seleccio.jsp
         ModelAndView mav = new ModelAndView("/plugindescan_seleccio");
         mav.addObject("scanWebID", scanWebID);
         mav.addObject("plugins", pluginsFiltered);
+        mav.addObject("pluginsExcludedStrings", pluginsExcludedStrings);
 
         return mav;
 

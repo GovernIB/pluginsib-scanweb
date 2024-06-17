@@ -3,9 +3,9 @@ package org.fundaciobit.pluginsib.scanweb.digitalibmassive;
 import org.fundaciobit.apisib.apimassivescanwebsimple.v1.ApiMassiveScanWebSimple;
 import org.fundaciobit.apisib.apimassivescanwebsimple.v1.beans.*;
 import org.fundaciobit.apisib.apimassivescanwebsimple.v1.jersey.ApiMassiveScanWebSimpleJersey;
-import org.fundaciobit.pluginsib.core.utils.ISO8601;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
+import org.fundaciobit.pluginsib.core.v3.utils.ISO8601;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.MetadataConstants;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
@@ -154,7 +154,7 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest config) {
+    public String filter(HttpServletRequest request, ScanWebRequest config) {
         return super.filter(request, config);
     }
 
@@ -384,8 +384,7 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
 
                     break;
 
-                    
-                    case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY: 
+                    case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE_AND_CUSTODY:
                     case MassiveScanWebSimpleAvailableProfile.PROFILE_TYPE_SCAN_AND_SIGNATURE: {
                         MassiveScanWebSimpleSignatureParameters signatureParameters = getSignatureParameters(
                                 scanWebRequest, locale);
@@ -396,23 +395,21 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                     }
                     break;
 
-                  
-                        /*
-                         * MassiveScanWebSimpleSignatureParameters signatureParameters =
-                         * getSignatureParameters();
-                         * 
-                         * MassiveScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
-                         * arxiuRequiredParameters = getArxiuRequiredParameters();
-                         * 
-                         * // See getArxiuOptionalParameters() sample
-                         * MassiveScanWebSimpleArxiuOptionalParameters arxiuOptionalParameters = null;
-                         * 
-                         * transacctionIdRequest = new
-                         * MassiveScanWebSimpleGetTransactionIdRequest(scanWebRequest.getTransactionName
-                         * (),profileCode, view, languageUI, funcionariUsername, signatureParameters,
-                         * arxiuRequiredParameters, arxiuOptionalParameters);
-                         */
-                    
+                    /*
+                     * MassiveScanWebSimpleSignatureParameters signatureParameters =
+                     * getSignatureParameters();
+                     * 
+                     * MassiveScanWebSimpleArxiuRequiredParameters arxiuRequiredParameters;
+                     * arxiuRequiredParameters = getArxiuRequiredParameters();
+                     * 
+                     * // See getArxiuOptionalParameters() sample
+                     * MassiveScanWebSimpleArxiuOptionalParameters arxiuOptionalParameters = null;
+                     * 
+                     * transacctionIdRequest = new
+                     * MassiveScanWebSimpleGetTransactionIdRequest(scanWebRequest.getTransactionName
+                     * (),profileCode, view, languageUI, funcionariUsername, signatureParameters,
+                     * arxiuRequiredParameters, arxiuOptionalParameters);
+                     */
 
                     default:
                         // TODO XYZ ZZZ ZZZ TRADUCCIO
@@ -1224,11 +1221,9 @@ public class DigitalIBMassiveScanWebPlugin extends AbstractScanWebPlugin {
                     + ScanWebRequestSignatureInfo.class.getName());
         }
 
-         
         MassiveScanWebSimpleSignatureParameters signatureParameters;
         signatureParameters = new MassiveScanWebSimpleSignatureParameters(swsi.getFunctionaryFullName(),
                 swsi.getFunctionaryAdministrationID(), swsi.getFunctionaryUnitDIR3());
-
 
         return signatureParameters;
     }

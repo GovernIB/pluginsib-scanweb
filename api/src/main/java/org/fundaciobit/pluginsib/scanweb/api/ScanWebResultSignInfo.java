@@ -1,7 +1,7 @@
 package org.fundaciobit.pluginsib.scanweb.api;
 
 import java.util.List;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
 
 /**
  * 

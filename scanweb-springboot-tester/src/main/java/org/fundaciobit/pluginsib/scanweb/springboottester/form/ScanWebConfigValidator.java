@@ -1,6 +1,6 @@
 package org.fundaciobit.pluginsib.scanweb.springboottester.form;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

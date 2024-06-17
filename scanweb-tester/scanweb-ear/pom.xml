@@ -1,120 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>pluginsib-scanweb-tester-ear</artifactId>
-  <packaging>ear</packaging>
-  <name>PluginsIB - Scan Web - JBoss 7.2 Tester - EAR</name>
-  <parent>
-    <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-    <artifactId>pluginsib-scanweb-tester</artifactId>
-    <version>4.0.0</version>
-  </parent>
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>pluginsib-scanweb-tester-ear</artifactId>
+    <packaging>ear</packaging>
+    <name>PluginsIB - Scan Web - JBoss 7.2 Tester - EAR</name>
+    <parent>
+        <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+        <artifactId>pluginsib-scanweb-tester</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+    <dependencies>
 
-    <dependency>
-      <artifactId>pluginsib-scanweb-tester-war</artifactId>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
-    <!-- Externes -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    
-    <dependency>
-       <groupId>org.fundaciobit.pluginsib.core</groupId>
-       <artifactId>pluginsib-core</artifactId>
-       <version>2.0.2</version>
-    </dependency>
-    
-    <!-- ====================================== -->
-    <!-- ===========  API DE SCANWEB  ========= -->
-    <!-- ====================================== -->
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-api</artifactId>
-      <version>4.0.0</version>
-    </dependency>
+        <dependency>
+            <artifactId>pluginsib-scanweb-tester-war</artifactId>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <!-- Externes -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
 
-    <!-- ====================================== -->
-    <!-- =========  PLUGINS DE SCANWEB  ======= -->
-    <!-- ====================================== -->
-    <!--  IMPLEMENTACIONS -->
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
-      <version>4.0.0</version>
-    </dependency>
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.core.v3</groupId>
+            <artifactId>pluginsib-core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
-      <version>4.0.6</version>
-    </dependency>
+        <!-- ====================================== -->
+        <!-- ===========  API DE SCANWEB  ========= -->
+        <!-- ====================================== -->
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-file</artifactId>
-      <version>4.0.0</version>
-    </dependency>
+        <!-- ====================================== -->
+        <!-- =========  PLUGINS DE SCANWEB  ======= -->
+        <!-- ====================================== -->
+        <!--  IMPLEMENTACIONS -->
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-iecisascanweb-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-dynamicwebtwain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-file</artifactId>
+            <version>5.0.0-SNAPSHOT</version>
+        </dependency>
 
 
-	<dependency>
-      <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-      <artifactId>pluginsib-scanweb-digitalibmassive2</artifactId>
-      <version>4.0.0</version>
-    </dependency>
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+            <artifactId>pluginsib-scanweb-digitalibmassive2</artifactId>
+            <version>5.0.0-SNAPSHOT</version>
+        </dependency>
 
-  </dependencies>
+    </dependencies>
 
-  <build>
-    <finalName>scanweb</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-ear-plugin</artifactId>
-        <version>3.3.0</version>
-        <!-- configuring the ear plugin -->
-        <configuration>
-          <displayName>Exemple de ScanWeb Plugin</displayName>
-          <description>Exemple de ScanWeb Plugin</description>
-          <skinnyModules>true</skinnyModules>
-          <packagingExcludes>**/com.fasterxml.jackson.*.jar,**/org.jboss.resteasy-resteasy-*.jar</packagingExcludes>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <manifestEntries>
-              <Tester-Version>${project.version}</Tester-Version>
-            </manifestEntries>
-          </archive>
-          <defaultLibBundleDir>lib</defaultLibBundleDir>
-          <jboss>
-            <version>5</version>
-            <loader-repository>org.fundaciobit.pluginsib:loader=scanweb.ear</loader-repository>
-            <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
-          </jboss>
-          <modules>
-            <webModule>
-              <artifactId>pluginsib-scanweb-tester-war</artifactId>
-              <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
-              <contextRoot>scanweb</contextRoot>
-            </webModule>
-          </modules>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-maven-plugin</artifactId>
-        <version>1.5.0</version>
-        <configuration>
-          <!-- <jbossHome>D:\servers\jboss-eap-5.1\jboss-as</jbossHome>-->
-          <serverName>default</serverName>
-          <fileName>target/scanweb.ear</fileName>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <finalName>scanweb</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.3.0</version>
+                <!-- configuring the ear plugin -->
+                <configuration>
+                    <displayName>Exemple de ScanWeb Plugin</displayName>
+                    <description>Exemple de ScanWeb Plugin</description>
+                    <skinnyModules>true</skinnyModules>
+                    <packagingExcludes>
+                        **/com.fasterxml.jackson.*.jar,**/org.jboss.resteasy-resteasy-*.jar</packagingExcludes>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Tester-Version>${project.version}</Tester-Version>
+                        </manifestEntries>
+                    </archive>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <jboss>
+                        <version>5</version>
+                        <loader-repository>
+                            org.fundaciobit.pluginsib:loader=scanweb.ear</loader-repository>
+                        <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
+                    </jboss>
+                    <modules>
+                        <webModule>
+                            <artifactId>pluginsib-scanweb-tester-war</artifactId>
+                            <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
+                            <contextRoot>scanweb</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jboss-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <!--
+                    <jbossHome>D:\servers\jboss-eap-5.1\jboss-as</jbossHome>-->
+                    <serverName>default</serverName>
+                    <fileName>target/scanweb.ear</fileName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebPlainFile;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebRequest;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebStatus;
 import org.fundaciobit.pluginsib.scanweb.tester.utils.HtmlUtils;
+import org.jboss.logging.Logger;
 import org.fundaciobit.pluginsib.scanweb.tester.logic.Plugin;
 import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebInfoTester;
 import org.fundaciobit.pluginsib.scanweb.tester.logic.ScanWebModuleEjb;
@@ -42,7 +42,6 @@ public class ScanWebModuleController extends HttpServlet {
 
     public static final boolean stepSelectionWhenOnlyOnePlugin = false;
 
-    
     protected ScanWebModuleEjb scanWebModuleEjb = ScanWebModuleEjb.getInstance();
 
     @RequestMapping(value = "/selectscanwebmodule/{scanWebID}")
@@ -75,47 +74,40 @@ public class ScanWebModuleController extends HttpServlet {
         return mav;
 
     }
-    
-    
-    
+
     @RequestMapping(value = "/downloadseparator/{pluginID}/{scanWebID}")
     public void downloadSeparator(HttpServletRequest request, HttpServletResponse response,
             @PathVariable("pluginID") Long pluginID, @PathVariable("scanWebID") String scanWebID) throws Exception {
-        
-        
+
         ScanWebInfoTester info = scanWebModuleEjb.getScanWebInfoTester(request, scanWebID);
-        
+
         OutputStream output = response.getOutputStream();
 
         try {
-            
-            ScanWebPlainFile sep = ScanWebPluginManager.getDocumentsSeparator(pluginID, info.getScanWebRequest().getLanguageUI());
+
+            ScanWebPlainFile sep = ScanWebPluginManager.getDocumentsSeparator(pluginID,
+                    info.getScanWebRequest().getLanguageUI());
             if (sep == null) {
                 throw new Exception("El plugin " + pluginID + " ha retornat un Separador null !!!");
             }
-                
-            
+
             response.setContentType(sep.getMime());
             response.setHeader("Content-Disposition", "inline; filename=\"" + sep.getName() + "\"");
             response.setContentLength((int) sep.getData().length);
-
-            
 
             output.write(sep.getData());
 
             output.flush();
 
             output.close();
-            
-            
+
         } catch (Exception e) {
-            String html = "<html><body><h1>Error intentant obtenir Separdor del plugin " + pluginID + "</h1><br/> Error: " + e.getMessage() + "</body></html>"; 
+            String html = "<html><body><h1>Error intentant obtenir Separdor del plugin " + pluginID
+                    + "</h1><br/> Error: " + e.getMessage() + "</body></html>";
             output.write(html.getBytes());
         }
-    
+
     }
-    
-    
 
     @RequestMapping(value = "/error")
     public ModelAndView errorProcesDeScan(HttpServletRequest request, HttpServletResponse response,

@@ -48,8 +48,17 @@ body {
                 </tr>
             </c:forEach>
         </table>
+        
     </div>
-
+    
+    <c:if test="${not empty pluginsExcludedStrings}">
+    <div class="well" style="max-width: 400px; margin: 0 auto 10px;">
+     Excluded Plugins<br/>
+        <c:forEach var="type" items="${pluginsExcludedStrings}">
+            <h5>* <b>${type.key}</b>: ${type.value}  </h5><br/>
+        </c:forEach>
+    </c:if>
+    </div>
     <br />
 
 </div>

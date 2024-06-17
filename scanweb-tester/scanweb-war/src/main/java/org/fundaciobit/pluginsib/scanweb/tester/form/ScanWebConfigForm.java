@@ -1,6 +1,5 @@
 package org.fundaciobit.pluginsib.scanweb.tester.form;
 
-
 /**
  * 
  * @author anadal
@@ -9,9 +8,9 @@ package org.fundaciobit.pluginsib.scanweb.tester.form;
 public class ScanWebConfigForm {
 
     String id;
-    
+
     protected String transactionName;
-    
+
     protected String type;
 
     protected String flag;
@@ -22,15 +21,12 @@ public class ScanWebConfigForm {
     protected String langUI;
 
     protected String username;
-    
-    protected String nom;
-    
-    protected String nif;
-    
-    protected String functionaryUnitDIR3;
-    
 
-    
+    protected String nom;
+
+    protected String nif;
+
+    protected String functionaryUnitDIR3;
 
     public ScanWebConfigForm() {
     }
@@ -42,8 +38,6 @@ public class ScanWebConfigForm {
     public void setId(String id) {
         this.id = id;
     }
-    
-    
 
     public String getTransactionName() {
         return transactionName;
@@ -108,7 +102,6 @@ public class ScanWebConfigForm {
     public void setNif(String nif) {
         this.nif = nif;
     }
-
 
     public String getFunctionaryUnitDIR3() {
         return functionaryUnitDIR3;

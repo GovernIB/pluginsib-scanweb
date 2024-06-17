@@ -1,4 +1,5 @@
 package org.fundaciobit.pluginsib.scanweb.api;
+
 /**
  * 
  * @author anadal
@@ -6,45 +7,44 @@ package org.fundaciobit.pluginsib.scanweb.api;
  */
 public class ScanWebStatus {
 
-  public static final int STATUS_INITIALIZING = 0;
+    public static final int STATUS_INITIALIZING = 0;
 
-  public static final int STATUS_IN_PROGRESS = 1;
+    public static final int STATUS_IN_PROGRESS = 1;
 
-  public static final int STATUS_FINAL_OK = 2;
+    public static final int STATUS_FINAL_OK = 2;
 
-  public static final int STATUS_FINAL_ERROR = -1;
-  
-  public static final int STATUS_CANCELLED = -2;
+    public static final int STATUS_FINAL_ERROR = -1;
 
-  protected int status = STATUS_INITIALIZING;
+    public static final int STATUS_CANCELLED = -2;
 
-  protected String errorMsg;
+    protected int status = STATUS_INITIALIZING;
 
-  protected Throwable errorException;
-  
-  public int getStatus() {
-    return status;
-  }
+    protected String errorMsg;
 
-  public void setStatus(int status) {
-    this.status = status;
-  }
+    protected Throwable errorException;
 
-  public String getErrorMsg() {
-    return errorMsg;
-  }
+    public int getStatus() {
+        return status;
+    }
 
-  public void setErrorMsg(String errorMsg) {
-    this.errorMsg = errorMsg;
-  }
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-  public Throwable getErrorException() {
-    return errorException;
-  }
+    public String getErrorMsg() {
+        return errorMsg;
+    }
 
-  public void setErrorException(Throwable errorException) {
-    this.errorException = errorException;
-  }
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
 
-  
+    public Throwable getErrorException() {
+        return errorException;
+    }
+
+    public void setErrorException(Throwable errorException) {
+        this.errorException = errorException;
+    }
+
 }

@@ -1,8 +1,8 @@
 package org.fundaciobit.pluginsib.scanweb.digitalibmassive;
 
-import org.fundaciobit.pluginsib.core.utils.ISO8601;
-import org.fundaciobit.pluginsib.core.utils.Metadata;
-import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
+import org.fundaciobit.pluginsib.core.v3.utils.ISO8601;
+import org.fundaciobit.pluginsib.core.v3.utils.Metadata;
+import org.fundaciobit.pluginsib.core.v3.utils.MetadataConstants;
 import org.fundaciobit.pluginsib.scanweb.api.AbstractScanWebPlugin;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebDocument;
 import org.fundaciobit.pluginsib.scanweb.api.ScanWebMode;
@@ -174,7 +174,7 @@ public class DigitalIBMassive2ScanWebPlugin extends AbstractScanWebPlugin {
     }
 
     @Override
-    public boolean filter(HttpServletRequest request, ScanWebRequest config) {
+    public String filter(HttpServletRequest request, ScanWebRequest config) {
         return super.filter(request, config);
     }
 
