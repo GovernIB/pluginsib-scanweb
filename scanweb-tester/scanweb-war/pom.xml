@@ -17,7 +17,6 @@
 
     <dependencies>
 
-
         <!-- Especificacions i llibreries proporcionades per JBoss -->
         <dependency>
             <groupId>org.jboss.spec</groupId>
@@ -104,14 +103,6 @@
                 <configuration>
                     <packagingExcludes> WEB-INF/lib/xml-apis-*.jar,
                         WEB-INF/lib/slf4j*.jar </packagingExcludes>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <configuration>
-                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
