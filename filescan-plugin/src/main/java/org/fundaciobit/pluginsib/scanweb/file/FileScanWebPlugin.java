@@ -486,7 +486,6 @@ public class FileScanWebPlugin extends AbstractScanWebPlugin {
             ServletFileUpload upload = new ServletFileUpload(factory);
 
             // Parse the request to get file items.
-            @SuppressWarnings("unchecked")
             List<FileItem> fileItems = upload.parseRequest(request);
 
             Map<String, FileItem> mapFile = new HashMap<String, FileItem>();

@@ -59,14 +59,14 @@
         <dependency>
             <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
             <artifactId>pluginsib-scanweb-file</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.fundaciobit.pluginsib.scanweb</groupId>
             <artifactId>pluginsib-scanweb-digitalibmassive2</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
@@ -77,11 +77,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
-                <version>3.3.0</version>
                 <!-- configuring the ear plugin -->
                 <configuration>
-                    <displayName>Exemple de ScanWeb Plugin</displayName>
-                    <description>Exemple de ScanWeb Plugin</description>
+                    <displayName>ScanWeb Tester</displayName>
+                    <description>Exemple Web d'ús dels Plugins de ScanWeb</description>
                     <skinnyModules>true</skinnyModules>
                     <packagingExcludes>
                         **/com.fasterxml.jackson.*.jar,**/org.jboss.resteasy-resteasy-*.jar</packagingExcludes>
