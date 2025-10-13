@@ -27,12 +27,70 @@
             <artifactId>digitalib-api-interna-client</artifactId>
             <version>2.0</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-        </dependency>
 
     </dependencies>
 
+    <profiles>
+    
+        <!-- Profile jboss72: actiu per defecte -->
+        <profile>
+            <id>jboss72_def</id>
+            <activation>
+                <property>
+                    <name>!jboss</name>
+                </property>
+            </activation>
+            <dependencies>
+                <!-- Dependències específiques per a JBoss 7.2 -->
+                <dependency>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                    <type>jar</type>
+                </dependency>
+
+            </dependencies>
+        </profile>
+    
+    
+        <!-- Profile jboss72: actiu per propietat -->
+        <profile>
+            <id>jboss72_explicit</id>
+            <activation>
+                <property>
+                    <name>jboss</name>
+                    <value>7.2</value>
+                </property>
+            </activation>
+            <dependencies>
+                <!-- Dependències específiques per a JBoss 7.2 -->
+                <dependency>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                    <type>jar</type>
+                </dependency>
+
+            </dependencies>
+        </profile>
+
+        <!-- Profile jboss74 actiu per propietat-->
+        <profile>
+            <id>jboss74_explicit</id>
+            <activation>
+                <property>
+                    <name>jboss</name>
+                    <value>7.4</value>
+                </property>
+            </activation>
+            <dependencies>
+                <!-- Dependències específiques per a JBoss 7.4 -->
+                <dependency>
+                    <groupId>jakarta.mail</groupId>
+                    <artifactId>jakarta.mail-api</artifactId>
+                    <version>1.6.4</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+    </profiles>
+    
 </project>
