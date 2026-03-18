@@ -1,0 +1,10 @@
+
+
+(1) Anar a https://www.dynamsoft.com/
+(2) Fer Login
+(3) Anar a Development/Downloads
+(4) Descarregar i instal·lar "Dynamic Web TWAIN SDK x.y.z"
+(5) Crear una nova carpeta a .\scanner_resources\scanner amb la nova versió (Per exemple 19.3.2)
+(6) Anar a "C:\Program Files (x86)\Dynamsoft\Dynamic Web TWAIN SDK x.y.y\Resources" i copiar fitxers a carpeta creada en el punt (5)
+(7) Copiar .\scanner_resources\scanner\x.y.z\dynamsoft.webtwain.config.js a .\scanner_resources\scanner\x.y.z\dynamsoft.webtwain.config_original.js
+(8) Editar fitxer .\scanner_resources\scanner\x.y.z\dynamsoft.webtwain.config.js i revisar els canvis que s'han fet en altres versions (Fer un winmerge entre el fitxer config i el fitxer config_original)
