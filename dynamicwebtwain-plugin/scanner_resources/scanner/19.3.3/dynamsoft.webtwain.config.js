@@ -28,6 +28,9 @@ Dynamsoft.DWT.Containers = [{ WebTwainId: '', ContainerId: 'dwtcontrolContainer'
 Dynamsoft.DWT.ProductKey = 'X_PRODUCTKEY_X';
 
 ///
+Dynamsoft.DWT.Trial = X_TRIAL_X;
+
+///
 Dynamsoft.DWT.ResourcesPath = 'X_PATH_X';
 
 ///
