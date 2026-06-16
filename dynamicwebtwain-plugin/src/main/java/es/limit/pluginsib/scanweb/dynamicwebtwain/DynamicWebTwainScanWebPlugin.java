@@ -390,6 +390,10 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                 finalPage(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request, response,
                         scanWebRequest, scanWebResult, languageUI);
 
+            } else if (query.startsWith(CANCEL_PAGE)) {
+
+                cancel(request, response, scanWebRequest, scanWebResult, languageUI);
+
             } else {
 
                 super.requestGETPOST(absolutePluginRequestPath, relativePluginRequestPath, scanWebID, query, request,
@@ -1007,6 +1011,12 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                             + clean + "' onclick='pujarServidor();' >" + pujarServidor + "</button>");
         }
         out.println("         </td>");
+
+        String cancel = getTraduccio("cancel", languageUI);
+
+        out.print("<td><button id=\"cancel\" class=\"btn btn-secondary\" type=\"button\"  onclick=\"location.href='"
+                + relativePluginRequestPath + CANCEL_PAGE + "'\");' >" + cancel + "</button></td>");
+
         out.print("      </tr></table>\n");
         out.print("   </div>\n");
         out.print(" </div>\n");
@@ -1083,6 +1093,58 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
                 String.valueOf(scanWebID), request, response, languageUI);
     }
 
+    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+    // ------------------- CANCEL BUTTON ----------------------
+    // ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+
+    protected static final String CANCEL_PAGE = "cancel";
+
+    protected void cancel(HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
+            ScanWebResult scanWebResult, Locale languageUI) {
+        
+        log.info(" Passa per cancel(...)");
+
+        scanWebResult.getStatus().setStatus(ScanWebStatus.STATUS_CANCELLED);
+
+        if (ScanWebMode.ASYNCHRONOUS.equals(scanWebRequest.getMode())) {
+            
+            log.info(" Passa per cancel(...) ASYNCHRONOUS");
+            
+            response.setContentType("text/html");
+            response.setCharacterEncoding("utf-8");
+
+            PrintWriter out;
+            try {
+                out = response.getWriter();
+            } catch (IOException e2) {
+                log.error(e2.getMessage(), e2);
+                return;
+            }
+
+            out.println("<html>\n");
+            out.println("<body>\n");
+            out.println("<table border=0 width=\"100%\" height=\"300px\">\n");
+            out.println("<tr><td align=center>\n");
+            out.println("<p><h2>" + getTraduccio("cancelat", languageUI) + "</h2><p>\n");
+            out.println("</td></tr>\n");
+            out.println("</table>\n");
+            out.println("</body>\n");
+            out.println("</html>\n");
+
+            out.flush();
+        } else {
+            final String url;
+            url = scanWebRequest.getUrlFinal();
+            
+            log.info(" Passa per cancel(...) SYNCHRONOUS --> redirigeix a " + url);
+            
+            sendRedirect(response, url);
+        }
+
+    }
+
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
     // --------------- FINAL PAGE (SINCRON MODE) -------------------------------
@@ -1095,15 +1157,20 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
             String query, HttpServletRequest request, HttpServletResponse response, ScanWebRequest scanWebRequest,
             ScanWebResult scanWebResult, Locale languageUI) {
 
+       
         log.debug("Entra dins FINAL_PAGE(...");
 
         List<ScanWebDocument> list = scanWebResult.getScannedDocuments();
         if (isDebug()) {
-            log.info(" SCANID[" + scanWebRequest.getScanWebID() + "].LIST.SIZE() = " + list.size());
+            log.info(" finalPage => SCANID[" + scanWebRequest.getScanWebID() + "].LIST.SIZE() = " + list.size());
         }
 
         ScanWebStatus status = scanWebResult.getStatus();
         int statusID = status.getStatus();
+        
+        if (isDebug()) {
+            log.info("finalPage => SCANID[" + scanWebRequest.getScanWebID() + "].STATUS = " + statusID);
+        }
 
         if (statusID == ScanWebStatus.STATUS_IN_PROGRESS) {
 
@@ -1115,7 +1182,9 @@ public class DynamicWebTwainScanWebPlugin extends AbstractScanWebPlugin implemen
 
                 status.setStatus(ScanWebStatus.STATUS_FINAL_OK);
             }
-        }
+        } else if (statusID == ScanWebStatus.STATUS_CANCELLED) {
+            // ja està cancel·lat
+        } 
 
         try {
             response.sendRedirect(scanWebRequest.getUrlFinal());
