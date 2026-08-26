@@ -15,7 +15,7 @@ import org.fundaciobit.pluginsib.scanweb.digitalibmassive.DigitalIBMassive2ScanW
  * @author anadal (u80067)
  * 26 ago 2026 13:43:31
  */
-public class DigtalIBMassiveTest {
+public class DigitalIBMassiveTest {
 
     public static void main(String[] args) {
 
